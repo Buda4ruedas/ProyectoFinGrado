@@ -1,0 +1,30 @@
+<div class="container mt-4">
+  <h3 class="mb-3">Calendario de Reservas</h3>
+  <table class="table table-bordered text-center">
+    <thead>
+      <tr>
+        <th>Hora</th>
+        <th *ngFor="let dia of dias">{{ dia }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let horario of horarios()">
+        <td><strong>{{ horario.hora }}</strong></td>
+        <td *ngFor="let dia of dias"
+        (click)="onclick(dia, horario.id)"
+        [ngClass]="{
+          'bg-secondary text-white': estaReservado(dia, horario.id) && esDelUsuario(dia, horario.id),
+          'bg-warning text-dark': estaReservado(dia, horario.id) && !esDelUsuario(dia, horario.id),
+          'bg-success text-white': !estaReservado(dia, horario.id)
+        }"
+        style="cursor: pointer;">
+      {{
+        estaReservado(dia, horario.id) 
+          ? 'Portal: ' + reservas()[`${dia}-${horario.id}`].portal + ' - ' + reservas()[`${dia}-${horario.id}`].piso 
+          : 'Disponible'
+      }}
+    </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

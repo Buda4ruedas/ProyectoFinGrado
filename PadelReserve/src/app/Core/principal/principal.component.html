@@ -1,0 +1,15 @@
+<br>
+<div class="container">
+    <h2>Mis Opciones de Reserva</h2>
+
+    @for(calendarios of calendarios;track calendarios.id){
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{calendarios.nombre}} <i class="bi bi-dribbble"></i></h5>
+                <p class="card-text">Nº de Usuarios</p>
+                <a routerLink="/navbar/calendario/{{calendarios.id}}" class="btn btn-primary">Ir al Calendario</a>
+            </div>
+        </div>
+
+    }
+

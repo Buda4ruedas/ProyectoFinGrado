@@ -1,0 +1,56 @@
+<div class="container d-flex justify-content-center mt-5">
+  <div class="card shadow p-4 w-100" style="max-width: 500px;">
+    <h4 class="card-title text-center mb-4">Solicitud de Alta</h4>
+
+    <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label for="comunidad" class="form-label">Nombre de la comunidad</label>
+        <input type="text" class="form-control" id="comunidad" formControlName="comunidad"
+          placeholder="Ej. Comunidad Madrid" />
+        @if(formulario.get('comunidad')?.invalid && formulario.get('comunidad')?.touched){
+        <div class="text-danger">
+          Campo obligatorio
+        </div>
+        }
+      </div>
+
+      <div class="mb-3">
+        <label for="nombre" class="form-label">Nombre</label>
+        <input type="text" class="form-control" id="nombre" formControlName="nombre" />
+        @if(formulario.get('nombre')?.invalid && formulario.get('nombre')?.touched){
+        <div class="text-danger">
+          Campo obligatorio
+        </div>
+        }
+
+      </div>
+
+      <div class="mb-3">
+        <label for="apellidos" class="form-label">Apellidos</label>
+        <input type="text" class="form-control" id="apellidos" formControlName="apellidos" />
+
+        @if(formulario.get('apellidos')?.invalid && formulario.get('apellidos')?.touched){
+        <div class="text-danger">
+          Campo obligatorio
+        </div>
+        }
+
+      </div>
+
+      <div class="mb-3">
+        <label for="email" class="form-label">Correo electrónico</label>
+        <input type="email" class="form-control" id="email" formControlName="email" />
+        @if(formulario.get('email')?.invalid && formulario.get('email')?.touched){
+        <div class="text-danger">
+          Email inválido o campo vacío
+        </div>
+        }
+
+      </div>
+      <div class="d-grid gap-2 mt-3">
+        <button type="button" class="btn btn-primary" (click)="onSubmit()">Enviar solicitud</button>
+        <button type="button" routerLink='' class="btn btn-secondary">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>

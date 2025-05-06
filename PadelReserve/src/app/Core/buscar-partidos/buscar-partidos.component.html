@@ -1,0 +1,106 @@
+<div class="container">
+  <h4>Buscar Partidos</h4>
+  <form class="row g-3 needs-validation" [formGroup]="buscarForm" (ngSubmit)="onSubmit()" novalidate>
+
+
+    <div class="col-md-6">
+      <label for="actividad" class="form-label">Actividad</label>
+      <select class="form-select" id="actividad" formControlName="actividad" required>
+        <option value="Padel" selected>Padel</option>
+      </select>
+      <div class="invalid-feedback">Por favor, seleccione una actividad válida.</div>
+    </div>
+
+
+    <div class="col-md-6">
+      <label for="jugadores" class="form-label">Jugadores</label>
+      <select class="form-select" id="jugadores" formControlName="jugadores" required>
+        <option value="" disabled selected>Seleccione</option>
+        <option value="2">2</option>
+        <option value="4">4</option>
+      </select>
+      <div class="invalid-feedback">Por favor, seleccione un número de jugadores válido.</div>
+    </div>
+
+
+    <div class="col-md-6">
+      <label for="genero" class="form-label">Género</label>
+      <select class="form-select" id="genero" formControlName="genero" required>
+        <option value="" disabled selected>Seleccione</option>
+        <option value="Masculino">Masculino</option>
+        <option value="Femenino">Femenino</option>
+        <option value="Mixto">Mixto</option>
+        <option value="Cualquiera">Cualquiera</option>
+      </select>
+      <div class="invalid-feedback">Por favor, seleccione un género válido.</div>
+    </div>
+
+
+    <div class="col-md-6">
+      <label for="nivel" class="form-label">Nivel</label>
+      <select class="form-select" id="nivel" formControlName="nivel" required>
+        <option value="" disabled selected>Seleccione</option>
+        <option value="Principiante">Principiante</option>
+        <option value="Intermedio">Intermedio</option>
+        <option value="Avanzado">Avanzado</option>
+        <option value="Cualquiera">Cualquiera</option>
+      </select>
+      <div class="invalid-feedback">Por favor, seleccione un nivel válido.</div>
+    </div>
+
+
+    <div class="col-12">
+      <button class="btn btn-primary" type="submit" [disabled]="!buscarForm.valid">Buscar</button>
+    </div>
+  </form>
+</div>
+
+<br /><br />
+<div class="container">
+  @if (loading) {
+  <div class="text-center my-4">
+    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-2">Buscando partidos...</p>
+  </div>
+  } @else if (formMandado) {
+  @if (data().length > 0) {
+  @for (registro of data(); track $index) {
+  <div class="card mb-3 shadow-sm" style="max-width: 500px;">
+    <div class="card-header bg-primary text-white">
+      Partido de Pádel
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-9 d-flex flex-column">
+          <h5 class="card-title">
+            Comunidad: <span class="text-muted">{{ registro.usuario.comunidad.nombre }}</span>
+          </h5>
+          <p class="card-text mb-1">
+            <strong>Fecha:</strong> {{ registro.fecha }}<br>
+            <strong>Hora de inicio:</strong> {{ registro.hora_inicio }}<br>
+            <strong>Hora de fin:</strong> {{ registro.hora_final }}<br>
+            <strong>Creador:</strong> {{ registro.usuario.nombre }} <br>
+            <strong>Jugadores apuntados:</strong> {{ registro.jugadores_apuntados }} / {{ registro.numero_jugadores }}
+          </p>
+        </div>
+
+        <div class="col-3 d-flex flex-column justify-content-end">
+          <div class="mt-auto text-end">
+            @if (completo[$index]) {
+            <button class="btn btn-secondary btn-sm" disabled>¡Completo!</button>
+            } @else {
+            <button class="btn btn-success btn-sm" (click)="apuntarme(registro.id)">Apúntame</button>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+  } @else {
+  <h2>No hay partidos con esas características</h2>
+  }
+  }
+</div>

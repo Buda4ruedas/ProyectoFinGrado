@@ -1,0 +1,92 @@
+<div class="container">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">PadelReserve</a>
+  
+        <div class="d-flex align-items-center gap-2">
+          <!-- Imagen de perfil -->
+          <img 
+         
+            [src]="(perfil$ | async)?.fotografia || 'https://via.placeholder.com/40'" 
+            alt="Perfil" 
+            class="rounded-circle" 
+            width="40" 
+            height="40" 
+            style="object-fit: cover;" />
+  
+          <!-- Nombre del usuario -->
+          <span class="fw-semibold text-dark">{{ (perfil$ | async)?.nombre }}</span>
+  
+          <!-- Botón de ajustes -->
+          <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-gear"></i>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <li><a class="dropdown-item" routerLink="/navbar/perfil">Visitar Perfil</a></li>
+              <li><button class="dropdown-item" (click)="cerrarSesion()">Cerrar sesión</button></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown"
+            aria-controls="navbarNavDarkDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNavDarkDropdown">
+            <ul class="navbar-nav">
+
+                <li class="nav-item">
+                    <button class="btn btn-dark" aria-expanded="false" style="min-width: 200px;"
+                        routerLink="/navbar/principal">
+                        <i class="bi bi-calendar2-date text-light"></i>
+                        Reservar
+                    </button>
+
+
+
+
+                <li class="nav-item dropdown">
+                    <button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"
+                        style="min-width: 200px;"><i class="bi bi-alarm-clock text-light"></i>
+                        Mis Reservas
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><a class="dropdown-item" routerLink="/navbar/reservasActivas">Reservas Activas</a></li>
+                        <li><a class="dropdown-item" routerLink="/navbar/historicoReservas">Historico de Reservas</a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"
+                        style="min-width: 200px;">
+                        Me apunto
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><a class="dropdown-item" routerLink="/navbar/buscarPartidos">Buscar Partidos</a></li>
+                        <li><a class="dropdown-item" routerLink="/navbar/crearPartido">Crear Partido</a></li>
+                        <li><a class="dropdown-item" routerLink="/navbar/misPartidos">Mis partidos</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"
+                        style="min-width: 200px;">
+                        Mis comunidades
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><a class="dropdown-item" href="#">Mi Comunidad</a></li>
+                        <li><a class="dropdown-item" href="#">Buscar Comunidad</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<router-outlet></router-outlet>

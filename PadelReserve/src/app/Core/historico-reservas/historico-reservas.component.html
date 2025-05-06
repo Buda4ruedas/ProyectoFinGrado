@@ -1,0 +1,25 @@
+<div class = 'container'>
+    <h4>Historico de Reservas</h4>
+
+<table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>Nombre Usuario </th>
+        <th>Tipo de Actividad</th>
+        <th>Fecha</th>
+        <th>Hora</th>
+      </tr>
+    </thead>
+    <tbody>
+        @for (registro of data(); track $index) {
+            <tr>
+              <td>{{ registro.nombre }}</td>
+              <td>{{ registro.calendario }}</td>
+              <td>{{ registro.fecha }}</td>
+              <td>{{ registro.horario }}</td>
+            </tr>
+          }
+    
+    </tbody>
+  </table>
+</div>

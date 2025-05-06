@@ -1,0 +1,85 @@
+<div class="container">
+    <h4>Creación de Partido</h4>
+    <div class="form-container p-4 border rounded shadow">
+      <form [formGroup]="partidoForm" (ngSubmit)="onSubmit()">
+        <!-- Nivel del Partido -->
+        <div class="mb-3">
+          <label for="nivel" class="form-label">Nivel del Partido</label>
+          <select id="nivel" class="form-select" formControlName="nivel" required>
+            <option value="" disabled selected>Seleccione un nivel</option>
+            <option value="principiante">Principiante</option>
+            <option value="intermedio">Intermedio</option>
+            <option value="avanzado">Avanzado</option>
+          </select>
+        </div>
+        <!-- Género -->
+        <div class="mb-3">
+          <label for="genero" class="form-label">Género</label>
+          <select id="genero" class="form-select" formControlName="genero" required>
+            <option value="" disabled selected>Seleccione un género</option>
+            <option value="masculino">Masculino</option>
+            <option value="femenino">Femenino</option>
+            <option value="mixto">Mixto</option>
+          </select>
+        </div>
+        <!-- Número de Jugadores -->
+        <div class="mb-3">
+          <label for="jugadores" class="form-label">Número de Jugadores</label>
+          <select id="jugadores" class="form-select" formControlName="jugadores" required>
+            <option value="" disabled selected>Seleccione el número de jugadores</option>
+            <option value="2">2 jugadores</option>
+            <option value="4">4 jugadores</option>
+          </select>
+        </div>
+  
+        <!-- Fecha del Partido -->
+        <div class="mb-3">
+          <label for="fecha" class="form-label">Fecha del Partido</label>
+          <input type="date" id="fecha" class="form-control" formControlName="fecha" required />
+        </div>
+  
+        <!-- Hora de Inicio -->
+        <div class="mb-3">
+            <label for="hora_inicio" class="form-label">Hora de Inicio</label>
+            <select id="hora_inicio" class="form-select" formControlName="hora_inicio" required>
+              <option value="" disabled selected>Seleccione una hora</option>
+              
+                @for(hora of horasInicio;track $index){
+                 <option  value = {{hora}}>{{hora}}</option>
+                }
+              
+            </select>
+          </div>
+  
+        <!-- Hora de Fin -->
+        <div class="mb-3">
+          <label for="hora_fin" class="form-label">Hora de Fin</label>
+          <select id="hora_fin" class="form-select" formControlName="hora_fin" required>
+            <option value="" disabled selected>Seleccione una hora</option>   
+            @for(hora of horasFinal;track $index){
+             <option  value = {{hora}}>{{hora}}</option>
+            }
+          </select> 
+        </div>
+  
+        <!-- Botón de Enviar -->
+        <button type="submit" class="btn btn-primary" [disabled]="!partidoForm.valid">Crear Partido</button>
+      </form>
+  
+      <!-- Sección de explicación -->
+      <div class="info-section mt-4 p-3 border-top">
+        <p><strong>(*) Todos sabemos que practicar deporte con personas de un nivel similar hace la actividad más
+            divertida. Para que todos tengamos una percepción de los niveles similares, distinguimos entre estos
+            niveles:</strong></p>
+        <ul>
+          <li><strong>Principiante:</strong> Jugadores que se estén iniciando en este deporte. No dominan la
+            técnica y posiblemente tampoco todas las normas.</li>
+          <li><strong>Intermedio:</strong> Jugadores que han practicado o practican este deporte con regularidad.
+            Tienen un dominio del juego, aunque todavía tienen margen de mejora.</li>
+          <li><strong>Avanzado:</strong> Jugadores que practican este deporte varias veces por semana y dominan en
+            mayor medida las técnicas de juego.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  

@@ -1,0 +1,38 @@
+h4{
+    margin: 40px;
+}
+.form-container {
+    max-width: 800px;  /* Ancho máximo para que el formulario se vea bien */
+    margin: 0 auto;    /* Centrar el formulario horizontalmente */
+    background-color: #f8f9fa;  /* Color de fondo suave */
+    border: 2px solid #007bff;  /* Borde azul */
+    border-radius: 10px;  /* Bordes redondeados */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  /* Sombra suave */
+  } 
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  button {
+    margin-top: 15px;
+  }
+  
+  /* Estilos para la sección de información */
+  .info-section {
+    background-color: #e9ecef;  /* Fondo claro para la información */
+    border-radius: 8px;          /* Bordes redondeados para el bloque de información */
+  }
+  
+  .info-section ul {
+    list-style-type: none;  /* Quitar los puntos de la lista */
+    padding-left: 0;
+  }
+  
+  .info-section li {
+    margin-bottom: 10px;  /* Espaciado entre los ítems de la lista */
+  }
+  
+  .info-section p {
+    font-weight: bold;  /* Hacer el texto más destacable */
+  }

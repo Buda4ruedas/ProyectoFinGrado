@@ -1,0 +1,54 @@
+<div class="container mt-4">
+    <h4 class="mb-3">Mis Partidos</h4>
+
+    <!-- Menú de pestañas -->
+    <ul class="nav nav-tabs mb-3">
+        <li class="nav-item">
+            <button class="nav-link" [class.active]="vistaActiva === 'creados'" (click)="cambiarVista('creados')">
+                Partidos Creados
+            </button>
+        </li>
+        <li class="nav-item">
+
+            <button class="nav-link" [class.active]="vistaActiva === 'apuntados'" (click)="cambiarVista('apuntados')">
+                Partidos Apuntados
+            </button>
+        </li>
+    </ul>
+    @if(vistaActiva === 'creados'){
+    <div>
+        @if(loadingCreados()){
+        <div class="d-flex justify-content-center my-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+        </div>
+        }@else if(partidosCreados().length > 0){
+        <div>
+            @for(partido of partidosCreados(); track $index){
+            <app-partido [partidoId]="partido" [editable] = true  (partidoEliminado)="onPartidoEliminado($event)"></app-partido>
+            }
+        </div>
+        }@else {
+        <p>No has creado ningún partido.</p>
+        }
+    </div>
+    }@else {
+    <div>
+        @if(loadingApuntados()){
+        <div class="d-flex justify-content-center my-4">
+            <div class="spinner-border text-success" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+        </div>
+        }@else if(partidosApuntados().length > 0){
+        <div>
+            @for(partido of partidosApuntados(); track $index){
+            <app-partido [partidoId]="partido"></app-partido>
+            }
+        </div>
+        }@else {
+        <p>No estás apuntado a ningún partido.</p>
+        }
+    </div>
+    }
