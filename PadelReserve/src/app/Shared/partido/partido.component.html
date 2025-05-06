@@ -1,97 +1,98 @@
-<div class="container">
-  <div class="card mb-3 shadow-sm mx-auto" style="max-width: 800px;">
-    <div class="card-header bg-primary text-white">
-      Partido de Pádel
+<div class="container py-4">
+  <div class="card shadow-sm mx-auto" style="max-width: 900px;">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Partido de Pádel</h5>
+      @if(puedeEliminarPartido())
+      {
+        <button (click)="eliminarPartido()" class="btn btn-sm btn-danger">
+          <i class="bi bi-trash-fill"></i> Eliminar
+        </button>
+      }
     </div>
+
     <div class="card-body">
-      <!-- Datos del partido -->
-      <div class="row">
-        <div class="col-12">
-          <h5 class="card-title">
-            Comunidad: <span class="text-muted">{{ datosPartido()?.usuario.comunidad.nombre }}</span>
-          </h5>
-          <p class="card-text">
-            <strong>Fecha:</strong> {{ datosPartido()?.fecha }}<br>
-            <strong>Hora:</strong> {{ datosPartido()?.hora_inicio }} - {{ datosPartido()?.hora_final }}<br>
-            <strong>Creador:</strong> {{ datosPartido()?.usuario?.nombre }}<br>
-            <strong>Nivel:</strong> {{ datosPartido()?.nivel }}<br>
-            <strong>Género:</strong> {{ datosPartido()?.genero }}
-          </p>
+
+      <!-- Datos del partido agrupados en columnas -->
+      <div class="row mb-4">
+        <div class="col-md-6 mb-3">
+          <div class="border rounded p-3 h-100">
+            <h6 class="text-muted">Detalles Generales</h6>
+            <p class="mb-1"><strong>Comunidad:</strong> {{ datosPartido()?.usuario.comunidad.nombre }}</p>
+            <p class="mb-1"><strong>Fecha:</strong> {{ datosPartido()?.fecha }}</p>
+            <p class="mb-1"><strong>Hora:</strong> {{ datosPartido()?.hora_inicio }} - {{ datosPartido()?.hora_final }}</p>
+          </div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <div class="border rounded p-3 h-100">
+            <h6 class="text-muted">Información del Partido</h6>
+            <p class="mb-1"><strong>Creador:</strong> {{ datosPartido()?.usuario?.nombre }}</p>
+            <p class="mb-1"><strong>Nivel:</strong> {{ datosPartido()?.nivel }}</p>
+            <p class="mb-1"><strong>Género:</strong> {{ datosPartido()?.genero }}</p>
+          </div>
         </div>
       </div>
 
-      <!-- Resultado del partido -->
-      <div class="row text-center mt-4">
-        <div class="col-12">
-          <h5 class="fw-bold">Resultado</h5>
-
-          @if (puedeEditarResultado()) {
+      <!-- Resultado -->
+      <div class="text-center mb-4">
+        <h6 class="fw-bold mb-3">Resultado</h6>
+        @if (puedeEditarResultado())
+        {
           <div class="d-flex flex-column align-items-center">
             <input type="text" [(ngModel)]="resultado" class="form-control text-center w-50" placeholder="6/4-6/2" />
-            <button class="btn btn-primary mt-2" (click)="guardarResultado()">Guardar</button>
+            <button class="btn btn-success mt-2" (click)="guardarResultado()">
+              <i class="bi bi-check-circle"></i> Guardar
+            </button>
           </div>
-          } @else {
-          <div class="d-flex justify-content-center gap-4">
-            <div><strong>{{ setsResultado[0] || '-' }}</strong></div>
-            <div><strong>{{ setsResultado[1] || '-' }}</strong></div>
-            <div><strong>{{ setsResultado[2] || '-' }}</strong></div>
+        }
+        @else
+        {
+          <div class="d-flex justify-content-center gap-3">
+            <span class="badge bg-secondary fs-5">{{ setsResultado[0] || '' }}</span>
+            <span class="badge bg-secondary fs-5">{{ setsResultado[1] || '' }}</span>
+            <span class="badge bg-secondary fs-5">{{ setsResultado[2] || '' }}</span>
           </div>
-          }
-        </div>
+        }
       </div>
-      @if(puedeEliminarPartido()){
-      <button (click)="eliminarPartido()" class="boton-eliminar">
-        Eliminar partido
-      </button>
-      }
 
-
-      <!-- Sección de equipos -->
-      <div class="mt-4">
-        <div class="d-flex justify-content-center align-items-center gap-5">
-          <!-- Equipo 1 -->
-          <div class="d-flex flex-column align-items-center">
-            <div class="d-flex gap-3">
-              @for(jugador of equipo1(); track $index) {
-              <div class="text-center d-flex flex-column align-items-center" style="width: 80px;">
-                <i class="bi bi-person-circle" style="font-size: 2rem;"></i>
-                <div style="height: 20px; display: flex; align-items: center; justify-content: center;">
-                  @if (jugador) {
-                  {{ jugador.usuario?.nombre }}
-                  } @else {
-                  <button class="btn btn-sm btn-outline-success p-0" style="height: 15px; width: 20px; line-height: 1;"
-                    (click)="aniadirEquipo(1)">+</button>
-                  }
-                </div>
+      <!-- Equipos -->
+      <div class="row text-center">
+        <div class="col-md-5">
+          <h6 class="fw-bold mb-2">Equipo 1</h6>
+          <div class="d-flex justify-content-center gap-2 flex-wrap">
+            @for(jugador of equipo1(); track $index) {
+              <div class="text-center">
+                <i class="bi bi-person-circle fs-2 text-primary"></i><br>
+                @if (jugador) {
+                  <small>{{ jugador.usuario?.nombre }}</small>
+                } @else {
+                  <button class="btn btn-outline-success btn-xs p-0" style="width: 24px; height: 24px; font-size: 0.75rem;" (click)="aniadirEquipo(1)">
+                    <i class="bi bi-plus"></i>
+                  </button>
+                }
               </div>
-              }
-            </div>
-            <div class="mt-2 fw-bold">Equipo 1</div>
+            }
           </div>
+        </div>
 
-          <!-- VS -->
-          <div class="text-center">
-            <h3 class="m-0">VS</h3>
-          </div>
+        <div class="col-md-2 d-flex align-items-center justify-content-center">
+          <h4 class="text-muted">VS</h4>
+        </div>
 
-          <!-- Equipo 2 -->
-          <div class="d-flex flex-column align-items-center">
-            <div class="d-flex gap-3">
-              @for(jugador of equipo2(); track $index) {
-              <div class="text-center d-flex flex-column align-items-center" style="width: 80px;">
-                <i class="bi bi-person-circle" style="font-size: 2rem;"></i>
-                <div style="height: 20px; display: flex; align-items: center; justify-content: center;">
-                  @if (jugador) {
-                  {{ jugador.usuario?.nombre }}
-                  } @else {
-                  <button class="btn btn-sm btn-outline-success p-0" style="height: 15px; width: 20px; line-height: 1;"
-                    (click)="aniadirEquipo(2)">+</button>
-                  }
-                </div>
+        <div class="col-md-5">
+          <h6 class="fw-bold mb-2">Equipo 2</h6>
+          <div class="d-flex justify-content-center gap-2 flex-wrap">
+            @for(jugador of equipo2(); track $index) {
+              <div class="text-center">
+                <i class="bi bi-person-circle fs-2 text-primary"></i><br>
+                @if (jugador) {
+                  <small>{{ jugador.usuario?.nombre }}</small>
+                } @else {
+                  <button class="btn btn-outline-success btn-xs p-0" style="width: 24px; height: 24px; font-size: 0.75rem;" (click)="aniadirEquipo(1)">
+                    <i class="bi bi-plus"></i>
+                  </button>
+                }
               </div>
-              }
-            </div>
-            <div class="mt-2 fw-bold">Equipo 2</div>
+            }
           </div>
         </div>
       </div>
