@@ -13,8 +13,8 @@
         <td *ngFor="let dia of dias"
         (click)="onclick(dia, horario.id)"
         [ngClass]="{
-          'bg-secondary text-white': estaReservado(dia, horario.id) && esDelUsuario(dia, horario.id),
-          'bg-warning text-dark': estaReservado(dia, horario.id) && !esDelUsuario(dia, horario.id),
+          'bg-secondary text-white': estaReservado(dia, horario.id) && esDeMiVivienda(dia, horario.id),
+          'bg-warning text-dark': estaReservado(dia, horario.id) && !esDeMiVivienda(dia, horario.id),
           'bg-success text-white': !estaReservado(dia, horario.id)
         }"
         style="cursor: pointer;">

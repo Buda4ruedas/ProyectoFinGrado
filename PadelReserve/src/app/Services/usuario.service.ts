@@ -35,4 +35,19 @@ export class UsuarioService {
     console.log('Perfil actualizado correctamente');
     this.authService.loadProfile(data.id);
   }
+  async modificarComunidad(idComunidad:any,idUsuario:any){
+    const {data,error} = await supabase
+    .from('usuario')
+    .update({comunidad_id:idComunidad})
+    .eq('id',idUsuario)
+    if(error){
+      console.log('no se ha podido añadir la comunidad')
+    }else{
+      this.authService.loadProfile(idUsuario);
+    }
+  }
+
+
+
+
 }

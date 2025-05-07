@@ -1,0 +1,19 @@
+<div class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header d-flex justify-content-between align-items-center">
+        <h5 class="modal-title">Introduce el código de la comunidad</h5>
+        <button type="button" class="btn-close" (click)="closePopUp()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="codigo" class="form-label">Código de la comunidad</label>
+          <input type="text" id="codigo" [(ngModel)]="codigo" class="form-control" placeholder="Introduce el código aquí" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closePopUp()">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="confirm()">Confirmar</button>
+      </div>
+    </div>
+  </div>
+  

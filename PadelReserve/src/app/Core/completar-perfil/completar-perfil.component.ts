@@ -15,8 +15,6 @@ export class CompletarPerfilComponent {
     this.formulario = this.fb.group({
       nombre: ['', Validators.required],
       apellidos: ['', Validators.required],
-      portal: ['', Validators.required],
-      piso: ['', Validators.required],
       fotografia: ['', Validators.required]
     });
 

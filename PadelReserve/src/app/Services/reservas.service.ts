@@ -42,6 +42,26 @@ export class ReservasService {
     return contador;
   }
 
+
+  async cargarReservasPorVivienda(fecha: string, portal: string, piso: string, calendarioId: string): Promise<number> {
+    const { data, error } = await supabase
+      .from('reserva')
+      .select('id, usuario(piso, portal)')
+      .eq('fecha', fecha)
+      .eq('id_calendario', calendarioId);
+  
+    if (error) {
+      console.error('Error cargando reservas por vivienda:', error);
+      return 0;
+    }
+  
+    const reservasDeLaVivienda = data.filter((r: any) =>
+      r.usuario?.portal === portal && r.usuario?.piso === piso
+    );
+  
+    return reservasDeLaVivienda.length;
+  }
+
   async eliminarReserva(fecha:string,userId:string,calendarioId:string,horario:string){
     const {data,error} = await supabase.from('reserva').delete()
     .eq('id_calendario', calendarioId)

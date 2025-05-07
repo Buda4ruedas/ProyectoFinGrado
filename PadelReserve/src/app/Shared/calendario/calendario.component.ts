@@ -14,6 +14,8 @@ import { AutenticacionService } from '../../Services/autenticacion.service';
 export class CalendarioComponent {
   calendarioId!: string;
   userId!: string;
+  portal!:string;
+  piso!:string;
 
   dias = this.obtenerDiasProximos(7);
   horarios = signal<{ id: string, hora: string }[]>([]);
@@ -30,6 +32,8 @@ export class CalendarioComponent {
     this.authService.profile$.subscribe((perfil:any) => {
       if (perfil) {
         this.userId = perfil.id;
+        this.portal = perfil.portal;
+        this.piso = perfil.piso;
         this.cargarHorarios();
         this.cargarReservas();
       }
@@ -79,8 +83,9 @@ export class CalendarioComponent {
     return !!this.reservas()[`${dia}-${horarioId}`];
   }
 
-  esDelUsuario(dia: string, horarioId: string): boolean {
-    return this.reservas()[`${dia}-${horarioId}`]?.id_usuario === this.userId;
+  esDeMiVivienda(dia: string, horarioId: string): boolean {
+    const reserva = this.reservas()[`${dia}-${horarioId}`];
+    return reserva?.portal === this.portal && reserva?.piso === this.piso;
   }
 
   async reservar(dia: string, horarioId: string,) {
@@ -107,9 +112,14 @@ export class CalendarioComponent {
       alert('No puedes reservar en el pasado.');
       return;
     }
-    const numeroReservas = await this.reservaService.cargarReservasporUsuario(diaReserva,this.userId,this.calendarioId);
-    if(numeroReservas>=4) {
-      alert("No puedes reservas mas de 2 horas en un dia")
+    const numeroReservas = await this.reservaService.cargarReservasPorVivienda(
+      diaReserva,
+      this.portal,
+      this.piso,
+      this.calendarioId
+    );
+    if (numeroReservas >= 4) {
+      alert("No puedes reservar más de 2 horas por vivienda en un día");
       return;
     }
     const confirmado = window.confirm(`¿Confirmas tu reserva para el ${dia}?`);
@@ -133,7 +143,7 @@ export class CalendarioComponent {
   }
  async  onclick(dia:string , horarioId:string ){
     if(this.estaReservado(dia,horarioId)){
-      if(this.esDelUsuario(dia,horarioId)){
+      if(this.esDeMiVivienda(dia,horarioId)){
         const confirmar = confirm("Estas seguro que quiere cancelar esta reserva")
         if(confirmar){
           const fechaParts = dia.split('/');

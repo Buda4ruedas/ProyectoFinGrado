@@ -39,7 +39,6 @@ export class AutenticacionService {
     }
   }
 
-  // Cargar perfil desde la base de datos
   async loadProfile(userId: string): Promise<void> {
     const { data, error } = await supabase
       .from('usuario') 
@@ -51,7 +50,8 @@ export class AutenticacionService {
     fotografia,
     email,
     comunidad:comunidad_id(id,
-    nombre)
+    nombre),
+    rol
       
     `)
       .eq('id', userId)
@@ -65,7 +65,7 @@ export class AutenticacionService {
     }
   }
 
-  // Login
+
   async login(email: string, password: string): Promise<boolean> {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 

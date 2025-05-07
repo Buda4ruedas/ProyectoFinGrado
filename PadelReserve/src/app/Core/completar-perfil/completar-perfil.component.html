@@ -34,37 +34,6 @@
             <div class="text-danger small mt-1">Campo obligatorio</div>
           }
         </div>
-  
-        <!-- Portal -->
-        <div class="mb-3">
-          <label for="portal" class="form-label">Portal</label>
-          <input
-            type="text"
-            class="form-control"
-            id="portal"
-            formControlName="portal"
-            placeholder="Ej. 3"
-          />
-          @if(formulario.get('portal')?.touched && formulario.get('portal')?.invalid){
-            <div class="text-danger small mt-1">Campo obligatorio</div>
-          }
-        </div>
-  
-        <!-- Piso -->
-        <div class="mb-3">
-          <label for="piso" class="form-label">Piso</label>
-          <input
-            type="text"
-            class="form-control"
-            id="piso"
-            formControlName="piso"
-            placeholder="Ej. 2ºB"
-          />
-          @if(formulario.get('piso')?.touched && formulario.get('piso')?.invalid){
-            <div class="text-danger small mt-1">Campo obligatorio</div>
-          }
-        </div>
-  
         <!-- Fotografía -->
         <div class="mb-3">
           <label for="fotografia" class="form-label">Fotografía de perfil</label>
@@ -79,7 +48,6 @@
             <div class="text-danger small mt-1">Campo obligatorio</div>
           }
         </div>
-  
         <button type="submit" class="btn btn-primary w-100 mt-3">Guardar perfil</button>
       </form>
     </div>
