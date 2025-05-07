@@ -46,6 +46,37 @@ export class UsuarioService {
       this.authService.loadProfile(idUsuario);
     }
   }
+  async obtenerUsuariosSinVerificar(idComunidad:any):Promise<any>{
+    const {data,error} = await supabase
+    .from('usuario')
+    .select('id,nombre,apellidos,email,portal,piso')
+    .eq('comunidad_id',idComunidad)
+    .is('rol',null)
+    if(!error){
+      console.log('usuarios sin autenticar' , data)
+      return data;
+    }else{
+      console.log("no he podido conseguir los usuarios pendientes")
+    }
+  }
+  async modificarRol(idUser:any,rol:any){
+    const{data,error} = await supabase
+    .from('usuario')
+    .update({rol:rol})
+    .eq('id',idUser)
+    if(error){
+      console.log("no se ha podido asignar el rol")
+    }
+  }
+  async rechazarUsuario(idUser:any){
+    const{data,error} = await supabase
+    .from('usuario')
+    .update({comunidad_id:null,portal:null,piso:null})
+    .eq('id',idUser)
+    if(error){
+      console.log("no se ha podido asignar el rol")
+    }
+  }
 
 
 

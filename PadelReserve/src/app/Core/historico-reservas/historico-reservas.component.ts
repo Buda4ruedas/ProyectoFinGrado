@@ -9,7 +9,7 @@ import { ReservasService } from '../../Services/reservas.service';
   styleUrl: './historico-reservas.component.css'
 })
 export class HistoricoReservasComponent {
-  data = signal<{nombre:string,calendario:string,horario:string,fecha:string}[]>([]);
+  data = signal<any>(null);
   userId:string =''
 
   constructor(private reservasService:ReservasService,private autenticacionService:AutenticacionService){

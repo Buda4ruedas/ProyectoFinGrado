@@ -8,13 +8,13 @@ export const accesoGuard: CanActivateFn = (route, state) => {
   const router = inject(Router); 
 
   return authService.user$.pipe(
-    first(), // Toma solo el primer valor emitido
+    first(), 
     map(user => {
       if (!user) {
-        router.navigate(['login']); // Redirige a la página de login si no hay usuario
-        return false; // Impide el acceso
+        router.navigate(['login']); 
+        return false; 
       }
-      return true; // Permite el acceso
+      return true; 
     })
   );
 };

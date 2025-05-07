@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterModule, } from '@angular/router';
 import { AutenticacionService } from '../../Services/autenticacion.service';
 import { Observable } from 'rxjs';
@@ -12,11 +12,13 @@ import { CommonModule } from '@angular/common';
 })
 export class NavBarComponent {
   usuario$: Observable<any>;
-  perfil$: Observable<any>;
+  perfil= signal<any>(null);
 
   constructor(private authService: AutenticacionService) {
     this.usuario$ = this.authService.user$;
-    this.perfil$ = this.authService.profile$;
+     this.authService.profile$.subscribe(perfil=>{
+      this.perfil.set(perfil)
+     });
   }
 
   cerrarSesion() {

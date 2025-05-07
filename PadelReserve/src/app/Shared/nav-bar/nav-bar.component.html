@@ -7,7 +7,7 @@
           <!-- Imagen de perfil -->
           <img 
          
-            [src]="(perfil$ | async)?.fotografia || 'https://via.placeholder.com/40'" 
+            [src]="perfil().fotografia || 'https://via.placeholder.com/40'" 
             alt="Perfil" 
             class="rounded-circle" 
             width="40" 
@@ -15,7 +15,7 @@
             style="object-fit: cover;" />
   
           <!-- Nombre del usuario -->
-          <span class="fw-semibold text-dark">{{ (perfil$ | async)?.nombre }}</span>
+          <span class="fw-semibold text-dark">{{ perfil().nombre }}</span>
   
           <!-- Botón de ajustes -->
           <div class="dropdown">
@@ -81,6 +81,18 @@
                         <li><a class="dropdown-item" routerLink="/navbar/buscarComunidad">Buscar Comunidad</a></li>
                     </ul>
                 </li>
+                @if(perfil().rol=='administrador'){
+                    <li class="nav-item dropdown">
+                        <button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"
+                            style="min-width: 200px;">
+                           Gestion de tu Comunidad
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark">
+                            <li><a class="dropdown-item" href="#">Ajustes Comunidad</a></li>
+                            <li><a class="dropdown-item" routerLink="/navbar/usuariosPendientes">Usuarios Pendientes</a></li>
+                        </ul>
+                    </li>
+                }
             </ul>
         </div>
     </div>

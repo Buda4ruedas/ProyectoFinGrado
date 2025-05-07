@@ -56,6 +56,7 @@ export class BuscarComunidadComponent {
   onUnirse(comunidad: any) {
     this.comunidadSeleccionada = comunidad;
     if (this.comunidadSeleccionada.seguridad === 'publica') {
+      
       this.unirseComunidad();
     } else {
       this.mostrarPopUp.set(true);

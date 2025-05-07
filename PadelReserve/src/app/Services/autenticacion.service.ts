@@ -15,8 +15,7 @@ export class AutenticacionService {
   profile$ = this.profileSubject.asObservable();
 
   constructor(private router: Router) {
-    // Recuperamos la sesión al iniciar el servicio
-    // this.recoverSession();
+
   }
 
   setPerfil(perfil: any) {
@@ -28,11 +27,10 @@ export class AutenticacionService {
     const { data, error } = await supabase.auth.getSession();
   
     if (data?.session) {
-      console.log('Sesión recuperada:', data.session); // Asegúrate de que se está recuperando la sesión
+      console.log('Sesión recuperada:', data.session); 
       this.userSubject.next(data.session.user);
       await this.loadProfile(data.session.user.id);
     } else {
-      // Si no hay sesión, limpiamos los datos
       console.log('No hay sesión almacenada');
       this.userSubject.next(null);
       this.profileSubject.next(null);
@@ -51,8 +49,7 @@ export class AutenticacionService {
     email,
     comunidad:comunidad_id(id,
     nombre),
-    rol
-      
+    rol  
     `)
       .eq('id', userId)
       .single();

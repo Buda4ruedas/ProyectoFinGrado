@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -8,9 +8,12 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './pop-up-codigo-comunidad.component.css'
 })
 export class PopUpCodigoComunidadComponent {
-  codigo: string = '';  // Código que el usuario va a introducir
-  @Output() close = new EventEmitter<void>();  // Evento para cerrar el modal
-  @Output() confirmar = new EventEmitter<string>();  // Evento para enviar el código ingresado
+  codigo: string = '';  
+  @Input() titulo:string = '';
+  @Input() subtitulo:string ='';
+  @Input()placeholder:string ='';
+  @Output() close = new EventEmitter<void>();  
+  @Output() confirmar = new EventEmitter<string>();
 
   closePopUp() {
     this.close.emit();  
