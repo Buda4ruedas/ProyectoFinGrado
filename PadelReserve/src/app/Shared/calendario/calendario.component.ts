@@ -4,6 +4,7 @@ import { ReservasService } from '../../Services/reservas.service';
 import { supabase } from '../../app.config';
 import { ActivatedRoute } from '@angular/router';
 import { AutenticacionService } from '../../Services/autenticacion.service';
+import { CalendarioService } from '../../Services/calendario.service';
 
 @Component({
   selector: 'app-calendario',
@@ -12,7 +13,7 @@ import { AutenticacionService } from '../../Services/autenticacion.service';
   styleUrl: './calendario.component.css'
 })
 export class CalendarioComponent {
-  calendarioId!: string;
+  calendario =signal<any>(null);
   userId!: string;
   portal!:string;
   piso!:string;
@@ -24,11 +25,13 @@ export class CalendarioComponent {
   constructor(
     private route: ActivatedRoute,
     private authService: AutenticacionService,
-    private reservaService: ReservasService
+    private reservaService: ReservasService,
+    private calendarioService:CalendarioService
   ) {}
 
   async ngOnInit(): Promise<void> {
-    this.calendarioId = this.route.snapshot.paramMap.get('id')!;
+    let calendarioId = this.route.snapshot.paramMap.get('id')!;
+    this.calendario.set(await this.calendarioService.obtenerCalendario(calendarioId))
     this.authService.profile$.subscribe((perfil:any) => {
       if (perfil) {
         this.userId = perfil.id;
@@ -42,19 +45,18 @@ export class CalendarioComponent {
   }
 
   async cargarHorarios() {
-    const { data, error } = await supabase.from('horario').select('id,hora');
-    if (!error) {
-      this.horarios.set(data);
-    } else {
-      console.error('Error al cargar horarios', error);
-    }
+    console.log('el calendario es ', this.calendario())
+    console.log(this.calendario().hora_inicio,this.calendario().hora_fin)
+    const horas = await this.calendarioService.obtenerHorasCalendario(this.calendario().hora_inicio,this.calendario().hora_fin);
+      this.horarios.set(horas);
+
   }
 
   async cargarReservas() {
     const { data, error } = await supabase
       .from('reserva')
       .select('fecha, id_horario, id_usuario,usuario(piso,portal)')
-      .eq('id_calendario', this.calendarioId);
+      .eq('id_calendario', this.calendario().id);
 
     if (!error) {
       const reservasMap: { [key: string]: { id_usuario: string,portal:string,piso:string } } = {};
@@ -116,7 +118,7 @@ export class CalendarioComponent {
       diaReserva,
       this.portal,
       this.piso,
-      this.calendarioId
+      this.calendario().id
     );
     if (numeroReservas >= 4) {
       alert("No puedes reservar más de 2 horas por vivienda en un día");
@@ -131,7 +133,7 @@ export class CalendarioComponent {
     const { error } = await supabase.from('reserva').insert({
       id_usuario: this.userId,
       id_horario: horarioId,
-      id_calendario: this.calendarioId,
+      id_calendario: this.calendario().id,
       fecha: fechaISO
     });
 
@@ -148,7 +150,7 @@ export class CalendarioComponent {
         if(confirmar){
           const fechaParts = dia.split('/');
           const fechaISO = `${fechaParts[2]}-${fechaParts[1]}-${fechaParts[0]}`;
-          await this.reservaService.eliminarReserva(fechaISO,this.userId,this.calendarioId,horarioId);
+          await this.reservaService.eliminarReserva(fechaISO,this.userId,this.calendario().id,horarioId);
           this.cargarReservas();
         }
      

@@ -22,7 +22,9 @@ export class BuscarComunidadComponent {
   codigo: string = '';
   comunidadSeleccionada: any;
   mostrarPopUp=signal<boolean>(false);
+  mostrarPortalPopUp =signal<boolean>(false);
   perfil=signal<any>(null);
+  loading = signal<boolean>(true);
 
   constructor(private usuarioService:UsuarioService,private autenticacionService:AutenticacionService){
     this.autenticacionService.profile$.subscribe(perfil => {
@@ -39,45 +41,83 @@ export class BuscarComunidadComponent {
       this.comunidades.set(data);
       this.comunidadesFiltradas.set(data);
     }
+    setTimeout(()=>{
+      this.loading.set(false);
+    },500)
+  
   }
 
   filtrar() {
-    const f = this.filtro.toLowerCase();
-    console.log('el filtro es ', this.filtro)
-    const resultados = this.comunidades().filter(c =>
-      c.nombre.toLowerCase().includes(f) ||
-      c.direccion.toLowerCase().includes(f) ||
-      c.poblacion.toLowerCase().includes(f) ||
-      c.provincia.toLowerCase().includes(f)
-    );
-    this.comunidadesFiltradas.set(resultados);
+    this.loading.set(true);  // Muestra el spinner
+
+    
+    setTimeout(() => {
+      const f = this.filtro.toLowerCase();
+      console.log('el filtro es ', this.filtro);
+  
+      const resultados = this.comunidades().filter(c =>
+        c.nombre.toLowerCase().includes(f) ||
+        c.direccion.toLowerCase().includes(f) ||
+        c.poblacion.toLowerCase().includes(f) ||
+        c.provincia.toLowerCase().includes(f)
+      );
+  
+      this.comunidadesFiltradas.set(resultados);
+      this.loading.set(false);  
+    }, 500); 
   }
 
   onUnirse(comunidad: any) {
     this.comunidadSeleccionada = comunidad;
     if (this.comunidadSeleccionada.seguridad === 'publica') {
-      
-      this.unirseComunidad();
+      this.mostrarPortalPopUp.set(true)
     } else {
       this.mostrarPopUp.set(true);
       
     }
   }
 
-  async onConfirmarCodigo(codigo:string){
+   onConfirmarCodigo(codigo:string){
     if(this.comunidadSeleccionada.codigo_acceso==codigo){
-      await this.unirseComunidad()
       this.mostrarPopUp.set(false)
+      this.mostrarPortalPopUp.set(true)
     }else{
       console.log("has introducido mal el codigo")
     }
   }
+  async onConfirmarPortal(codigo:string){
+
+    if (!codigo.includes('-')) {
+    console.error('El formato debe ser "portal-piso", como "2-2B".');
+    return;
+  }
+
+  const partes = codigo.split('-');
+
+  if (partes.length !== 2 || !partes[0] || !partes[1]) {
+    console.error('Formato inválido. Debe ser algo como "2-2B".');
+    return;
+  }
+
+  const portal = partes[0].trim();
+  const piso = partes[1].trim();
+
+  console.log('Portal:', portal);
+  console.log('Piso:', piso);
+    this.unirseComunidad(portal,piso)
+    this.mostrarPopUp.set(false)
+
+  }
   onCerrarPopup(){
     this.mostrarPopUp.set(false);
   }
+  onCerrarPortalPopup(){
+    this.mostrarPortalPopUp.set(false);
+  }
 
 
-  async unirseComunidad() {
-   await this.usuarioService.modificarComunidad(this.comunidadSeleccionada.id,this.perfil().id)
+  async unirseComunidad(portal:string,piso:string) {
+   await this.usuarioService.modificarComunidadaUsuario(this.comunidadSeleccionada.id,this.perfil().id,portal,piso)
+   this.mostrarPortalPopUp.set(false)
   }
 }

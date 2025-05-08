@@ -1,0 +1,40 @@
+h4 {
+    margin: 40px;
+  }
+  
+  .form-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #f8f9fa;
+    border: 2px solid #007bff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  button {
+    margin-top: 15px;
+  }
+  
+  .info-section {
+    background-color: #e9ecef;
+    border-radius: 8px;
+  }
+  
+  .info-section ul {
+    list-style-type: none;
+    padding-left: 0;
+  }
+  
+  .info-section li {
+    margin-bottom: 10px;
+  }
+  
+  .info-section p {
+    font-weight: bold;
+  }
+  

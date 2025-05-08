@@ -1,8 +1,7 @@
 import { Component, signal, Signal } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
-import { CalendarioComponent } from '../../Shared/calendario/calendario.component';
 import { AutenticacionService } from '../../Services/autenticacion.service';
-import { Observable } from 'rxjs';
+
 import { CalendarioService } from '../../Services/calendario.service';
 
 @Component({
@@ -16,12 +15,12 @@ export class PrincipalComponent {
 calendarios:{ id:string, nombre:string}[]=[];
 perfil = signal<any>(null);
 
-constructor(private calendarioService:CalendarioService,private autenticacionService:AutenticacionService){
-  this.autenticacionService.profile$.subscribe(perfil => {
+ constructor(private calendarioService:CalendarioService,private autenticacionService:AutenticacionService){
+  this.autenticacionService.profile$.subscribe( async perfil => {
     if (perfil) {
       this.perfil.set(perfil)
       if(perfil.comunidad){
-        this.calendarioService.obtenerCalendarios(perfil.comunidad.id)
+        await this.calendarioService.obtenerCalendarios(perfil.comunidad.id)
         .then(calendarios => {
           this.calendarios = calendarios;
         });
@@ -30,8 +29,7 @@ constructor(private calendarioService:CalendarioService,private autenticacionSer
     }
   });
 }
-  
-
+ 
 
 }
 

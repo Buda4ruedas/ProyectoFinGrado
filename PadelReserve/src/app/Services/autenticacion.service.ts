@@ -13,16 +13,11 @@ export class AutenticacionService {
 
   user$ = this.userSubject.asObservable();
   profile$ = this.profileSubject.asObservable();
-
   constructor(private router: Router) {
-
   }
-
   setPerfil(perfil: any) {
     this.profileSubject.next({...perfil});
   }
-
-  // Recuperar sesión desde Supabase
   async recoverSession(): Promise<void> {
     const { data, error } = await supabase.auth.getSession();
   
@@ -75,8 +70,6 @@ export class AutenticacionService {
     await this.loadProfile(data.user.id);
     return true;
   }
-
-  // Logout
   async logout(): Promise<void> {
     await supabase.auth.signOut();
     this.userSubject.next(null);

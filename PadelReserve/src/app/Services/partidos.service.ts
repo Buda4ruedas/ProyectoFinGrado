@@ -33,7 +33,7 @@ export class PartidosService {
   async obtenerPartidos(): Promise<any[]> {
     const { data, error } = await supabase
       .from('partido')
-      .select('id,usuario(id , nombre, comunidad(id,nombre)),fecha,hora_inicio,hora_final,resultado,nivel,genero,numero_jugadores') .order('fecha', { ascending: false })  // Ordenar primero por fecha, de más reciente a menos
+      .select('id,usuario(id , nombre, comunidad:comunidad_id(id,nombre)),fecha,hora_inicio,hora_final,resultado,nivel,genero,numero_jugadores') .order('fecha', { ascending: false })  // Ordenar primero por fecha, de más reciente a menos
       .order('hora_inicio', { ascending: false });
 
     if (error) {

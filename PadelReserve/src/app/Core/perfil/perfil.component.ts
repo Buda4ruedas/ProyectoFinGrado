@@ -24,8 +24,8 @@ export class PerfilComponent {
       email: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
       nombre: ['', Validators.required],
       apellidos: ['', Validators.required],
-      portal: ['', Validators.required],
-      piso: ['', Validators.required],
+      portal: [{value:'', disabled:true}, Validators.required],
+      piso: [{value:'', disabled:true}, Validators.required],
       fotografia: ['', Validators.required],
       comunidad: [{value:'', disabled:true}, Validators.required],
 

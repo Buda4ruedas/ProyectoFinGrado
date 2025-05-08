@@ -22,12 +22,19 @@ export class ReservasActivasComponent {
       })
   }
 
-  async cargarReservasActivas(){
+  async cargarReservasActivas() {
     const datos = await this.reservasService.obtenerReservas(this.userId);
-    const dia = new Date();
-    const reservasActivas = datos.filter(element => new Date(element.fecha) > dia);
+    const ahora = new Date();
+  
+    const reservasActivas = datos.filter(element => {
+      // Combinar fecha y hora
+      const fechaHoraStr = `${element.fecha}T${element.horario}:00`; // → "2025-05-08T17:00:00"
+      const fechaCompleta = new Date(fechaHoraStr);
+      
+      return fechaCompleta > ahora;
+    });
+  
     this.data.set(reservasActivas);
-
   }
 
 

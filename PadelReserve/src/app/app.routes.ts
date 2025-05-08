@@ -15,6 +15,7 @@ import { PartidoComponent } from './Shared/partido/partido.component';
 import { MisPartidosComponent } from './Core/mis-partidos/mis-partidos.component';
 import { BuscarComunidadComponent } from './Core/buscar-comunidad/buscar-comunidad.component';
 import { UsuariosPendientesComponent } from './Core/usuarios-pendientes/usuarios-pendientes.component';
+import { CrearComunidadComponent } from './Core/crear-comunidad/crear-comunidad.component';
 
 export const routes: Routes = [
     {path:'', component:LoginComponent},
@@ -32,6 +33,7 @@ export const routes: Routes = [
         {path:'misPartidos',component:MisPartidosComponent},
         {path:'buscarComunidad',component:BuscarComunidadComponent},
         {path:'usuariosPendientes',component:UsuariosPendientesComponent},
+        {path:'crearComunidad',component:CrearComunidadComponent},
 
 
     ]},

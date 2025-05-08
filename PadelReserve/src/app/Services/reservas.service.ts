@@ -90,8 +90,18 @@ export class ReservasService {
       horario: r.horario.hora,
       fecha: r.fecha
     }));
-  }
 
+   
+  }
+  async obtenerIdHorario(hora:string):Promise<any>{
+      const {data,error} = await supabase.from('horario').select('id').eq('hora',hora).single()
+      if(error){
+        console.log('no se ha podido obtener el id del horario')
+        return
+      }else{
+        return data
+      }
+  }
 
 
 

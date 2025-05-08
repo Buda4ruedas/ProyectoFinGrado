@@ -24,7 +24,7 @@ export class SolicitudAccesoComponent {
     if (this.formulario.valid) {
       const datos = this.formulario.value;
       console.log('Datos del formulario:', datos);
-      // Aquí llamarías a tu backend o servicio de email
+     
       alert('Solicitud enviada correctamente. En unos dias recibiras un email con tus credenciales');
       this.formulario.reset();
       this.route.navigate([''])

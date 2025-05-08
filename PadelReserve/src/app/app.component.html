@@ -1,2 +1,10 @@
 
-<router-outlet></router-outlet>
+@if(cargando()) {
+    <div class="d-flex justify-content-center align-items-center vh-100">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+  } @else {
+    <router-outlet></router-outlet>
+  }
