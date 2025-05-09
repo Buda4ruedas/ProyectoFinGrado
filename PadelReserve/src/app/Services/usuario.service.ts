@@ -38,7 +38,7 @@ export class UsuarioService {
   async modificarComunidadaUsuario(idComunidad: any, idUsuario: any, portal: string, piso: string) {
     const { data, error } = await supabase
       .from('usuario')
-      .update({ comunidad_id: idComunidad, portal: portal, piso: piso })
+      .update({ comunidad_id: idComunidad, portal: portal, piso: piso,rol:null })
       .eq('id', idUsuario)
     if (error) {
       console.log('no se ha podido añadir la comunidad')

@@ -1,16 +1,12 @@
-<div class="container py-5">
+<div class="container mt-5">
+  <h2 class="text-primary mb-4">🔍 Buscar Comunidades</h2>
   <div class="card shadow-sm border-0 mb-4">
-
     <div class="card-body">
-      <h2 class="card-title text-primary mb-4">🔍 Buscar Comunidades</h2>
-
-      <div class="input-group mb-3">
-        <input type="text" class="form-control form-control-lg"
-          placeholder="Buscar por nombre, dirección, población o provincia" [(ngModel)]="filtro" />
-        <button class="btn btn-lg btn-outline-primary" type="button" (click)="filtrar()">
-          Buscar
-        </button>
+      <div class="input-group mb-4">
+        <input type="text" class="form-control form-control-lg" placeholder="Buscar por nombre, dirección, población o provincia" [(ngModel)]="filtro" />
+        <button class="btn btn-lg btn-outline-primary" type="button" (click)="filtrar()">Buscar</button>
       </div>
+
       @if (loading()) {
       <div class="text-center my-4">
         <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
@@ -27,27 +23,24 @@
       </div>
       }@else{
       <div class="d-flex flex-column gap-3">
-        @for(comunidad of comunidadesFiltradas(); track comunidad.id ) {
-        <app-comunidad [comunidad]="comunidad" (unirse)="onUnirse(comunidad)"></app-comunidad>
+        @for(comunidad of comunidadesFiltradas(); track comunidad.id) {
+        <app-comunidad [comunidad]="comunidad" (unirse)="onUnirse(comunidad)" (abandonar)="onAbandonar()"></app-comunidad>
         }
       </div>
       }
-    }
+      }
     </div>
-
   </div>
-
 </div>
 
 @if(mostrarPopUp()){
-<app-pop-up-codigo-comunidad [titulo]="'Introduce el código de la comunidad'" [subtitulo]="'Código de la comunidad'"
-  [placeholder]="'Introduce el código aquí'" (close)="onCerrarPopup()" (confirmar)="onConfirmarCodigo($event)">
-</app-pop-up-codigo-comunidad>
+<app-pop-up-codigo-comunidad [titulo]="'Introduce el código de la comunidad'" [subtitulo]="'Código de la comunidad'" [placeholder]="'Introduce el código aquí'" (close)="onCerrarPopup()" (confirmar)="onConfirmarCodigo($event)"></app-pop-up-codigo-comunidad>
 }
 
 @if(mostrarPortalPopUp()){
-<app-pop-up-codigo-comunidad [titulo]="'Introduce tu portal y piso para que el administrador pueda validarte'"
-  [subtitulo]="'Portal - Piso'" [placeholder]="'4-2B'" (close)="onCerrarPortalPopup()"
-  (confirmar)="onConfirmarPortal($event)">
-</app-pop-up-codigo-comunidad>
+<app-pop-up-codigo-comunidad [titulo]="'Introduce tu portal y piso para que el administrador pueda validarte'" [subtitulo]="'Portal - Piso'" [placeholder]="'4-2B'" (close)="onCerrarPortalPopup()" (confirmar)="onConfirmarPortal($event)"></app-pop-up-codigo-comunidad>
+}
+
+@if(mostrarConfirmacionPopUp()){
+<app-pop-up-confirmacion [titulo]="'Abandonar Comunidad'" [subtitulo]="'Vas a abandonar tu comunidad Actual'" (close)="onCerrarConfirmacionPopup()" (confirmar)="onConfirmar()"></app-pop-up-confirmacion>
 }

@@ -1,25 +1,26 @@
-<div class = 'container'>
-    <h4>Historico de Reservas</h4>
+<div class="container py-5">
+  <h2 class="text-primary mb-4">Histórico de Reservas</h2>
 
-<table class="table table-bordered table-striped">
-    <thead>
-      <tr>
-        <th>Nombre Usuario </th>
-        <th>Tipo de Actividad</th>
-        <th>Fecha</th>
-        <th>Hora</th>
-      </tr>
-    </thead>
-    <tbody>
+  <div class="table-responsive shadow-sm rounded overflow-hidden">
+    <table class="table table-bordered table-striped mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Nombre Usuario</th>
+          <th>Tipo de Actividad</th>
+          <th>Fecha</th>
+          <th>Hora</th>
+        </tr>
+      </thead>
+      <tbody>
         @for (registro of data(); track $index) {
-            <tr>
-              <td>{{ registro.nombre }}</td>
-              <td>{{ registro.calendario }}</td>
-              <td>{{ registro.fecha }}</td>
-              <td>{{ registro.horario }}</td>
-            </tr>
-          }
-    
-    </tbody>
-  </table>
+          <tr>
+            <td>{{ registro.nombre }}</td>
+            <td>{{ registro.calendario }}</td>
+            <td>{{ registro.fecha }}</td>
+            <td>{{ registro.horario }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
 </div>

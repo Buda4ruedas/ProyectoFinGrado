@@ -35,16 +35,16 @@ export class PerfilComponent {
   ngOnInit() {
     this.perfil$.subscribe((perfilData) => {
       if (perfilData) {
-        this.nombreComunidad = perfilData.comunidad.nombre;
-  
+        console.log(perfilData)
+        this.nombreComunidad = perfilData.comunidad?.nombre;
         this.perfilForm.patchValue({
           nombre: perfilData.nombre,
           email: perfilData.email,
           apellidos:perfilData.apellidos,
-          portal: perfilData.portal,
-          piso: perfilData.piso,
+          portal: perfilData?.portal,
+          piso: perfilData?.piso,
           fotografia:perfilData.fotografia,
-          comunidad:perfilData.comunidad.id
+          comunidad:perfilData.comunidad?.id
         });
       }
     });

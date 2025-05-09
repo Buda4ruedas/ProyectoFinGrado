@@ -3,10 +3,11 @@ import { RouterModule, RouterOutlet } from '@angular/router';
 import { AutenticacionService } from '../../Services/autenticacion.service';
 
 import { CalendarioService } from '../../Services/calendario.service';
+import { SinRolComponent } from "../../Shared/sin-rol/sin-rol.component";
 
 @Component({
   selector: 'app-principal',
-  imports: [RouterModule],
+  imports: [RouterModule, SinRolComponent],
   templateUrl: './principal.component.html',
   styleUrl: './principal.component.css'
 })

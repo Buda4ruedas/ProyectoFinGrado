@@ -1,56 +1,40 @@
-<div class="container min-vh-100 d-flex flex-column justify-content-center align-items-center bg-light">
-  <h2 class="display-4 mb-4 text-primary">¡¡Bienvenido a Padel Reserve!!</h2>
+<div class="container min-vh-100 d-flex flex-column justify-content-center align-items-center bg-light py-5">
+  <h2 class="display-4 text-primary mb-4">¡¡Bienvenido a Padel Reserve!!</h2>
 
-  <div class="card p-4 w-100" style="max-width: 500px;">
-    <h5 class="card-title mb-3 text-primary text-center">Completa tu perfil para continuar</h5>
+  <div class="card shadow-sm w-100" style="max-width: 500px;">
+    <div class="card-body">
+      <h5 class="card-title text-primary text-center mb-3">Completa tu perfil para continuar</h5>
 
-    <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
-      <!-- Nombre -->
-      <div class="mb-3">
-        <label for="nombre" class="form-label text-primary">Nombre</label>
-        <input
-          type="text"
-          class="form-control"
-          id="nombre"
-          formControlName="nombre"
-          placeholder="Tu nombre"
-        />
-        @if(formulario.get('nombre')?.touched && formulario.get('nombre')?.invalid){
-          <div class="text-danger small mt-1">Campo obligatorio</div>
-        }
-      </div>
+      <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
+        <!-- Nombre -->
+        <div class="mb-3">
+          <label for="nombre" class="form-label text-primary">Nombre</label>
+          <input type="text" class="form-control" id="nombre" formControlName="nombre" placeholder="Tu nombre" />
+          @if(formulario.get('nombre')?.touched && formulario.get('nombre')?.invalid){
+            <div class="text-danger small mt-1">Campo obligatorio</div>
+          }
+        </div>
 
-      <!-- Apellido -->
-      <div class="mb-3">
-        <label for="apellido" class="form-label text-primary">Apellido</label>
-        <input
-          type="text"
-          class="form-control"
-          id="apellido"
-          formControlName="apellidos"
-          placeholder="Tu apellido"
-        />
-        @if(formulario.get('apellido')?.touched && formulario.get('apellido')?.invalid){
-          <div class="text-danger small mt-1">Campo obligatorio</div>
-        }
-      </div>
+        <!-- Apellido -->
+        <div class="mb-3">
+          <label for="apellido" class="form-label text-primary">Apellido</label>
+          <input type="text" class="form-control" id="apellido" formControlName="apellidos" placeholder="Tu apellido" />
+          @if(formulario.get('apellido')?.touched && formulario.get('apellido')?.invalid){
+            <div class="text-danger small mt-1">Campo obligatorio</div>
+          }
+        </div>
 
-      <!-- Fotografía -->
-      <div class="mb-3">
-        <label for="fotografia" class="form-label text-primary">Fotografía de perfil</label>
-        <input
-          type="url"
-          class="form-control"
-          id="fotografia"
-          formControlName="fotografia"
-          placeholder="URL de tu foto"
-        />
-        @if(formulario.get('fotografia')?.touched && formulario.get('fotografia')?.invalid){
-          <div class="text-danger small mt-1">Campo obligatorio</div>
-        }
-      </div>
+        <!-- Fotografía -->
+        <div class="mb-4">
+          <label for="fotografia" class="form-label text-primary">Fotografía de perfil</label>
+          <input type="url" class="form-control" id="fotografia" formControlName="fotografia" placeholder="URL de tu foto" />
+          @if(formulario.get('fotografia')?.touched && formulario.get('fotografia')?.invalid){
+            <div class="text-danger small mt-1">Campo obligatorio</div>
+          }
+        </div>
 
-      <button type="submit" class="btn btn-primary w-100 mt-3">Guardar perfil</button>
-    </form>
+        <button type="submit" class="btn btn-primary w-100">Guardar perfil</button>
+      </form>
+    </div>
   </div>
 </div>

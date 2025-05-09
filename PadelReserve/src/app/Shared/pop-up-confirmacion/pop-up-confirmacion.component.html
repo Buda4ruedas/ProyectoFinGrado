@@ -1,0 +1,16 @@
+<div class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header d-flex justify-content-between align-items-center">
+        <h5 class="modal-title text-primary">{{ titulo }}</h5>
+      </div>
+      <div class="modal-body text-center">
+        <p class="text-muted mb-2">{{ subtitulo }}</p>
+        <p class="fs-5 fw-semibold">¿Estás seguro de que quieres continuar?</p>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button type="button" class="btn btn-secondary px-4" (click)="closePopUp()">No</button>
+        <button type="button" class="btn btn-primary px-4" (click)="confirm()">Sí</button>
+      </div>
+    </div>
+  </div>
+  

@@ -1,43 +1,25 @@
-<br>
-<div class="container">
-
-    @if(perfil().comunidad){
-    <h2>Mis Opciones de Reserva</h2>
-
-    @for(calendarios of calendarios;track calendarios.id){
-    <div class="card mb-3">
-        <div class="card-body">
-            <h5 class="card-title">{{calendarios.nombre}} <i class="bi bi-dribbble"></i></h5>
-            <p class="card-text">Nº de Usuarios</p>
-            <a routerLink="/navbar/calendario/{{calendarios.id}}" class="btn btn-primary">Ir al Calendario</a>
-        </div>
-    </div>
-
-    }
-    }@else {
-
-    <h2 class="text-center my-4">No estás en ninguna comunidad</h2>
-    <div class="row justify-content-center">
-        <!-- Buscar Comunidad -->
-        <div class="col-md-5 mb-3">
-            <div class="card border-info shadow-sm h-100">
-                <div class="card-body text-center">
-                    <h5 class="card-title text-info">🔍 Buscar Comunidades</h5>
-                    <p class="card-text">Explora comunidades públicas y solicita acceso a las privadas.</p>
-                    <a routerLink="/navbar/buscarComunidad" class="btn btn-outline-info">Buscar Comunidades</a>
-                </div>
+<div class="container py-5">
+    @if(perfil().rol && perfil().comunidad){
+      <h2 class="text-primary mb-4">Mis Opciones de Reserva</h2>
+  
+      <div class="d-flex flex-column gap-3">
+        @for(calendarios of calendarios; track calendarios.id){
+          <div class="card shadow-sm border-0">
+            <div class="card-body">
+              <h5 class="card-title text-primary mb-2">
+                {{ calendarios.nombre }} <i class="bi bi-dribbble"></i>
+              </h5>
+              <p class="card-text mb-3">Nº de Usuarios</p>
+              <a 
+                routerLink="/navbar/calendario/{{ calendarios.id }}" 
+                class="btn btn-primary"
+              >
+                Ir al Calendario
+              </a>
             </div>
-        </div>
-        <!-- Crear Comunidad -->
-        <div class="col-md-5 mb-3">
-            <div class="card border-success shadow-sm h-100">
-                <div class="card-body text-center">
-                    <h5 class="card-title text-success">➕ Crear Comunidad</h5>
-                    <p class="card-text">¿No encuentras la tuya? Crea una nueva comunidad para tu edificio o grupo.</p>
-                    <a routerLink="/navbar/crearComunidad" class="btn btn-success">Crear Comunidad</a>
-                </div>
-            </div>
-        </div>
-    </div>
+          </div>
+        }
+      </div>
     }
-</div>
+  </div>
+  

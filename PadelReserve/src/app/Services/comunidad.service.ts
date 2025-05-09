@@ -19,8 +19,7 @@ const {data,error} = await supabase.from('comunidad')
   seguridad:datos.seguridad,
   direccion:datos.direccion,
   provincia:datos.provincia,
-  codigo_acceso:datos.codigoAcceso,
-  administrador:userId}]).select('id')
+  codigo_acceso:datos.codigoAcceso}]).select('id')
   console.log('datos', data)
   
 
