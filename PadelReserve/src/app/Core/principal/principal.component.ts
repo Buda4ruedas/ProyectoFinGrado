@@ -4,16 +4,17 @@ import { AutenticacionService } from '../../Services/autenticacion.service';
 
 import { CalendarioService } from '../../Services/calendario.service';
 import { SinRolComponent } from "../../Shared/sin-rol/sin-rol.component";
+import { CalendarioCardComponent } from "../../Shared/calendario-card/calendario-card.component";
 
 @Component({
   selector: 'app-principal',
-  imports: [RouterModule, SinRolComponent],
+  imports: [RouterModule, CalendarioCardComponent],
   templateUrl: './principal.component.html',
   styleUrl: './principal.component.css'
 })
 export class PrincipalComponent {
 
-calendarios:{ id:string, nombre:string}[]=[];
+calendarios = signal<{ id: string; nombre: string }[]>([]);
 perfil = signal<any>(null);
 
  constructor(private calendarioService:CalendarioService,private autenticacionService:AutenticacionService){
@@ -23,7 +24,7 @@ perfil = signal<any>(null);
       if(perfil.comunidad){
         await this.calendarioService.obtenerCalendarios(perfil.comunidad.id)
         .then(calendarios => {
-          this.calendarios = calendarios;
+          this.calendarios.set(calendarios)
         });
       }
     

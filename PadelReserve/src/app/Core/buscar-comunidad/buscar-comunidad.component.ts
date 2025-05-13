@@ -3,11 +3,11 @@ import { supabase } from '../../app.config';
 import { CommonModule } from '@angular/common';
 import { ComunidadComponent } from "../../Shared/comunidad/comunidad.component";
 import { FormsModule } from '@angular/forms';
-import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { PopUpCodigoComunidadComponent } from '../../Shared/pop-up-codigo-comunidad/pop-up-codigo-comunidad.component';
 import { UsuarioService } from '../../Services/usuario.service';
 import { AutenticacionService } from '../../Services/autenticacion.service';
 import { PopUpConfirmacionComponent } from '../../Shared/pop-up-confirmacion/pop-up-confirmacion.component';
+import { ComunidadService } from '../../Services/comunidad.service';
 
 
 @Component({
@@ -31,7 +31,7 @@ export class BuscarComunidadComponent {
   portal: any
   piso: any
 
-  constructor(private usuarioService: UsuarioService, private autenticacionService: AutenticacionService) {
+  constructor(private usuarioService: UsuarioService, private autenticacionService: AutenticacionService,private comunidadService:ComunidadService) {
     this.autenticacionService.profile$.subscribe(perfil => {
       if (perfil) {
         this.perfil.set(perfil)
@@ -70,17 +70,30 @@ export class BuscarComunidadComponent {
     }, 500);
   }
 
-  onUnirse(comunidad: any) {
+  async onUnirse(comunidad: any) {
     this.comunidadSeleccionada = comunidad;
+    const puede = await this.puedeAbandonar();
+    if(puede){
     if (this.comunidadSeleccionada.seguridad == 'privada') {
       this.mostrarPopUp.set(true);
     } else {
       this.mostrarPortalPopUp.set(true)
     }
+    }else{
+      alert('No puedes abandonar la comunidad siendo el único administrador.');
+    }
+
 
   }
-  onAbandonar() {
-    this.mostrarConfirmacionPopUp.set(true)
+  async onAbandonar() {
+  const puede = await this.puedeAbandonar();
+    console.log(puede)
+    if (puede) {
+      this.mostrarConfirmacionPopUp.set(true)
+    } else {
+      alert('No puedes abandonar la comunidad siendo el único administrador.');
+    }
+    
   }
 
   onConfirmarCodigo(codigo: string) {
@@ -126,8 +139,6 @@ export class BuscarComunidadComponent {
   onCerrarPortalPopup() {
     this.mostrarPortalPopUp.set(false);
   }
-
-
   async unirseComunidad(portal: string, piso: string) {
     await this.usuarioService.modificarComunidadaUsuario(this.comunidadSeleccionada.id, this.perfil().id, portal, piso)
     this.mostrarPortalPopUp.set(false)
@@ -145,5 +156,10 @@ export class BuscarComunidadComponent {
     }
     this.mostrarConfirmacionPopUp.set(false)
 
+  }
+     async puedeAbandonar(): Promise<boolean> {
+    const administradores = await this.comunidadService.obtenerAdministradores(this.perfil().comunidad?.id);
+    console.log(administradores,'administradores :')
+    return !(this.perfil().rol == 'administrador' && administradores.length <= 1);
   }
 }

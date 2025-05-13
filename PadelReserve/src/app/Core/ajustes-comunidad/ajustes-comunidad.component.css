@@ -1,0 +1,19 @@
+.admin-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: transform 0.2s ease, background-color 0.3s ease;
+  border-radius: 1rem;
+}
+
+.admin-card {
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  border-radius: 1rem;
+}
+
+.admin-card:hover {
+  background-color: #f0f8ff;
+  transform: scale(1.02);
+  cursor: pointer;
+  box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1);
+}

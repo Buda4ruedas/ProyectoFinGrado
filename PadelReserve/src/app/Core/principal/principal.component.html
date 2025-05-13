@@ -1,25 +1,13 @@
-<div class="container py-5">
-    @if(perfil().rol && perfil().comunidad){
-      <h2 class="text-primary mb-4">Mis Opciones de Reserva</h2>
-  
-      <div class="d-flex flex-column gap-3">
-        @for(calendarios of calendarios; track calendarios.id){
-          <div class="card shadow-sm border-0">
-            <div class="card-body">
-              <h5 class="card-title text-primary mb-2">
-                {{ calendarios.nombre }} <i class="bi bi-dribbble"></i>
-              </h5>
-              <p class="card-text mb-3">Nº de Usuarios</p>
-              <a 
-                routerLink="/navbar/calendario/{{ calendarios.id }}" 
-                class="btn btn-primary"
-              >
-                Ir al Calendario
-              </a>
-            </div>
-          </div>
-        }
-      </div>
+<div class="container mt-5">
+  @if(perfil().rol && perfil().comunidad){
+  <h2 class="text-primary mb-4">Mis Opciones de Reserva</h2>
+
+  <div class="d-flex flex-column gap-3">
+    @for(calendarios of calendarios(); track calendarios.id){
+
+    <app-calendario-card [nombre]="calendarios.nombre" [enlace]="'/navbar/calendario/' + calendarios.id">
+    </app-calendario-card>
     }
   </div>
-  
+  }
+</div>

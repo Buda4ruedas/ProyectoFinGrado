@@ -1,0 +1,35 @@
+<div class="container py-5">
+  <h2 class="text-primary mb-4">Gestión de Usuarios</h2>
+
+  <div class="row g-4">
+    @for(usuario of usuarios; track usuario.id) {
+      <div class="col-md-4">
+        <div class="card user-card shadow-sm border-0">
+          <div class="card-body">
+            <h5 class="card-title text-primary">{{ usuario.nombre}} {{usuario.apellidos }}</h5>
+            <img 
+         
+            [src]="usuario.fotografia || 'https://via.placeholder.com/40'" 
+            alt="Perfil" 
+            class="rounded-circle" 
+            width="40" 
+            height="40" 
+            style="object-fit: cover;" />
+            <p class="card-text mb-1"><strong>Email:</strong> {{ usuario.email }}</p>
+            <p class="card-text mb-3"><strong>Rol:</strong> {{ usuario.rol || 'Sin rol' }}</p>
+
+            <div class="d-flex justify-content-between">
+              <button class="btn btn-sm btn-outline-danger" (click)="eliminarUsuario(usuario.id)">
+                <i class="bi bi-trash3"></i> Eliminar
+              </button>
+              <button class="btn btn-sm btn-outline-primary" (click)="cambiarRol(usuario.id,usuario.rol)">
+                <i class="bi bi-shield-lock"></i> Cambiar Rol
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+

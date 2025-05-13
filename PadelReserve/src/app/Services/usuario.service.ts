@@ -18,15 +18,12 @@ export class UsuarioService {
       console.error('No se ha encontrado el ID del usuario');
       throw new Error('ID de usuario no disponible');
     }
-
     const { data, error } = await supabase
       .from('usuario')
       .update(datos)
       .eq('id', resp.id)
       .select('*')
       .single();
-
-
     if (error) {
       console.error('Error al actualizar perfil:', error);
       throw error;
@@ -43,7 +40,7 @@ export class UsuarioService {
     if (error) {
       console.log('no se ha podido añadir la comunidad')
     } else {
-      this.authService.loadProfile(idUsuario);
+    this.authService.loadProfile(idUsuario);
     }
   }
   async ponerRolAdministrador(idComunidad: any, idUsuario: any, portal: string, piso: string) {
@@ -58,7 +55,6 @@ export class UsuarioService {
       this.authService.loadProfile(idUsuario);
     }
   }
-
   async obtenerUsuariosSinVerificar(idComunidad: any): Promise<any> {
     const { data, error } = await supabase
       .from('usuario')
@@ -76,24 +72,40 @@ export class UsuarioService {
     const { data, error } = await supabase
       .from('usuario')
       .update({ rol: rol })
-      .eq('id', idUser)
+      .eq('id', idUser).select('*')
     if (error) {
       console.log("no se ha podido asignar el rol")
     }else{
-      
+      console.log(data)
     }
   }
   async rechazarUsuario(idUser: any) {
     const { data, error } = await supabase
       .from('usuario')
-      .update({ comunidad_id: null, portal: null, piso: null })
+      .update({ comunidad_id: null, portal: null, piso: null,rol:null })
       .eq('id', idUser)
     if (error) {
-      console.log("no se ha podido asignar el rol")
+      console.log("no se ha podido actualizar los campos a null")
     }
   }
-
-
-
+    async abandonarComunidad(idUser: any) {
+    const { data, error } = await supabase
+      .from('usuario')
+      .update({ comunidad_id: null, portal: null, piso: null,rol:null })
+      .eq('id', idUser)
+    if (error) {
+      console.log("no se ha podido actualizar los campos a null")
+    }else{
+      this.authService.loadProfile(idUser);
+    }
+  }
+  async obtenerUsuariosdeComunidad(idComunidad:any):Promise<any>{
+    const {data,error}  = await supabase.from('usuario').select('*').eq('comunidad_id',idComunidad)
+    if(error){
+      console.log('no se ha podido obtener los usuarios de esta comunidad')
+      return []
+    }
+    return data
+  }
 
 }

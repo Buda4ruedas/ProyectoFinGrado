@@ -18,6 +18,10 @@ import { UsuariosPendientesComponent } from './Core/usuarios-pendientes/usuarios
 import { CrearComunidadComponent } from './Core/crear-comunidad/crear-comunidad.component';
 import { sinRolGuard } from './guards/sin-rol.guard';
 import { SinRolComponent } from './Shared/sin-rol/sin-rol.component';
+import { MiComunidadComponent } from './Core/mi-comunidad/mi-comunidad.component';
+import { sinComunidadGuard } from './guards/sin-comunidad.guard';
+import { AjustesComunidadComponent } from './Core/ajustes-comunidad/ajustes-comunidad.component';
+import { GestionUsuariosComponent } from './Core/gestion-usuarios/gestion-usuarios.component';
 
 export const routes: Routes = [
     {path:'', component:LoginComponent},
@@ -35,7 +39,10 @@ export const routes: Routes = [
         {path:'misPartidos',component:MisPartidosComponent,canActivate:[sinRolGuard]},
         {path:'buscarComunidad',component:BuscarComunidadComponent},
         {path:'usuariosPendientes',component:UsuariosPendientesComponent,canActivate:[sinRolGuard]},
+        {path:'ajustesComunidad',component:AjustesComunidadComponent,canActivate:[sinRolGuard]},
+        {path:'gestionUsuarios',component:GestionUsuariosComponent,canActivate:[sinRolGuard]},
         {path:'crearComunidad',component:CrearComunidadComponent},
+        {path:'miComunidad',component:MiComunidadComponent,canActivate:[sinComunidadGuard]},
         {path:'sinRol',component:SinRolComponent}
 
 
