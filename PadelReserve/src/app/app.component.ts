@@ -16,7 +16,7 @@ export class AppComponent {
 
   ngOnInit(): void {
     this.authService.recoverSession().then(() => {
-      this.authService.user$.pipe(take(1)).subscribe(user => {
+      this.authService.profile$.pipe(take(1)).subscribe(user => {
         if (user) {
           this.router.navigate(['/navbar/principal']);
         } else {

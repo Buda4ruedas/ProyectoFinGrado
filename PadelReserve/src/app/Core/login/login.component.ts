@@ -1,40 +1,41 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormsModule, Validators,ReactiveFormsModule, FormGroup } from '@angular/forms';
+import { FormBuilder, FormsModule, Validators, ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { AutenticacionService } from '../../Services/autenticacion.service';
 import { observable, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-login',
-  imports: [RouterOutlet,ReactiveFormsModule,RouterModule],
+  imports: [RouterOutlet, ReactiveFormsModule, RouterModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
   loginForm: FormGroup;
+  errorLogin: string | null = null;
 
-  
-  usuario$;
-  perfil$ ;
+  perfil$;
 
   constructor(
     private router: Router,
     private authService: AutenticacionService,
     private fb: FormBuilder
   ) {
- 
+
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
     });
 
-    this.usuario$ = this.authService.user$;
+
     this.perfil$ = this.authService.profile$;
   }
 
   async onLogin() {
+    this.errorLogin = null;
+
     if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched(); 
+      this.loginForm.markAllAsTouched();
       return;
     }
 
@@ -42,18 +43,16 @@ export class LoginComponent {
     const exito = await this.authService.login(email, password);
 
     if (!exito) {
-      console.error("No se ha podido iniciar sesión");
+      this.errorLogin = 'Correo o contraseña incorrectos. Intenta de nuevo.';
     } else {
       
-      this.usuario$.subscribe(usuario => {
         this.perfil$.subscribe(perfil => {
-          if (perfil && perfil?.nombre && usuario) {
+          if (perfil && perfil?.nombre ) {
             this.router.navigate(['/navbar/principal']);
-          } else if (usuario && !perfil?.nombre) {
+          } else if (!perfil?.nombre) {
             this.router.navigate(['/navbar/completarPerfil']);
           }
         });
-      });
     }
   }
 

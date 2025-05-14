@@ -1,0 +1,26 @@
+<div class="container d-flex justify-content-center mt-5">
+  <div class="card p-4 shadow" style="max-width: 400px; width: 100%;">
+    <h4 class="mb-3 text-primary text-center">Cambiar contraseña</h4>
+
+    <form [formGroup]="form" (ngSubmit)="cambiarPassword()">
+      <div class="mb-3">
+        <label class="form-label">Nueva contraseña</label>
+        <input type="password" class="form-control" formControlName="nuevaPassword" />
+      </div>
+      @if(form.get('nuevaPassword')?.touched && form.get('nuevaPassword')?.invalid){
+        <div class="text-danger small">
+        La contraseña debe tener al menos 6 caracteres.
+        </div>
+      }
+      
+
+      <div class="mb-3">
+        <label class="form-label">Confirmar nueva contraseña</label>
+        <input type="password" class="form-control" formControlName="confirmarPassword" />
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100">Guardar contraseña</button>
+    </form>
+  </div>
+</div>
+

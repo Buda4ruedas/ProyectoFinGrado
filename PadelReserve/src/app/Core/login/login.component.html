@@ -1,54 +1,49 @@
 <div class="container min-vh-100 d-flex flex-column justify-content-center align-items-center bg-light">
-    <h1 class="display-4 mb-4 text-primary">Padel Reserve</h1>
-  
-    <div class="card shadow p-4 w-100" style="max-width: 400px;">
-      <h5 class="card-title mb-3 text-center">Inicia sesión</h5>
-    
-      <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
-        <div class="mb-3">
-          <label for="email" class="form-label">Correo electrónico</label>
-          <input
-            type="email"
-            class="form-control"
-            id="email"
-            formControlName="email"
-            placeholder="ejemplo@correo.com"
-          />
+  <h1 class="display-4 mb-4 text-primary">Padel Reserve</h1>
 
-          @if(loginForm.get('email')?.touched && loginForm.get('email')?.invalid){
-            <div class="text-danger small mt-1">
-              Ingresa un correo válido.
-            </div>
-          }
+  <div class="card shadow p-4 w-100" style="max-width: 400px;">
+    <h5 class="card-title mb-3 text-center">Inicia sesión</h5>
 
-         
+    <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+      <div class="mb-3">
+        @if(errorLogin){
+        <div class="alert alert-danger text-center">
+          {{ errorLogin }}
         </div>
-    
-        <div class="mb-3">
-          <label for="password" class="form-label">Contraseña</label>
-          <input
-            type="password"
-            class="form-control"
-            id="password"
-            formControlName="password"
-            placeholder="••••••••"
-          />
-          @if(loginForm.get('password')?.touched && loginForm.get('password')?.invalid){
-            <div class="text-danger small mt-1">
-              La contraseña es obligatoria.
-            </div>
-          }
+        }
+
+        <label for="email" class="form-label">Correo electrónico</label>
+        <input type="email" class="form-control" id="email" formControlName="email" placeholder="ejemplo@correo.com" />
+
+        @if(loginForm.get('email')?.touched && loginForm.get('email')?.invalid){
+        <div class="text-danger small mt-1">
+          Ingresa un correo válido.
         </div>
-    
-        <button type="submit" class="btn btn-primary w-100 mt-3">Iniciar sesión</button>
-      </form>
-    
-      <hr class="my-4" />
-    
-      <div class="text-center">
-        ¿No tienes cuenta?
-        <a routerLink="/solicitud" routerLinkActive="router-link-active"  class="text-decoration-none">Solicita tu acceso</a>
+        }
+
+
       </div>
+
+      <div class="mb-3">
+        <label for="password" class="form-label">Contraseña</label>
+        <input type="password" class="form-control" id="password" formControlName="password" placeholder="••••••••" />
+        @if(loginForm.get('password')?.touched && loginForm.get('password')?.invalid){
+        <div class="text-danger small mt-1">
+          La contraseña es obligatoria.
+        </div>
+        }
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100 mt-3">Iniciar sesión</button>
+    </form>
+
+    <hr class="my-4" />
+
+    <div class="text-center">
+      ¿No tienes cuenta?
+      <a routerLink="/registrarse" routerLinkActive="router-link-active" class="text-decoration-none">Solicita tu
+        acceso</a>
     </div>
   </div>
-  <router-outlet></router-outlet>
+</div>
+<router-outlet></router-outlet>

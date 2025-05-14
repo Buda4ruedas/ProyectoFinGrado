@@ -51,9 +51,7 @@ export class BuscarComunidadComponent {
   }
 
   filtrar() {
-    this.loading.set(true);  // Muestra el spinner
-
-
+    this.loading.set(true);
     setTimeout(() => {
       const f = this.filtro.toLowerCase();
       console.log('el filtro es ', this.filtro);
@@ -72,7 +70,7 @@ export class BuscarComunidadComponent {
 
   async onUnirse(comunidad: any) {
     this.comunidadSeleccionada = comunidad;
-    const puede = await this.puedeAbandonar();
+    const puede = await this.puedeAbandonar(comunidad.id);
     if(puede){
     if (this.comunidadSeleccionada.seguridad == 'privada') {
       this.mostrarPopUp.set(true);
@@ -85,8 +83,8 @@ export class BuscarComunidadComponent {
 
 
   }
-  async onAbandonar() {
-  const puede = await this.puedeAbandonar();
+  async onAbandonar(comunidad:any) {
+  const puede = await this.puedeAbandonar(comunidad.id);
     console.log(puede)
     if (puede) {
       this.mostrarConfirmacionPopUp.set(true)
@@ -157,8 +155,8 @@ export class BuscarComunidadComponent {
     this.mostrarConfirmacionPopUp.set(false)
 
   }
-     async puedeAbandonar(): Promise<boolean> {
-    const administradores = await this.comunidadService.obtenerAdministradores(this.perfil().comunidad?.id);
+     async puedeAbandonar(idComunidad:any): Promise<boolean> {
+    const administradores = await this.comunidadService.obtenerAdministradores(idComunidad);
     console.log(administradores,'administradores :')
     return !(this.perfil().rol == 'administrador' && administradores.length <= 1);
   }

@@ -24,6 +24,8 @@ import { AjustesComunidadComponent } from './Core/ajustes-comunidad/ajustes-comu
 import { GestionUsuariosComponent } from './Core/gestion-usuarios/gestion-usuarios.component';
 import { GestionCalendariosComponent } from './Core/gestion-calendarios/gestion-calendarios.component';
 import { GestionComunidadComponent } from './Core/gestion-comunidad/gestion-comunidad.component';
+import { RegistrarseComponent } from './Core/registrarse/registrarse.component';
+import { CambiarContraseniaComponent } from './Core/cambiar-contrasenia/cambiar-contrasenia.component';
 
 export const routes: Routes = [
     {path:'', component:LoginComponent},
@@ -37,6 +39,7 @@ export const routes: Routes = [
         {path:'crearPartido', component: CrearPartidoComponent,canActivate:[sinRolGuard]},
         {path:'completarPerfil',component:CompletarPerfilComponent},
         {path:'perfil',component:PerfilComponent},
+        {path:'cambiarContrasenia',component:CambiarContraseniaComponent},
         {path:'partido/:id',component:PartidoComponent,canActivate:[sinRolGuard]},
         {path:'misPartidos',component:MisPartidosComponent,canActivate:[sinRolGuard]},
         {path:'buscarComunidad',component:BuscarComunidadComponent},
@@ -51,7 +54,7 @@ export const routes: Routes = [
 
 
     ]},
-    {path:'solicitud',component:SolicitudAccesoComponent},
+    {path:'registrarse',component:RegistrarseComponent},
     {path:'**', redirectTo:''}
  
 

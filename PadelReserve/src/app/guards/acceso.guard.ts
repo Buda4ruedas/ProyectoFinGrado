@@ -7,7 +7,7 @@ export const accesoGuard: CanActivateFn = (route, state) => {
   const authService = inject(AutenticacionService); 
   const router = inject(Router); 
 
-  return authService.user$.pipe(
+  return authService.profile$.pipe(
     first(), 
     map(user => {
       if (!user) {

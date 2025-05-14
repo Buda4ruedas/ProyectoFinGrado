@@ -1,5 +1,5 @@
-import { Component, signal } from '@angular/core';
-import { RouterModule, } from '@angular/router';
+import { Component, inject, signal } from '@angular/core';
+import { Router, RouterModule, } from '@angular/router';
 import { AutenticacionService } from '../../Services/autenticacion.service';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -11,17 +11,17 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./nav-bar.component.css']
 })
 export class NavBarComponent {
-  usuario$: Observable<any>;
   perfil= signal<any>(null);
-
-  constructor(private authService: AutenticacionService) {
-    this.usuario$ = this.authService.user$;
+  router = inject(Router)
+  authService = inject(AutenticacionService)
+  constructor() {
      this.authService.profile$.subscribe(perfil=>{
       this.perfil.set(perfil)
      });
   }
 
-  cerrarSesion() {
-    this.authService.logout(); 
+  async cerrarSesion() {
+    await this.authService.logout(); 
+    this.router.navigate([''])
   }
 }

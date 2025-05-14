@@ -24,7 +24,7 @@
       }@else{
       <div class="d-flex flex-column gap-3">
         @for(comunidad of comunidadesFiltradas(); track comunidad.id) {
-        <app-comunidad [comunidad]="comunidad" (unirse)="onUnirse(comunidad)" (abandonar)="onAbandonar()"></app-comunidad>
+        <app-comunidad [comunidad]="comunidad" (unirse)="onUnirse(comunidad)" (abandonar)="onAbandonar(comunidad)"></app-comunidad>
         }
       </div>
       }

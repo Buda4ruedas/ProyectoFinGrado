@@ -1,16 +1,17 @@
 import { Component } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AutenticacionService } from '../../Services/autenticacion.service';
 
 @Component({
   selector: 'app-registrarse',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule,RouterModule],
   templateUrl: './registrarse.component.html',
   styleUrl: './registrarse.component.css'
 })
 export class RegistrarseComponent {
   registroForm: FormGroup;
+  errorLogin: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -33,7 +34,7 @@ export class RegistrarseComponent {
     const { email, password, confirmarPassword } = this.registroForm.value;
 
     if (password !== confirmarPassword) {
-      alert('Las contraseñas no coinciden');
+      this.errorLogin = 'Las contraseñas no coinciden';
       return;
     }
 
