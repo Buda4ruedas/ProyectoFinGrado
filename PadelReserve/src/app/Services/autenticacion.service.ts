@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { supabase } from '../app.config';
-import { User } from '@supabase/supabase-js';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -82,15 +81,16 @@ export class AutenticacionService {
   }
 
   async cambiarPassword(nuevaPassword: string): Promise<boolean> {
-  const { data, error } = await supabase.auth.updateUser({
-    password: nuevaPassword
-  });
+    const { data, error } = await supabase.auth.updateUser({
+      password: nuevaPassword
+    });
 
-  if (error) {
-    console.error('Error al cambiar contraseña:', error.message);
-    return false;
-  }
+    if (error) {
+      console.error('Error al cambiar contraseña:', error.message);
+      return false;
+    }
 
-  return true;
-}
+    return true;
+  } 
+
 }
