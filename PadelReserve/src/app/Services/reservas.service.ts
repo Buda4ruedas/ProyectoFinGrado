@@ -10,17 +10,17 @@ export class ReservasService {
 
   constructor() { }
 
-  async obtenerHorarios(): Promise<string[]> {
+  async obtenerHorarios(): Promise<any> {
     const { data, error } = await supabase
       .from('horario')
-      .select('hora')
+      .select('id , hora')
       .order('hora', { ascending: true });
 
     if (error) {
       console.error('Error al obtener horarios:', error.message);
       return [];
     }
-    return data.map((registro: any) => registro.hora);
+    return data;
   }
 
 

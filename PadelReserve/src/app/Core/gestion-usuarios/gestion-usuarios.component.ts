@@ -27,26 +27,21 @@ export class GestionUsuariosComponent {
     this.usuarios = await this.usuariosService.obtenerUsuariosdeComunidad(this.perfil().comunidad.id)
     console.log('usuarios obtenidos ', this.usuarios)
   }
-
-
-
-
-
-
   async cambiarRol(userId: any, rolActual: any) {
     const puede = await this.puedeAbandonar()
     if (rolActual == 'administrador') {
       if (puede) {
         await this.usuariosService.modificarRol(userId, 'usuario')
-      }else{
+
+      } else {
         alert("No se puede modificar el rol de este usuario porque es el unico administrador")
       }
     } else {
       console.log('paso')
       await this.usuariosService.modificarRol(userId, 'administrador')
     }
-    if(userId == this.perfil().id){
-      this.autenticationService.loadProfile(this.perfil().id)
+    if (userId == this.perfil().id) {
+      await this.autenticationService.loadProfile(this.perfil().id)
     }
     await this.obtenerUsuarios()
 

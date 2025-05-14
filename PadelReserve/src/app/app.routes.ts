@@ -22,6 +22,8 @@ import { MiComunidadComponent } from './Core/mi-comunidad/mi-comunidad.component
 import { sinComunidadGuard } from './guards/sin-comunidad.guard';
 import { AjustesComunidadComponent } from './Core/ajustes-comunidad/ajustes-comunidad.component';
 import { GestionUsuariosComponent } from './Core/gestion-usuarios/gestion-usuarios.component';
+import { GestionCalendariosComponent } from './Core/gestion-calendarios/gestion-calendarios.component';
+import { GestionComunidadComponent } from './Core/gestion-comunidad/gestion-comunidad.component';
 
 export const routes: Routes = [
     {path:'', component:LoginComponent},
@@ -41,6 +43,8 @@ export const routes: Routes = [
         {path:'usuariosPendientes',component:UsuariosPendientesComponent,canActivate:[sinRolGuard]},
         {path:'ajustesComunidad',component:AjustesComunidadComponent,canActivate:[sinRolGuard]},
         {path:'gestionUsuarios',component:GestionUsuariosComponent,canActivate:[sinRolGuard]},
+        {path:'gestionCalendarios',component:GestionCalendariosComponent,canActivate:[sinRolGuard]},
+        {path:'gestionComunidad',component:GestionComunidadComponent,canActivate:[sinRolGuard]},
         {path:'crearComunidad',component:CrearComunidadComponent},
         {path:'miComunidad',component:MiComunidadComponent,canActivate:[sinComunidadGuard]},
         {path:'sinRol',component:SinRolComponent}

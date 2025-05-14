@@ -16,13 +16,13 @@ export class AutenticacionService {
   constructor(private router: Router) {
   }
   setPerfil(perfil: any) {
-    this.profileSubject.next({...perfil});
+    this.profileSubject.next({ ...perfil });
   }
   async recoverSession(): Promise<void> {
     const { data, error } = await supabase.auth.getSession();
-  
+
     if (data?.session) {
-      console.log('Sesión recuperada:', data.session); 
+      console.log('Sesión recuperada:', data.session);
       this.userSubject.next(data.session.user);
       await this.loadProfile(data.session.user.id);
     } else {
@@ -34,7 +34,7 @@ export class AutenticacionService {
 
   async loadProfile(userId: string): Promise<void> {
     const { data, error } = await supabase
-      .from('usuario') 
+      .from('usuario')
       .select(`id,
     nombre,
     apellidos,
@@ -75,5 +75,18 @@ export class AutenticacionService {
     this.userSubject.next(null);
     this.profileSubject.next(null);
     this.router.navigate(['']);
+  }
+  async registro(email: string, password: string): Promise<boolean> {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password
+    });
+
+    if (error) {
+      console.error('[Auth] Error al registrar:', error.message);
+      return false;
+    }
+
+    return true;
   }
 }

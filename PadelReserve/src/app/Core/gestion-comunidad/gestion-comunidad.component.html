@@ -1,0 +1,99 @@
+<div class="container py-5">
+    <h2 class="text-primary mb-4">Gestión de Comunidad 🏡</h2>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form [formGroup]="comunidadForm" (ngSubmit)="guardarComunidad()">
+                <div class="mb-4">
+                    <h5 class="text-primary mb-3">Datos generales</h5>
+
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">Nombre</label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="nombre" 
+                            formControlName="nombre" 
+                            required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="cp" class="form-label">Código Postal</label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="cp" 
+                            formControlName="cp" 
+                            required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="poblacion" class="form-label">Población</label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="poblacion" 
+                            formControlName="poblacion" 
+                            required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="provincia" class="form-label">Provincia</label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="provincia" 
+                            formControlName="provincia" 
+                            required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="direccion" class="form-label">Dirección</label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="direccion" 
+                            formControlName="direccion" 
+                            required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="seguridad" class="form-label">Seguridad</label>
+                        <select 
+                            class="form-select" 
+                            id="seguridad" 
+                            formControlName="seguridad" 
+                            required>
+                            <option value="">Seleccione...</option>
+                            <option value="publica">Pública</option>
+                            <option value="privada">Privada</option>
+                        </select>
+                    </div>
+                    @if(comunidadForm.get('seguridad')?.value === 'privada'){
+                        <div class="mb-3">
+                             <label for="codigoAcceso" class="form-label">Código de acceso</label>
+                            <input 
+                            type="text" 
+                            class="form-control" 
+                            id="codigoAcceso" 
+                            formControlName="codigoAcceso" />
+                        </div>
+                    }
+                </div>
+                <div class="d-flex gap-2">
+                    <button 
+                        type="submit" 
+                        class="btn btn-primary w-100">
+                        Guardar cambios
+                    </button>
+                    <button 
+                        type="button" 
+                        class="btn btn-outline-danger" 
+                        (click)="eliminarComunidad()">
+                        Eliminar Comunidad
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

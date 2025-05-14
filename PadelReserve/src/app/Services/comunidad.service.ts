@@ -81,4 +81,27 @@ export class ComunidadService {
      return data.map((calendarios)=>calendarios.nombre)
     }
   }
+  async eliminarComunidad(idComunidad:any){
+    const {data,error}  = await supabase.from('comunidad').delete().eq('id',idComunidad)
+    if(error){
+      throw error
+    }
+  }
+  async actualizarComunidad(idComunidad:any,datos:any){
+    const {data,error}  = await supabase.from('comunidad')
+    .update({nombre:datos.nombre,
+      direccion:datos.direccion,
+      cp:datos.cp,
+      poblacion:datos.poblacion,
+      seguridad:datos.seguridad,
+      codigo_acceso:datos.codigoAcceso}).eq('id',idComunidad)
+      if(error){
+        throw error
+      }
+  }
+
+
+
+
+
 }

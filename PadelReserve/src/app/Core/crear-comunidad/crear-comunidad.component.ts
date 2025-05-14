@@ -18,7 +18,7 @@ export class CrearComunidadComponent {
   perfil = signal<any>(null)
   popUp=false;
   datos:any=null
-  horasDisponibles: string[] = [];
+  horasDisponibles: any = null;
   datosCalendario:any=null;
 
   constructor(private fb: FormBuilder,

@@ -1,0 +1,25 @@
+.calendar-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  border-radius: 1rem;
+}
+
+.calendar-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.card-actions {
+  z-index: 1;
+}
+
+.calendar-card.create {
+  border: 2px dashed #198754;
+  background-color: #f6fdf9;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.calendar-card.create:hover {
+  background-color: #e2fbe5;
+}
