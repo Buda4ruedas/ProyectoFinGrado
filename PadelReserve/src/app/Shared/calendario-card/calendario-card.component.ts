@@ -1,4 +1,4 @@
-import { Component, Input} from '@angular/core';
+import { Component, input, Input} from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -8,6 +8,6 @@ import { RouterModule } from '@angular/router';
   styleUrl: './calendario-card.component.css'
 })
 export class CalendarioCardComponent {
-@Input() nombre:any = ''
-@Input() enlace:any=''
+ nombre = input<any>()
+ enlace= input <any>()
 }

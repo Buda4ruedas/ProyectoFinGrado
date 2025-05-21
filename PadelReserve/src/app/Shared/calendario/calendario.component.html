@@ -1,30 +1,58 @@
-<div class="container mt-4">
-  <h3 class="mb-3">Calendario de Reservas</h3>
-  <table class="table table-bordered text-center">
-    <thead>
-      <tr>
-        <th>Hora</th>
-        <th *ngFor="let dia of dias">{{ dia }}</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let horario of horarios()">
-        <td><strong>{{ horario.hora }}</strong></td>
-        <td *ngFor="let dia of dias"
-        (click)="onclick(dia, horario.id)"
-        [ngClass]="{
-          'bg-secondary text-white': estaReservado(dia, horario.id) && esDeMiVivienda(dia, horario.id),
-          'bg-warning text-dark': estaReservado(dia, horario.id) && !esDeMiVivienda(dia, horario.id),
-          'bg-success text-white': !estaReservado(dia, horario.id)
-        }"
-        style="cursor: pointer;">
-      {{
-        estaReservado(dia, horario.id) 
-          ? 'Portal: ' + reservas()[`${dia}-${horario.id}`].portal + ' - ' + reservas()[`${dia}-${horario.id}`].piso 
-          : 'Disponible'
-      }}
-    </td>
-      </tr>
-    </tbody>
-  </table>
+<div class="container mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+    <h3 class="text-primary mb-2">Calendario de Reservas</h3>
+    <div class="bg-light p-3 rounded shadow-sm ms-auto" style="min-width: 250px;">
+      <h6 class="text-primary mb-2">Leyenda</h6>
+      <div class="d-flex align-items-center mb-1">
+        <div class="legend-box bg-success me-2"></div>
+        <small>Disponible</small>
+      </div>
+      <div class="d-flex align-items-center mb-1">
+        <div class="legend-box bg-secondary me-2"></div>
+        <small>Reservado (mi vivienda)</small>
+      </div>
+      <div class="d-flex align-items-center">
+        <div class="legend-box bg-warning me-2"></div>
+        <small>Reservado (otra vivienda)</small>
+      </div>
+    </div>
+  </div>
+  
+  <h5 class="text-primary mb-3 text-center">Reservas para {{ calendario().nombre }}</h5>
+  <div class="table-responsive shadow-sm rounded">
+    <table class="table table-bordered text-center align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th class="bg-primary text-white">Hora</th>
+          @for(dia of dias;track $index){
+            <th class="bg-primary text-white">{{ dia }}</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for(horario of horarios(); track $index) {
+        <tr>
+          <td class="fw-semibold text-primary">{{ horario.hora }}</td>
+          @for(dia of dias; track $index) {
+          <td
+            (click)="onclick(dia, horario.id)"
+            [ngClass]="{
+              'bg-secondary text-white': estaReservado(dia, horario.id) && esDeMiVivienda(dia, horario.id),
+              'bg-warning text-dark': estaReservado(dia, horario.id) && !esDeMiVivienda(dia, horario.id),
+              'bg-success text-white': !estaReservado(dia, horario.id)
+            }"
+            class="calendar-cell"
+          >
+            {{
+              estaReservado(dia, horario.id)
+                ? 'Portal: ' + reservas()[`${dia}-${horario.id}`].portal + ' - ' + reservas()[`${dia}-${horario.id}`].piso
+                : 'Disponible'
+            }}
+          </td>
+          }
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
 </div>

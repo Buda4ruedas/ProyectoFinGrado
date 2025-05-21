@@ -1,96 +1,172 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { supabase } from '../app.config';
-import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AutenticacionService {
-  
-  private profileSubject = new BehaviorSubject<any | null>(null);
-  profile$ = this.profileSubject.asObservable();
- 
-  setPerfil(perfil: any) {
-    this.profileSubject.next({ ...perfil });
+  private _perfil = signal<any | null>(null);
+  get perfil() {
+    return this._perfil();
   }
-  async recoverSession(): Promise<void> {
-    const { data, error } = await supabase.auth.getSession();
+  perfilSignal = this._perfil;
 
-    if (data?.session) {
-      await this.loadProfile(data.session.user.id);
-    } else {
-      console.log('No hay sesión almacenada');
-      this.profileSubject.next(null);
+  setPerfil(perfil: any) {
+    this._perfil.set({ ...perfil });
+  }
+
+  async recoverSession(): Promise<void> {
+    try {
+      const { data, error } = await supabase.auth.getSession();
+      if (error) {
+        console.error('Error al obtener sesión:', error.message);
+        this._perfil.set(null);
+        return;
+      }
+
+      if (data?.session) {
+        await this.loadProfile(data.session.user.id);
+      } else {
+        console.log('No hay sesión almacenada');
+        this._perfil.set(null);
+      }
+    } catch (e) {
+      console.error('Error al recuperar la sesión:', (e as Error).message);
+      this._perfil.set(null);
     }
   }
 
   async loadProfile(userId: string): Promise<void> {
-    const { data, error } = await supabase
-      .from('usuario')
-      .select(`id,
-        nombre,
-        apellidos,
-        portal,
-        piso,
-        fotografia,
-        email,
-        comunidad:comunidad_id(id,
-        nombre),
-        rol  
-      `)
-      .eq('id', userId)
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('usuario')
+        .select(`
+          id,
+          nombre,
+          apellidos,
+          portal,
+          piso,
+          fotografia,
+          email,
+          comunidad:comunidad_id(id, nombre),
+          rol
+        `)
+        .eq('id', userId)
+        .single();
 
-    if (!error && data) {
-      this.profileSubject.next(data);
-    } else {
-      console.error('Error al cargar el perfil:', error?.message);
-      this.profileSubject.next(null);
+      if (error) {
+        console.error('Error al cargar el perfil:', error.message);
+        this._perfil.set(null);
+        return;
+      }
+
+      if (data) {
+        this._perfil.set(data);
+      } else {
+        this._perfil.set(null);
+      }
+    } catch (e) {
+      console.error('Error inesperado al cargar perfil:', (e as Error).message);
+      this._perfil.set(null);
     }
   }
 
-
-  async login(email: string, password: string): Promise<boolean> {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-
-    if (error) {
-      console.error('[Auth] Error al iniciar sesión:', error.message);
-      return false;
-    }
-
- 
-    await this.loadProfile(data.user.id);
-    return true;
-  }
-  async logout(): Promise<void> {
-    await supabase.auth.signOut();
-    this.profileSubject.next(null);
-  }
-  async registro(email: string, password: string): Promise<boolean> {
-    const { data, error } = await supabase.auth.signUp({
+  async login(email: string, password: string)
+  : Promise<{ success: boolean; mensaje: string }> {
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password
     });
 
     if (error) {
-      console.error('[Auth] Error al registrar:', error.message);
-      return false;
+      // Error general (credenciales, bloqueo, etc.)
+      return { success: false, mensaje: error.message };
     }
 
-    return true;
+    // Si no hay session aquí, es porque no confirmó el email
+    if (!data.session) {
+      // Limpia cualquier rastro que pueda haber quedado
+      await supabase.auth.signOut();
+      return {
+        success: false,
+        mensaje:
+          'Tu cuenta aún no está confirmada. Revisa tu correo y haz clic en el enlace de verificación.'
+      };
+    }
+
+    // Si llegamos aquí, hay session y user válidos
+    await this.loadProfile(data.session.user.id);
+    return { success: true, mensaje: 'Login exitoso.' };
+
+  } catch (e) {
+    console.error('Error inesperado en login:', e);
+    // Si por algún motivo queda un estado atascado, lo limpiamos
+    await supabase.auth.signOut();
+    return {
+      success: false,
+      mensaje: 'Ha ocurrido un error. Por favor inténtalo de nuevo más tarde.'
+    };
+  }
+}
+
+  async logout(): Promise<void> {
+    try {
+      await supabase.auth.signOut();
+      this._perfil.set(null);
+    } catch (e) {
+      console.error('Error al cerrar sesión:', (e as Error).message);
+    }
   }
 
+async registro(email: string, password: string): Promise<{ success: boolean; mensaje: string }> {
+  try {
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    console.log('signUp data:', data);
+    console.log('signUp error:', error);
+
+    if (error) {
+      return { success: false, mensaje: `Error: ${error.message}` };
+    }
+    return { success: true, mensaje: 'Registro exitoso. Revisa tu correo para confirmar tu cuenta.' };
+  } catch (e) {
+    console.error('Excepción en registro:', e);
+    return { success: false, mensaje: 'Error inesperado. Inténtalo de nuevo más tarde.' };
+  }
+}
+
+
+
   async cambiarPassword(nuevaPassword: string): Promise<boolean> {
-    const { data, error } = await supabase.auth.updateUser({
-      password: nuevaPassword
+    try {
+      const { data, error } = await supabase.auth.updateUser({
+        password: nuevaPassword,
+      });
+      if (error) {
+        console.error('Error al cambiar contraseña:', error.message);
+        return false;
+      }
+      return true;
+    } catch (e) {
+      console.error('Error inesperado al cambiar contraseña:', (e as Error).message);
+      return false;
+    }
+  }
+
+  async recuperarContrasenia(email: string): Promise<{ success: boolean; mensaje: string }> {
+  try {
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: 'https://tu-app.com/reset-password'  // Cambia a tu dominio real y ruta
     });
 
     if (error) {
-      console.error('Error al cambiar contraseña:', error.message);
-      return false;
+      return { success: false, mensaje: error.message };
     }
 
-    return true;
-  } 
-
+    return { success: true, mensaje: 'Email de recuperación enviado. Revisa tu correo.' };
+  } catch (e) {
+    return { success: false, mensaje: 'Error inesperado. Intenta de nuevo.' };
+  }
 }
+}
+

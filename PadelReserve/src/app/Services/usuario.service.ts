@@ -1,19 +1,18 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { AutenticacionService } from './autenticacion.service';
 import { supabase } from '../app.config';
-import { firstValueFrom, single } from 'rxjs';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsuarioService {
+  private authService = inject(AutenticacionService) 
 
-
-  constructor(private authService: AutenticacionService) { }
+  constructor() {}
 
   async modificarPerfil(datos: any): Promise<void> {
-    const resp = await firstValueFrom(this.authService.profile$);
-
+    const resp = this.authService.perfil;
     if (!resp?.id) {
       console.error('No se ha encontrado el ID del usuario');
       throw new Error('ID de usuario no disponible');
@@ -30,7 +29,7 @@ export class UsuarioService {
     }
     console.log(data);
     console.log('Perfil actualizado correctamente');
-    this.authService.loadProfile(data.id);
+    await this.authService.loadProfile(data.id);
   }
   async modificarComunidadaUsuario(idComunidad: any, idUsuario: any, portal: string, piso: string) {
     const { data, error } = await supabase
@@ -40,7 +39,7 @@ export class UsuarioService {
     if (error) {
       console.log('no se ha podido añadir la comunidad')
     } else {
-    this.authService.loadProfile(idUsuario);
+      await this.authService.loadProfile(idUsuario);
     }
   }
   async ponerRolAdministrador(idComunidad: any, idUsuario: any, portal: string, piso: string) {
@@ -52,7 +51,7 @@ export class UsuarioService {
     if (error) {
       console.log('no se ha podido añadir el rol de administrador')
     }else{
-      this.authService.loadProfile(idUsuario);
+      await this.authService.loadProfile(idUsuario);
     }
   }
   async obtenerUsuariosSinVerificar(idComunidad: any): Promise<any> {
@@ -96,16 +95,33 @@ export class UsuarioService {
     if (error) {
       console.log("no se ha podido actualizar los campos a null")
     }else{
-      this.authService.loadProfile(idUser);
+      await this.authService.loadProfile(idUser);
     }
   }
   async obtenerUsuariosdeComunidad(idComunidad:any):Promise<any>{
     const {data,error}  = await supabase.from('usuario').select('*').eq('comunidad_id',idComunidad)
     if(error){
       console.log('no se ha podido obtener los usuarios de esta comunidad')
-      return []
+      return ;
     }
     return data
   }
+  async obtenerCorreos():Promise<any>{
+    const {data , error} = await supabase.from('usuario').select('email')
+    if(error){
+      console.log("no se ha podido obtener los correos")
+    }else{
+      return data
+    }
+  }
+
+  async usuarioYaRegistrado(email:any):Promise<boolean>{
+  const usuarios = await this.obtenerCorreos();
+  console.log("correos que llegan" , usuarios)
+  const exito  = usuarios.find((resp:any)=> resp.email ==email)
+  console.log("exito" , exito)
+  if(exito) return true
+  return false
+}
 
 }

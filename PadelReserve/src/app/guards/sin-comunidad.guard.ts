@@ -1,21 +1,19 @@
 import { inject, signal } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AutenticacionService } from '../Services/autenticacion.service';
+import { map, take } from 'rxjs';
 
 export const sinComunidadGuard: CanActivateFn = (route, state) => {
  
-  const router = inject(Router);
-  const comunidad = signal<any>(null)
-  const auth = inject(AutenticacionService)
-  auth.profile$.subscribe(async perfil => {
-    if (perfil.comunidad?.id) {
-      await comunidad.set(perfil.comunidad.id);
-    }
-  })
-  if (comunidad()) {
-    return true
-  } else {
-    router.navigate(['navbar/sinRol'])
+const router = inject(Router);
+const auth = inject(AutenticacionService)
+const perfil = auth.perfilSignal;
+if(!perfil().nombre){
+ router.navigate(['completarPerfil'])
+ return false
+}else if(!perfil().comunidad?.id){
+    router.navigate(['sinRol']);
     return false
-  }
-};
+}
+  return true
+}

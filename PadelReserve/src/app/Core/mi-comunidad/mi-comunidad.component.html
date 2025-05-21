@@ -38,4 +38,11 @@
     </div>
   </div>
 </div>
-<ng-template #contenedorPopUp></ng-template>
+<app-pop-up-confirmacion
+  #popUp
+  [titulo]="'Abandonar Comunidad'"
+  [subtitulo]="'Vas a abandonar tu comunidad actual'"
+  [placeholder]="''"
+  (confirmar)="onConfirmarAbandono()"
+  (cancelar)="onCerrarPopup()">
+</app-pop-up-confirmacion>

@@ -33,7 +33,7 @@
   </div>
 </div>
 
-@if(mostrarPopUp()){
+@if(mostrarCodigoPopUp()){
 <app-pop-up-codigo-comunidad [titulo]="'Introduce el código de la comunidad'" [subtitulo]="'Código de la comunidad'" [placeholder]="'Introduce el código aquí'" (close)="onCerrarPopup()" (confirmar)="onConfirmarCodigo($event)"></app-pop-up-codigo-comunidad>
 }
 

@@ -11,13 +11,22 @@ export class PopUpConfirmacionComponent {
   @Input() titulo:string = '';
   @Input() subtitulo:string ='';
   @Input()placeholder:string ='';
-  @Output() close = new EventEmitter<void>();  
+  @Output() cancelar = new EventEmitter<void>();  
   @Output() confirmar = new EventEmitter<string>();
+  visible=false;
 
   closePopUp() {
-    this.close.emit();  
+    this.cancelar.emit();
+    this.visible = false  
   }
   confirm() {
     this.confirmar.emit();
+    this.visible = false
+  }
+  open(){
+    this.visible=true
+  }
+  close(){
+    this.visible = false
   }
 }

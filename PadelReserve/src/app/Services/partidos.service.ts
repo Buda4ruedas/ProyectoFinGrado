@@ -49,6 +49,9 @@ export class PartidosService {
       .insert([
         { id_partido: id_partido, id_participante: id_user, equipo: equipo },
       ])
+      if(error){
+        console.log('no se ha podido insertar el jugador al equipo')
+      }
   }
   async obtenerJugadoresPartido(idPartido: string): Promise<any[]> {
     const { data, error } = await supabase.from('jugadoresPartido')

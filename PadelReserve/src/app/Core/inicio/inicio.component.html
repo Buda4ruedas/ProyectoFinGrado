@@ -1,0 +1,153 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+    <div class="container">
+        <a class="navbar-brand text-primary fw-bold fs-3" href="#">PadelReserve</a>
+        <div class="ms-auto">
+            <button (click)="irLogin()" class="btn btn-primary me-2">Iniciar sesión</button>
+            <button (click)="irRegistrarse()" class="btn btn-outline-primary">Registrarse</button>
+        </div>
+    </div>
+</nav>
+
+<main class="pt-5 mt-5">
+    <div class="container py-5">
+        <!-- Título centrado -->
+        <h2 class="text-primary mb-5 fs-4 text-center">
+            Calendarios de reservas para gestionar tus instalaciones
+        </h2>
+
+        <!-- Primera parte: 2 columnas x 2 filas -->
+        <div class="row gy-4 mb-5">
+            <!-- Tarjeta 1: imagen a la derecha -->
+            <div class="col-md-6">
+                <div class="card shadow-sm d-flex flex-row align-items-center p-3">
+                    <div class="flex-grow-1">
+                        <h5 class="text-primary">1. Crea tu comunidad de usuarios</h5>
+                    </div>
+                    <img src="/fotoComunidad.jpg" alt="Comunidad" class="ms-3"
+                        style="width: 220px; height: 150px; object-fit: cover; border-radius: 8px;">
+                </div>
+            </div>
+
+            <!-- Tarjeta 2: imagen a la izquierda -->
+            <div class="col-md-6">
+                <div class="card shadow-sm d-flex flex-row align-items-center p-3">
+                    <img src="/fotoCalendario.jpg" alt="Calendarios" class="me-3"
+                        style="width: 220px; height: 150px; object-fit: cover; border-radius: 8px;">
+                    <div>
+                        <h5 class="text-primary">2. Crea calendarios para tus instalaciones</h5>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tarjeta 3: imagen a la derecha -->
+            <div class="col-md-6">
+                <div class="card shadow-sm d-flex flex-row align-items-center p-3">
+                    <div class="flex-grow-1">
+                        <h5 class="text-primary">3. Permite a tus usuarios que se puedan adherir a tu comunidad</h5>
+                    </div>
+                    <img src="/fotoUsuario.png" alt="Invitación" class="ms-3"
+                        style="width: 220px; height: 150px; object-fit: cover; border-radius: 8px;">
+                </div>
+            </div>
+
+            <!-- Tarjeta 4: imagen a la izquierda -->
+            <div class="col-md-6">
+                <div class="card shadow-sm d-flex flex-row align-items-center p-3">
+                    <img src="/fotoHorario.png" alt="Reservas" class="me-3"
+                        style="width: 220px; height: 150px; object-fit: cover; border-radius: 8px;">
+                    <div>
+                        <h5 class="text-primary">4. Permite que hagan reservas</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Segunda parte: 2 columnas de tarjetas con imagen arriba -->
+        <h3 class="text-primary mb-4 fs-4 text-center">Funcionalidades destacadas</h3>
+        <div class="row gy-4">
+            <div class="col-md-6">
+                <div class="card shadow-sm h-100">
+                    <img src="" class="card-img-top"
+                        alt="Busca tu comunidad" style="object-fit: cover; height: 200px;">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">Busca tu comunidad</h5>
+                        <p class="card-text">Consulta la disponibilidad de pistas de forma rápida y sencilla.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card shadow-sm h-100">
+                    <img src="" class="card-img-top"
+                        alt="Calendario intuitivo" style="object-fit: cover; height: 200px;">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">Calendario intuitivo</h5>
+                        <p class="card-text">Visualiza y reserva con un clic las horas disponibles.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card shadow-sm h-100">
+                    <img src="" class="card-img-top"
+                        alt="Apúntate a partidos" style="object-fit: cover; height: 200px;">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">Apúntate a partidos</h5>
+                        <p class="card-text">Únete a partidos abiertos o crea uno tú mismo si te falta gente.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card shadow-sm h-100">
+                    <img src="" class="card-img-top" alt="Mi perfil"
+                        style="object-fit: cover; height: 200px;">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">Mi perfil</h5>
+                        <p class="card-text">Define tu nivel y encuentra partidos adaptados a ti.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card shadow-sm h-100">
+                    <img src="" class="card-img-top"
+                        alt="Notificaciones" style="object-fit: cover; height: 200px;">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">Notificaciones</h5>
+                        <p class="card-text">Recibe recordatorios por email para que no se te pase ninguna reserva.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card shadow-sm h-100">
+                    <img src="" class="card-img-top"
+                        alt="Administra tu comunidad" style="object-fit: cover; height: 200px;">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">Administra tu comunidad</h5>
+                        <p class="card-text">Crea calendarios, horarios, controla accesos y mejora la organización.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+@if(mostrarLogIn()){
+<div class="overlay">
+  <div class="modal-card">
+    <button class="btn-close position-absolute top-0 end-0 m-2" (click)="mostrarLogIn.set(false)"></button>
+    <app-login></app-login>
+  </div>
+</div>
+}
+
+
+@if(mostrarRegistro()){
+<div class="overlay">
+  <div class="modal-card">
+    <button class="btn-close position-absolute top-0 end-0 m-2" (click)="mostrarRegistro.set(false)" ></button>
+    <app-registrarse (usuarioRegistrado) = "mostrarRegistro.set(false)"></app-registrarse>
+  </div>
+</div>
+}

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { supabase } from '../app.config';
 import { ReservasService } from './reservas.service';
 
@@ -6,8 +6,7 @@ import { ReservasService } from './reservas.service';
   providedIn: 'root'
 })
 export class CalendarioService {
-
-  constructor(private reservaService: ReservasService) { }
+  
 
   async obtenerCalendarios(id: number): Promise<{ id: string, nombre: string, horaInicio: string, horaFin: string }[]> {
 
@@ -27,6 +26,8 @@ export class CalendarioService {
     console.log(data)
     return data as any
   }
+
+
   async obtenerCalendario(idCalendario: any) {
     const { data: data, error: error } = await supabase.from('calendario')
       .select('id,nombre,hora_inicio,hora_fin')
@@ -36,7 +37,7 @@ export class CalendarioService {
       throw error
       return []
     }
-    console.log(data)
+    console.log("El calendario es " , data)
     return data
 
   }
@@ -47,14 +48,8 @@ export class CalendarioService {
     }
   }
   async crearCalendarios(idComunidad: any, datos: any) {
-    console.log('calendarios que llegan a crearCalendarios' , datos)
-    const hora_inicio = await this.reservaService.obtenerIdHorario(datos.horaInicio)
-    const hora_final = await this.reservaService.obtenerIdHorario(datos.horaFin)
-    console.log('hora inicio : ', hora_inicio)
-    console.log('hora fin : ', hora_final)
-
     console.log('esto es lo que llega al servicio calendario', datos)
-    const { data, error } = await supabase.from('calendario').insert([{ comunidad_id: idComunidad, nombre: datos.nombre, hora_inicio: hora_inicio.id, hora_fin: hora_final.id }])
+    const { data, error } = await supabase.from('calendario').insert([{ comunidad_id: idComunidad, nombre: datos.nombre, hora_inicio: datos.horaInicio, hora_fin: datos.horaFin }])
     if (error) {
       console.log('no se ha podido crear el calendario',)
     }

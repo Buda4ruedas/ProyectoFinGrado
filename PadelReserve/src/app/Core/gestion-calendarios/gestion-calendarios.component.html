@@ -14,7 +14,7 @@
 
                     <div class="mb-2">
                         <label class="form-label mb-1">Hora Inicio</label>
-                        <select class="form-select form-select-sm" [(ngModel)]="calendario.horaInicio.id"
+                        <select class="form-select form-select-sm" [(ngModel)]="calendario?.horaInicio.id"
                             [disabled]="!calendario.editando">
                             @for(hora of horas;track $index){
                             <option [ngValue]="hora.id">{{ hora.hora }}</option>
@@ -66,7 +66,7 @@
                         <label class="form-label">Hora Inicio</label>
                         <select class="form-select" [(ngModel)]="nuevoCalendario.horaInicio">
                             @for(hora of horas;track $index){
-                            <option [ngValue]="hora.hora">{{ hora.hora}}</option>
+                            <option [ngValue]="hora.id">{{ hora.hora}}</option>
                             }
                         </select>
                     </div>
@@ -74,7 +74,7 @@
                         <label class="form-label">Hora Fin</label>
                         <select class="form-select" [(ngModel)]="nuevoCalendario.horaFin">
                             @for(hora of horas;track $index){
-                            <option [ngValue]="hora.hora">{{ hora.hora }}</option>
+                            <option [ngValue]="hora.id">{{ hora.hora }}</option>
                             }
                         </select>
                     </div>

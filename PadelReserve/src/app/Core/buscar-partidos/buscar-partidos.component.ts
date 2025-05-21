@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { PartidosService } from '../../Services/partidos.service';
 import { AutenticacionService } from '../../Services/autenticacion.service';
@@ -12,19 +12,18 @@ import { Router, RouterModule } from '@angular/router';
 })
 export class BuscarPartidosComponent {
   data = signal<any[]>([]);
-  userId: string = '';
+  perfil=signal<any>(null);
   buscarForm: FormGroup;
   formMandado = false;
   loading = false;
   completo: boolean[] = [];
   jugadoresApuntados: number[] = [];
+  private fb = inject(FormBuilder);
+  private partidosService = inject(PartidosService)
+  private autenticacionService = inject(AutenticacionService)
+  private router = inject(Router)
 
-  constructor(
-    private fb: FormBuilder,
-    private partidosService: PartidosService,
-    private autenticacionService: AutenticacionService,
-    private router: Router
-  ) {
+  constructor() {
     this.buscarForm = this.fb.group({
       actividad: ['Padel', Validators.required],
       jugadores: ['', Validators.required],
@@ -32,11 +31,10 @@ export class BuscarPartidosComponent {
       nivel: ['', Validators.required]
     });
 
-    this.autenticacionService.profile$.subscribe(perfil => {
-      if (perfil) {
-        this.userId = perfil.id;
-      }
-    });
+  effect(()=>{
+      const perfil = this.autenticacionService.perfilSignal()
+      this.perfil.set(perfil)
+    })
   }
 
   onSubmit(): void {
@@ -55,7 +53,7 @@ export class BuscarPartidosComponent {
     const partidos = await this.partidosService.obtenerPartidos();
     const partidosFiltrados: any[] = [];
 
-    const filtroBase = (resp: any) => resp.usuario.id !== this.userId && resp.numero_jugadores == datos.jugadores;
+    const filtroBase = (resp: any) => resp.usuario.id !== this.perfil().id && resp.numero_jugadores == datos.jugadores;
 
     for (const resp of partidos) {
       if (!filtroBase(resp)) continue;

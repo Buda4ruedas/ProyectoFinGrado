@@ -7,7 +7,7 @@ import { CalendarioComponent } from './Shared/calendario/calendario.component';
 import { CrearPartidoComponent } from './Core/crear-partido/crear-partido.component';
 import { LoginComponent } from './Core/login/login.component';
 import { NavBarComponent } from './Shared/nav-bar/nav-bar.component';
-import { SolicitudAccesoComponent } from './Core/solicitud-acceso/solicitud-acceso.component';
+
 import { CompletarPerfilComponent } from './Core/completar-perfil/completar-perfil.component';
 import { accesoGuard } from './guards/acceso.guard';
 import { PerfilComponent } from './Core/perfil/perfil.component';
@@ -26,38 +26,39 @@ import { GestionCalendariosComponent } from './Core/gestion-calendarios/gestion-
 import { GestionComunidadComponent } from './Core/gestion-comunidad/gestion-comunidad.component';
 import { RegistrarseComponent } from './Core/registrarse/registrarse.component';
 import { CambiarContraseniaComponent } from './Core/cambiar-contrasenia/cambiar-contrasenia.component';
+import { InicioComponent } from './Core/inicio/inicio.component';
+
+
 
 export const routes: Routes = [
-    {path:'', component:LoginComponent},
-    {path:'navbar', component:NavBarComponent,canActivate: [accesoGuard],
-         children:[
-        {path:'principal',component: PrincipalComponent,canActivate:[sinRolGuard]},
-        {path:'reservasActivas', component: ReservasActivasComponent,canActivate:[sinRolGuard]},
-        {path:'historicoReservas', component: HistoricoReservasComponent,canActivate:[sinRolGuard]},
-        {path:'buscarPartidos', component: BuscarPartidosComponent,canActivate:[sinRolGuard]},
-        {path:'calendario/:id', component: CalendarioComponent,canActivate:[sinRolGuard]},
-        {path:'crearPartido', component: CrearPartidoComponent,canActivate:[sinRolGuard]},
-        {path:'completarPerfil',component:CompletarPerfilComponent},
-        {path:'perfil',component:PerfilComponent},
-        {path:'cambiarContrasenia',component:CambiarContraseniaComponent},
-        {path:'partido/:id',component:PartidoComponent,canActivate:[sinRolGuard]},
-        {path:'misPartidos',component:MisPartidosComponent,canActivate:[sinRolGuard]},
-        {path:'buscarComunidad',component:BuscarComunidadComponent},
-        {path:'usuariosPendientes',component:UsuariosPendientesComponent,canActivate:[sinRolGuard]},
-        {path:'ajustesComunidad',component:AjustesComunidadComponent,canActivate:[sinRolGuard]},
-        {path:'gestionUsuarios',component:GestionUsuariosComponent,canActivate:[sinRolGuard]},
-        {path:'gestionCalendarios',component:GestionCalendariosComponent,canActivate:[sinRolGuard]},
-        {path:'gestionComunidad',component:GestionComunidadComponent,canActivate:[sinRolGuard]},
-        {path:'crearComunidad',component:CrearComunidadComponent},
-        {path:'miComunidad',component:MiComunidadComponent,canActivate:[sinComunidadGuard]},
-        {path:'sinRol',component:SinRolComponent}
-
-
-    ]},
-    {path:'registrarse',component:RegistrarseComponent},
-    {path:'**', redirectTo:''}
- 
-
-
-   
+  { path: '', component: InicioComponent},
+  { path: 'registrarse', component: RegistrarseComponent },
+  { path: 'login', component: LoginComponent},
+  {
+    path: 'navbar',
+    component: NavBarComponent,
+    canActivate: [accesoGuard],
+    children: [
+      { path: 'principal', component: PrincipalComponent, canActivate: [sinRolGuard] },
+      { path: 'reservasActivas', component: ReservasActivasComponent, canActivate: [sinRolGuard] },
+      { path: 'historicoReservas', component: HistoricoReservasComponent, canActivate: [sinRolGuard] },
+      { path: 'buscarPartidos', component: BuscarPartidosComponent, canActivate: [sinRolGuard] },
+      { path: 'calendario/:id', component: CalendarioComponent, canActivate: [sinRolGuard] },
+      { path: 'crearPartido', component: CrearPartidoComponent, canActivate: [sinRolGuard] },
+      { path: 'perfil', component: PerfilComponent },
+      { path: 'cambiarContrasenia', component: CambiarContraseniaComponent },
+      { path: 'partido/:id', component: PartidoComponent, canActivate: [sinRolGuard] },
+      { path: 'misPartidos', component: MisPartidosComponent, canActivate: [sinRolGuard] },
+      { path: 'buscarComunidad', component: BuscarComunidadComponent },
+      { path: 'usuariosPendientes', component: UsuariosPendientesComponent, canActivate: [sinRolGuard] },
+      { path: 'ajustesComunidad', component: AjustesComunidadComponent, canActivate: [sinRolGuard] },
+      { path: 'gestionUsuarios', component: GestionUsuariosComponent, canActivate: [sinRolGuard] },
+      { path: 'gestionCalendarios', component: GestionCalendariosComponent, canActivate: [sinRolGuard] },
+      { path: 'gestionComunidad', component: GestionComunidadComponent, canActivate: [sinRolGuard] },
+      { path: 'crearComunidad', component: CrearComunidadComponent },
+      { path: 'miComunidad', component: MiComunidadComponent, canActivate: [sinComunidadGuard] },
+      { path: 'sinRol', component: SinRolComponent },
+      { path: 'completarPerfil', component: CompletarPerfilComponent }
+    ]
+  }
 ];

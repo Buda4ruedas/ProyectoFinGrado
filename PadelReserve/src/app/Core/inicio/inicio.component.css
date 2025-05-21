@@ -1,0 +1,26 @@
+/* Estilos para el overlay */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4); /* oscurece el fondo */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+}
+
+/* Estilo del modal */
+.modal-card {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.2);
+  max-width: 500px;  /* más ancho */
+  width: 90%;
+  max-height: 80vh;  /* menos alto */
+  overflow: hidden;
+  position: relative;
+}

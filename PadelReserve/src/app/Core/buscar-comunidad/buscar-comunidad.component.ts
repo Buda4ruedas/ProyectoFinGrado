@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { supabase } from '../../app.config';
 import { CommonModule } from '@angular/common';
 import { ComunidadComponent } from "../../Shared/comunidad/comunidad.component";
@@ -17,33 +17,29 @@ import { ComunidadService } from '../../Services/comunidad.service';
   styleUrl: './buscar-comunidad.component.css'
 })
 export class BuscarComunidadComponent {
+  private usuarioService = inject(UsuarioService)
+  private autenticacionService = inject(AutenticacionService)
+  private comunidadService = inject(ComunidadService)
+
   filtro = '';
   comunidades = signal<any[]>([]);
   comunidadesFiltradas = signal<any[]>([]);
   codigo: string = '';
   comunidadSeleccionada: any;
-  mostrarPopUp = signal<boolean>(false);
+  mostrarCodigoPopUp = signal<boolean>(false);
   mostrarPortalPopUp = signal<boolean>(false);
-  perfil = signal<any>(null);
+  perfil = this.autenticacionService.perfilSignal;
   loading = signal<boolean>(true);
   mostrarConfirmacionPopUp = signal<boolean>(false)
   cambio = false
   portal: any
   piso: any
 
-  constructor(private usuarioService: UsuarioService, private autenticacionService: AutenticacionService,private comunidadService:ComunidadService) {
-    this.autenticacionService.profile$.subscribe(perfil => {
-      if (perfil) {
-        this.perfil.set(perfil)
-      }
-    });
-  }
   async ngOnInit() {
-    const { data, error } = await supabase.from('comunidad').select('*');
-    if (!error && data) {
-      this.comunidades.set(data);
-      this.comunidadesFiltradas.set(data);
-    }
+    const comunidades = await this.comunidadService.obtenerComunidades()
+    console.log("las comunidades son " , comunidades)
+    this.comunidades.set(comunidades)
+    this.comunidadesFiltradas.set(comunidades)
     setTimeout(() => {
       this.loading.set(false);
     }, 500)
@@ -71,32 +67,32 @@ export class BuscarComunidadComponent {
   async onUnirse(comunidad: any) {
     this.comunidadSeleccionada = comunidad;
     const puede = await this.puedeAbandonar(comunidad.id);
-    if(puede){
-    if (this.comunidadSeleccionada.seguridad == 'privada') {
-      this.mostrarPopUp.set(true);
+    if (puede) {
+      if (this.comunidadSeleccionada.seguridad == 'privada') {
+        this.mostrarCodigoPopUp.set(true);
+      } else {
+        this.mostrarPortalPopUp.set(true)
+      }
     } else {
-      this.mostrarPortalPopUp.set(true)
-    }
-    }else{
       alert('No puedes abandonar la comunidad siendo el único administrador.');
     }
 
 
   }
-  async onAbandonar(comunidad:any) {
-  const puede = await this.puedeAbandonar(comunidad.id);
+  async onAbandonar(comunidad: any) {
+    const puede = await this.puedeAbandonar(comunidad.id);
     console.log(puede)
     if (puede) {
       this.mostrarConfirmacionPopUp.set(true)
     } else {
       alert('No puedes abandonar la comunidad siendo el único administrador.');
     }
-    
+
   }
 
   onConfirmarCodigo(codigo: string) {
     if (this.comunidadSeleccionada.codigo_acceso == codigo) {
-      this.mostrarPopUp.set(false)
+      this.mostrarCodigoPopUp.set(false)
       this.mostrarPortalPopUp.set(true)
     } else {
       console.log("has introducido mal el codigo")
@@ -120,23 +116,24 @@ export class BuscarComunidadComponent {
 
     this.portal = partes[0].trim();
     this.piso = partes[1].trim();
-    if(this.perfil().comunidad){
+    if (this.perfil().comunidad) {
       this.cambio = true
       this.mostrarConfirmacionPopUp.set(true)
-    }else{
+    } else {
       this.unirseComunidad(this.portal, this.piso)
     }
-    
+
     this.mostrarPortalPopUp.set(false)
-    
+
 
   }
   onCerrarPopup() {
-    this.mostrarPopUp.set(false);
+    this.mostrarCodigoPopUp.set(false);
   }
   onCerrarPortalPopup() {
     this.mostrarPortalPopUp.set(false);
   }
+
   async unirseComunidad(portal: string, piso: string) {
     await this.usuarioService.modificarComunidadaUsuario(this.comunidadSeleccionada.id, this.perfil().id, portal, piso)
     this.mostrarPortalPopUp.set(false)
@@ -150,14 +147,14 @@ export class BuscarComunidadComponent {
     console.log(this.cambio)
     if (this.cambio) {
       await this.unirseComunidad(this.portal, this.piso)
-      this.cambio=false
+      this.cambio = false
     }
     this.mostrarConfirmacionPopUp.set(false)
 
   }
-     async puedeAbandonar(idComunidad:any): Promise<boolean> {
+  async puedeAbandonar(idComunidad: any): Promise<boolean> {
     const administradores = await this.comunidadService.obtenerAdministradores(idComunidad);
-    console.log(administradores,'administradores :')
+    console.log(administradores, 'administradores :')
     return !(this.perfil().rol == 'administrador' && administradores.length <= 1);
   }
 }

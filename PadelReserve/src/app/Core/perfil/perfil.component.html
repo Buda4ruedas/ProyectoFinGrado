@@ -2,9 +2,9 @@
   <div class="row">
     <!-- Columna para la imagen de perfil -->
     <div class="col-md-4 text-center">
-      <img [src]="(perfil$ | async)?.fotografia || 'https://via.placeholder.com/150'" alt="Foto de perfil"
+      <img [src]="perfil().fotografia || 'https://via.placeholder.com/150'" alt="Foto de perfil"
         class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;" />
-      <h4>{{ (perfil$ | async)?.nombre }}</h4>
+      <h4>{{ perfil().nombre }}</h4>
     </div>
 
     <!-- Columna para los datos del perfil -->

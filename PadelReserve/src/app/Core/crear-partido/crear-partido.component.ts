@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'; 
 import { ReservasService } from '../../Services/reservas.service';
 import { AutenticacionService } from '../../Services/autenticacion.service';
@@ -13,12 +13,17 @@ import { PartidosService } from '../../Services/partidos.service';
 })
 export class CrearPartidoComponent {
   partidoForm: FormGroup;
-  idUser:string=''
-  idComunidad:number=0
+  private reservasService= inject (ReservasService)
+  private fb = inject( FormBuilder)
+  private autenticationService= inject(AutenticacionService)
+  private calendarioService=inject(CalendarioService)
+  private partidosService= inject(PartidosService)
+
+  perfil = this.autenticationService.perfilSignal
   horasInicio:string[]=[]
   horasFinal:string[]=[]
 
-  constructor(private fb: FormBuilder,private reservasService:ReservasService,private autenticacionService:AutenticacionService,private calendarioService:CalendarioService,private partidosService:PartidosService) { 
+  constructor() {
     this.partidoForm = this.fb.group({
       nivel: ['', Validators.required],
       genero: ['', Validators.required],
@@ -39,20 +44,14 @@ export class CrearPartidoComponent {
       }
     });
 
-    this.autenticacionService.profile$.subscribe(respuesta=>{
-      this.idUser = respuesta.id
-      this.idComunidad = respuesta.comunidad.id
-      console.log(this.idUser)
-      console.log(this.idComunidad)
-    })
   }
 
  async  onSubmit(): Promise<void> {
     if (this.partidoForm.valid) {
       const datos = this.partidoForm.value;
-     const idPartido = await this.partidosService.guardarUnpartido(datos,this.idUser)
+     const idPartido = await this.partidosService.guardarUnpartido(datos,this.perfil().id)
      console.log(idPartido)
-     await this.partidosService.insertarEquipo(idPartido.id,this.idUser,1)
+     await this.partidosService.insertarEquipo(idPartido.id,this.perfil().id,1)
      this.partidoForm.reset();
     }
   }
@@ -92,7 +91,7 @@ export class CrearPartidoComponent {
   }
 
   async cargaridPadel():Promise<string>{
-    const calendarios = await this.calendarioService.obtenerCalendarios(this.idComunidad)
+    const calendarios = await this.calendarioService.obtenerCalendarios(this.perfil().comunidad.id)
     let idCalendarioPadel:string='';
      calendarios.forEach(element => {
       if(element.nombre=='Padel')
@@ -101,7 +100,7 @@ export class CrearPartidoComponent {
     return idCalendarioPadel
   }
   async cargarTodasHoras(idCalendario:string):Promise<{nombre:string,calendario:string,horario:string,fecha:string}[]>{
-    const horas = await this.reservasService.obtenerReservas(this.idUser)
+    const horas = await this.reservasService.obtenerReservas(this.perfil().id)
     const horasPadel = horas.filter(resp=>resp.calendarioId==idCalendario)
     return horasPadel
   }

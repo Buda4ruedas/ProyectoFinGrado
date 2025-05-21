@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { FormBuilder, FormsModule, Validators, ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { AutenticacionService } from '../../Services/autenticacion.service';
 import { observable, Observable } from 'rxjs';
+import { UsuarioService } from '../../Services/usuario.service';
 
 @Component({
   selector: 'app-login',
@@ -12,47 +13,52 @@ import { observable, Observable } from 'rxjs';
 })
 export class LoginComponent {
   loginForm: FormGroup;
-  errorLogin: string | null = null;
-
-  perfil$;
-
-  constructor(
-    private router: Router,
-    private authService: AutenticacionService,
-    private fb: FormBuilder
-  ) {
-
+  errorLogin = signal<string | null>(null);
+  private authService = inject(AutenticacionService) 
+  perfil = this.authService.perfilSignal
+  private usuariosService = inject( UsuarioService)
+  private router= inject(Router) 
+  
+  private fb = inject (FormBuilder)
+  constructor() {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required]
+      password: ['', Validators.required],
     });
 
+  }
+  async onLogin() {
+  this.errorLogin.set(null);
 
-    this.perfil$ = this.authService.profile$;
+  if (this.loginForm.invalid) {
+    this.loginForm.markAllAsTouched();
+    return;
   }
 
-  async onLogin() {
-    this.errorLogin = null;
+  const { email, password } = this.loginForm.value;
+  const resultado = await this.authService.login(email, password);
 
-    if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched();
-      return;
-    }
+  if (!resultado.success) {
+    // aquí verás el mensaje adecuado: “email no confirmado”, credenciales, etc.
+    this.errorLogin.set(resultado.mensaje);
+    return;
+  }
 
-    const { email, password } = this.loginForm.value;
-    const exito = await this.authService.login(email, password);
-
-    if (!exito) {
-      this.errorLogin = 'Correo o contraseña incorrectos. Intenta de nuevo.';
-    } else {
-      
-        this.perfil$.subscribe(perfil => {
-          if (perfil && perfil?.nombre ) {
-            this.router.navigate(['/navbar/principal']);
-          } else if (!perfil?.nombre) {
-            this.router.navigate(['/navbar/completarPerfil']);
-          }
-        });
+  // sólo navegamos si login fue 100% correcto
+  this.router.navigate(['/navbar/principal']);
+}
+  async recuperarContrasenia(){
+    const datos = this.loginForm.value
+    if(datos.email){
+      const existe = await this.usuariosService.usuarioYaRegistrado(datos.email)
+      if(existe){
+        await this.authService.recuperarContrasenia(datos.email)
+        console.log('se ha enviado una nueva contraseña al correo')
+      }else{
+        console.log("El correo introducido es erroneo")
+      }
+    }else{
+      console.log("debes introducir un correo electronico")
     }
   }
 

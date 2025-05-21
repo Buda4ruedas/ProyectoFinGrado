@@ -1,0 +1,21 @@
+<h2>Restablecer contraseña</h2>
+
+<form (ngSubmit)="onResetPassword()" [formGroup]="resetForm">
+  <div>
+    <label for="password">Nueva contraseña:</label>
+    <input id="password" type="password" formControlName="password" />
+  </div>
+
+  <div>
+    <label for="confirmPassword">Confirmar contraseña:</label>
+    <input id="confirmPassword" type="password" formControlName="confirmPassword" />
+  </div>
+@if(error){
+  <div style="color:red;">
+    {{ error }}
+  </div>
+}
+
+
+  <button type="submit" [disabled]="resetForm.invalid">Cambiar contraseña</button>
+</form>

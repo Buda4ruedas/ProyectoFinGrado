@@ -1,4 +1,4 @@
-import { Component, signal, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, effect, inject, Signal, signal, viewChild, ViewChild, ViewContainerRef } from '@angular/core';
 import { AutenticacionService } from '../../Services/autenticacion.service';
 import { ComunidadService } from '../../Services/comunidad.service';
 import { CalendarioService } from '../../Services/calendario.service';
@@ -9,28 +9,21 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-mi-comunidad',
-  imports: [CalendarioCardComponent],
+  imports: [CalendarioCardComponent,PopUpConfirmacionComponent],
   templateUrl: './mi-comunidad.component.html',
   styleUrl: './mi-comunidad.component.css'
 })
 export class MiComunidadComponent {
 
   @ViewChild('contenedorPopUp', { read: ViewContainerRef }) contenedorPopUp!: ViewContainerRef;
-
+  private autenticationService= inject(AutenticacionService) 
+  private comunidadService= inject(ComunidadService)
+  private calendarioService = inject( CalendarioService)
+  private usuarioService= inject(UsuarioService) 
+  private router= inject(Router)
   comunidad: any = null;
-  perfil = signal<any>(null);
-
-  constructor(
-    private autenticationService: AutenticacionService,
-    private comunidadService: ComunidadService,
-    private calendarioService: CalendarioService,
-    private usuarioService: UsuarioService,
-    private router:Router
-  ) {
-    this.autenticationService.profile$.subscribe(perfil => {
-      this.perfil.set(perfil);
-    });
-  }
+  perfil = this.autenticationService.perfilSignal;
+  private popUp: Signal<PopUpConfirmacionComponent> = viewChild.required(PopUpConfirmacionComponent)
 
   async ngOnInit() {
     this.comunidad = await this.comunidadService.obtenerComunidad(this.perfil().comunidad.id);
@@ -51,32 +44,23 @@ export class MiComunidadComponent {
   }
 
    async abandonarComunidad() {
-    const puede = await this.puedeAbandonar();
-    console.log(puede)
-    if (puede) {
-      this.mostrarPopUpConfirmacion();
-    } else {
+    const administradores = await this.comunidadService.obtenerAdministradores(this.perfil().comunidad.id);
+    const puede = !(this.perfil().rol === 'administrador' && administradores.length <= 1);
+    if (!puede) {
       alert('No puedes abandonar la comunidad siendo el único administrador.');
+      return;
     }
+
+    this.popUp().open(); 
   }
 
-  mostrarPopUpConfirmacion() {
-    this.contenedorPopUp.clear();
-    const ref = this.contenedorPopUp.createComponent(PopUpConfirmacionComponent);
+  onConfirmarAbandono = async () => {
+    await this.usuarioService.abandonarComunidad(this.perfil().id);
+    this.popUp().close();
+    this.router.navigate(['/navbar/principal']);
+  };
 
-    ref.instance.titulo = 'Abandonar Comunidad';
-    ref.instance.subtitulo = 'Vas a abandonar tu comunidad actual';
-    ref.instance.placeholder = '';
-
-    ref.instance.close.subscribe(() => {
-      ref.destroy();
-    });
-
-    ref.instance.confirmar.subscribe(async () => {
-      console.log('Comunidad abandonada');
-      await this.usuarioService.abandonarComunidad(this.perfil().id)
-      this.router.navigate(['/navbar/principal'])
-      ref.destroy();
-    });
-  }
+  onCerrarPopup = () => {
+    this.popUp().close();
+  };
 }

@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, effect, signal } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule, FormArray } from '@angular/forms';
 import { ComunidadService } from '../../Services/comunidad.service';
 import { AutenticacionService } from '../../Services/autenticacion.service';
@@ -27,7 +27,8 @@ export class CrearComunidadComponent {
     private autenticationService:AutenticacionService,
     private reservasService:ReservasService,
     ) {
-    this.autenticationService.profile$.subscribe(perfil=>{
+    effect(()=>{
+      const perfil = this.autenticationService.perfilSignal()
       this.perfil.set(perfil)
     })
   }

@@ -1,4 +1,4 @@
-import { Component, signal, Signal } from '@angular/core';
+import { Component, effect, inject, signal, Signal } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { AutenticacionService } from '../../Services/autenticacion.service';
 
@@ -14,24 +14,24 @@ import { CalendarioCardComponent } from "../../Shared/calendario-card/calendario
 })
 export class PrincipalComponent {
 
-calendarios = signal<{ id: string; nombre: string }[]>([]);
-perfil = signal<any>(null);
 
- constructor(private calendarioService:CalendarioService,private autenticacionService:AutenticacionService){
-  this.autenticacionService.profile$.subscribe( async perfil => {
-    if (perfil) {
-      this.perfil.set(perfil)
-      if(perfil.comunidad){
-        await this.calendarioService.obtenerCalendarios(perfil.comunidad.id)
-        .then(calendarios => {
-          this.calendarios.set(calendarios)
-        });
+  calendarios = signal<{ id: string; nombre: string }[]>([]);
+  perfil = signal<any>(null);
+  private calendarioService = inject (CalendarioService)
+  private autenticacionService = inject (AutenticacionService)
+
+  constructor() {
+    effect(() => {
+      const perfilActual = this.autenticacionService.perfilSignal();
+      if (perfilActual) {
+        this.perfil.set(perfilActual);
+        if (perfilActual.comunidad) {
+          this.calendarioService
+            .obtenerCalendarios(perfilActual.comunidad.id)
+            .then((cals) => this.calendarios.set(cals));
+        }
       }
-    
-    }
-  });
-}
- 
-
+    });
+  }
 }
 

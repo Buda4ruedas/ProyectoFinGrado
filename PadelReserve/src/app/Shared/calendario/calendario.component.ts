@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { ReservasService } from '../../Services/reservas.service';
 import { supabase } from '../../app.config';
 import { ActivatedRoute } from '@angular/router';
@@ -13,35 +13,22 @@ import { CalendarioService } from '../../Services/calendario.service';
   styleUrl: './calendario.component.css'
 })
 export class CalendarioComponent {
+  private route = inject(ActivatedRoute)
+  private autenticationService= inject(AutenticacionService)
+  private reservaService= inject(ReservasService) 
+  private calendarioService= inject (CalendarioService)
+  
   calendario =signal<any>(null);
-  userId!: string;
-  portal!:string;
-  piso!:string;
-
+  perfil = this.autenticationService.perfilSignal
   dias = this.obtenerDiasProximos(7);
   horarios = signal<{ id: string, hora: string }[]>([]);
   reservas = signal<{ [key: string]: { id_usuario: string,portal:string,piso:string } }>({});
 
-  constructor(
-    private route: ActivatedRoute,
-    private authService: AutenticacionService,
-    private reservaService: ReservasService,
-    private calendarioService:CalendarioService
-  ) {}
-
   async ngOnInit(): Promise<void> {
     let calendarioId = this.route.snapshot.paramMap.get('id')!;
     this.calendario.set(await this.calendarioService.obtenerCalendario(calendarioId))
-    this.authService.profile$.subscribe((perfil:any) => {
-      if (perfil) {
-        this.userId = perfil.id;
-        this.portal = perfil.portal;
-        this.piso = perfil.piso;
-        this.cargarHorarios();
-        this.cargarReservas();
-      }
-    });
-    console.log(this.reservas())
+     await this.cargarHorarios()
+     await this.cargarReservas()
   }
 
   async cargarHorarios() {
@@ -49,7 +36,7 @@ export class CalendarioComponent {
     console.log(this.calendario().hora_inicio,this.calendario().hora_fin)
     const horas = await this.calendarioService.obtenerHorasCalendario(this.calendario().hora_inicio,this.calendario().hora_fin);
       this.horarios.set(horas);
-
+      console.log('estos son los horarios' , this.horarios())
   }
 
   async cargarReservas() {
@@ -87,7 +74,7 @@ export class CalendarioComponent {
 
   esDeMiVivienda(dia: string, horarioId: string): boolean {
     const reserva = this.reservas()[`${dia}-${horarioId}`];
-    return reserva?.portal === this.portal && reserva?.piso === this.piso;
+    return reserva?.portal === this.perfil().portal && reserva?.piso === this.perfil().piso;
   }
 
   async reservar(dia: string, horarioId: string,) {
@@ -116,8 +103,8 @@ export class CalendarioComponent {
     }
     const numeroReservas = await this.reservaService.cargarReservasPorVivienda(
       diaReserva,
-      this.portal,
-      this.piso,
+      this.perfil().portal,
+      this.perfil().piso,
       this.calendario().id
     );
     if (numeroReservas >= 4) {
@@ -131,7 +118,7 @@ export class CalendarioComponent {
     const fechaISO = `${fechaParts[2]}-${fechaParts[1]}-${fechaParts[0]}`;
 
     const { error } = await supabase.from('reserva').insert({
-      id_usuario: this.userId,
+      id_usuario: this.perfil().id,
       id_horario: horarioId,
       id_calendario: this.calendario().id,
       fecha: fechaISO
@@ -150,7 +137,7 @@ export class CalendarioComponent {
         if(confirmar){
           const fechaParts = dia.split('/');
           const fechaISO = `${fechaParts[2]}-${fechaParts[1]}-${fechaParts[0]}`;
-          await this.reservaService.eliminarReserva(fechaISO,this.userId,this.calendario().id,horarioId);
+          await this.reservaService.eliminarReserva(fechaISO,this.perfil().id,this.calendario().id,horarioId);
           this.cargarReservas();
         }
      
@@ -161,10 +148,5 @@ export class CalendarioComponent {
 
 
   }
-
-
-
-
-
 
 }

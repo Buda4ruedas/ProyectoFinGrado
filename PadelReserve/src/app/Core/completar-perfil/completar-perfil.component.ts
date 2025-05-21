@@ -26,7 +26,6 @@ export class CompletarPerfilComponent {
       console.log('paso')
       this.formulario.reset();
       this.route.navigate(['/navbar/principal'])
-      console.log("No he podido ir a la ruta")
 
     } else {
       this.formulario.markAllAsTouched();

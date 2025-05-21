@@ -9,22 +9,4 @@ import { RouterModule } from '@angular/router';
 })
 export class AjustesComunidadComponent {
 
-  abrirEliminarComunidad() {
-
-}
-abrirEditarComunidad() {
-throw new Error('Method not implemented.');
-}
-
-
-abrirCrearCalendario() {
-throw new Error('Method not implemented.');
-}
-abrirModificarRol() {
-throw new Error('Method not implemented.');
-}
-abrirEliminarUsuario() {
-throw new Error('Method not implemented.');
-}
-
 }

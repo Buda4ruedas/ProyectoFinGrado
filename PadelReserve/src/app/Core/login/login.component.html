@@ -1,4 +1,6 @@
-<div class="container min-vh-100 d-flex flex-column justify-content-center align-items-center bg-light">
+
+<div class="container d-flex flex-column justify-content-center align-items-center bg-light">
+
   <h1 class="display-4 mb-4 text-primary">Padel Reserve</h1>
 
   <div class="card shadow p-4 w-100" style="max-width: 400px;">
@@ -6,9 +8,9 @@
 
     <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
       <div class="mb-3">
-        @if(errorLogin){
+        @if(errorLogin()){
         <div class="alert alert-danger text-center">
-          {{ errorLogin }}
+          {{ errorLogin() }}
         </div>
         }
 
@@ -33,16 +35,13 @@
         </div>
         }
       </div>
-
       <button type="submit" class="btn btn-primary w-100 mt-3">Iniciar sesión</button>
     </form>
-
     <hr class="my-4" />
-
     <div class="text-center">
-      ¿No tienes cuenta?
-      <a routerLink="/registrarse" routerLinkActive="router-link-active" class="text-decoration-none">Solicita tu
-        acceso</a>
+      ¿A olvidado su contraseña?
+      <button (click) ='recuperarContrasenia()' class="text-decoration-none">Solicita tu
+        acceso</button>
     </div>
   </div>
 </div>

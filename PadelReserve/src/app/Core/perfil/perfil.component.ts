@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, effect, signal } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { AutenticacionService } from '../../Services/autenticacion.service';
@@ -14,12 +14,28 @@ import { UsuarioService } from '../../Services/usuario.service';
 })
 export class PerfilComponent {
   perfilForm: FormGroup;
-  perfil$: Observable<any>;
+  perfil = signal<any>(null)
   nombreComunidad:string='';
   
 
   constructor(private authService: AutenticacionService, private fb: FormBuilder,private usuarioService : UsuarioService) {
-    this.perfil$ = this.authService.profile$;
+    effect(() => {
+      const perfil = this.authService.perfilSignal()
+      if(perfil){
+        this.perfil.set(perfil)
+        this.nombreComunidad = perfil.comunidad?.nombre;
+        this.perfilForm.patchValue({
+          nombre: perfil.nombre,
+          email: perfil.email,
+          apellidos:perfil.apellidos,
+          portal: perfil?.portal,
+          piso: perfil?.piso,
+          fotografia:perfil.fotografia,
+          comunidad:perfil.comunidad?.id
+        });
+
+      }
+    })
     this.perfilForm = this.fb.group({
       email: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
       nombre: ['', Validators.required],
@@ -32,25 +48,6 @@ export class PerfilComponent {
     });
   }
 
-  ngOnInit() {
-    this.perfil$.subscribe((perfilData) => {
-      if (perfilData) {
-        console.log(perfilData)
-        this.nombreComunidad = perfilData.comunidad?.nombre;
-        this.perfilForm.patchValue({
-          nombre: perfilData.nombre,
-          email: perfilData.email,
-          apellidos:perfilData.apellidos,
-          portal: perfilData?.portal,
-          piso: perfilData?.piso,
-          fotografia:perfilData.fotografia,
-          comunidad:perfilData.comunidad?.id
-        });
-      }
-    });
-  }
-
-  
   guardarCambios() {
     if (this.perfilForm.valid) {
       const datos = this.perfilForm.value;

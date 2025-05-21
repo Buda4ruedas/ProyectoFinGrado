@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { AutenticacionService } from '../../Services/autenticacion.service';
 import { CalendarioService } from '../../Services/calendario.service';
 import { FormsModule } from '@angular/forms';
@@ -13,24 +13,17 @@ import { ReservasService } from '../../Services/reservas.service';
 export class GestionCalendariosComponent {
   calendarios: any[] = [];
   horas: any = null;
-  perfil = signal<any>(null);
+  private autenticationService = inject(AutenticacionService)
+  private calendarioService= inject(CalendarioService)
+  private reservasService = inject(ReservasService)
+  perfil = this.autenticationService.perfilSignal;
   modoCreacion:boolean=false
   nuevoCalendario = {
   nombre: '',
   horaInicio: null,
   horaFin: null
 };
-
-  constructor(
-    private autenticationService: AutenticacionService,
-    private calendarioService: CalendarioService,
-    private reservasService:ReservasService
-  ) {
-    this.autenticationService.profile$.subscribe(perfil => {
-      if (perfil) this.perfil.set(perfil);
-    });
-  }
-
+ 
   async ngOnInit() {
     await this.obtenerCalendarios();
     this.horas = await this.reservasService.obtenerHorarios();
@@ -38,7 +31,9 @@ export class GestionCalendariosComponent {
   }
 
   async obtenerCalendarios() {
+    console.log("el perfil que hay cundo carga esta parte es " , this.perfil())
     const comunidadId = this.perfil()?.comunidad?.id;
+    console.log('el id de la comunidad es ' , comunidadId)
     if (!comunidadId) return;
     const calendarios = await this.calendarioService.obtenerCalendarios(comunidadId);
     this.calendarios = calendarios.map(c => ({

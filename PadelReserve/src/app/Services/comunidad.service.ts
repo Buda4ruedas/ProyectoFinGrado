@@ -48,6 +48,7 @@ export class ComunidadService {
     }
 
   }
+
   async obtenerNumeroVecinos(idComunidad: any): Promise<any> {
     const { data, error } = await supabase.from('usuario').select('*').eq('comunidad_id', idComunidad)
     if (error) {
@@ -98,6 +99,16 @@ export class ComunidadService {
       if(error){
         throw error
       }
+  }
+  async obtenerComunidades():Promise<any>{
+    const {data,error} = await supabase.from('comunidad').select('*')
+    if(error){
+      console.log('no se han podido obtener las comunidades')
+      return null;
+    }else{
+      return data
+    }
+
   }
 
 

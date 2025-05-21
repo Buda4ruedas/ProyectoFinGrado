@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { AutenticacionService } from '../../Services/autenticacion.service';
 import { ReservasService } from '../../Services/reservas.service';
 
@@ -9,20 +9,19 @@ import { ReservasService } from '../../Services/reservas.service';
   styleUrl: './historico-reservas.component.css'
 })
 export class HistoricoReservasComponent {
+  private reservasService= inject(ReservasService)
+  private autenticacionService= inject(AutenticacionService)
   data = signal<any>(null);
-  userId:string =''
+  perfil = this.autenticacionService.perfilSignal
 
-  constructor(private reservasService:ReservasService,private autenticacionService:AutenticacionService){
-      this.autenticacionService.profile$.subscribe(perfil=>{
-        if(perfil){
-          this.userId = perfil.id
-          this.cargarReservas()
-        }
-      })
+ async ngOnInit(){
+    await this.cargarReservas()
   }
 
+
+
   async cargarReservas(){
-    const datos = await this.reservasService.obtenerReservas(this.userId);
+    const datos = await this.reservasService.obtenerReservas(this.perfil().id);
     const dia = new Date();
     this.data.set(datos);
 

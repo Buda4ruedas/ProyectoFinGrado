@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormArray, ReactiveFormsModule } from '@angular/forms';
 import { ComunidadService } from '../../Services/comunidad.service';
 import { AutenticacionService } from '../../Services/autenticacion.service';
@@ -11,16 +11,15 @@ import { Router } from '@angular/router';
   styleUrl: './gestion-comunidad.component.css'
 })
 export class GestionComunidadComponent {
+  private fb = inject(FormBuilder)
+  private comunidadService = inject(ComunidadService)
+  private autenticationService = inject(AutenticacionService)
+  private router = inject(Router)
   comunidadForm: FormGroup;
-  perfil = signal<any>(null)
+  perfil = this.autenticationService.perfilSignal
   comunidad = signal<any>(null)
 
-  constructor(
-    private fb: FormBuilder,
-    private comunidadService: ComunidadService,
-    private autenticationService: AutenticacionService,
-    private router: Router
-  ) {
+  constructor() {
     this.comunidadForm = this.fb.group({
       nombre: ['', Validators.required],
       cp: ['', Validators.required],
@@ -41,10 +40,6 @@ export class GestionComunidadComponent {
       }
       codigoAccesoControl?.updateValueAndValidity();
     });
-    this.autenticationService.profile$.subscribe(perfil => {
-      this.perfil.set(perfil)
-    })
-
   }
   async ngOnInit() {
     await this.obtenerComunidad()

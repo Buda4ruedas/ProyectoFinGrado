@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { UsuarioService } from '../../Services/usuario.service';
 import { AutenticacionService } from '../../Services/autenticacion.service';
 import { ComunidadService } from '../../Services/comunidad.service';
@@ -11,15 +11,11 @@ import { ComunidadService } from '../../Services/comunidad.service';
 })
 export class GestionUsuariosComponent {
   usuarios: any[] = []
-  perfil = signal<any>(null)
-
-  constructor(private usuariosService: UsuarioService, private autenticationService: AutenticacionService, private comunidadService: ComunidadService) {
-    this.autenticationService.profile$.subscribe(perfil => {
-      if (perfil) {
-        this.perfil.set(perfil)
-      }
-    })
-  }
+  private usuariosService = inject(UsuarioService)
+  private autenticacionService= inject (AutenticacionService) 
+  private comunidadService = inject (ComunidadService) 
+  perfil = this.autenticacionService.perfilSignal
+  
   ngOnInit() {
     this.obtenerUsuarios()
   }
@@ -41,7 +37,7 @@ export class GestionUsuariosComponent {
       await this.usuariosService.modificarRol(userId, 'administrador')
     }
     if (userId == this.perfil().id) {
-      await this.autenticationService.loadProfile(this.perfil().id)
+      await this.autenticacionService.loadProfile(this.perfil().id)
     }
     await this.obtenerUsuarios()
 

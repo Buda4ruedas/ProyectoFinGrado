@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, effect, signal } from '@angular/core';
 import { PartidosService } from '../../Services/partidos.service';
 import { AutenticacionService } from '../../Services/autenticacion.service';
 import { supabase } from '../../app.config';
@@ -13,14 +13,17 @@ import { PartidoComponent } from '../../Shared/partido/partido.component';
 export class MisPartidosComponent {
   partidosCreados = signal<any[]>([])
   partidosApuntados = signal<any[]>([])
-  userId: string = ''
+  perfil = signal<any>(null)
   vistaActiva='creados'
   loadingCreados = signal(true);
   loadingApuntados = signal(true);
   constructor(private partidosService: PartidosService, private autenticacionService: AutenticacionService) {
-    this.autenticacionService.profile$.subscribe(respuesta => {
-      this.userId = respuesta.id
-    })
+   effect(()=>{
+    const perfil = this.autenticacionService.perfilSignal()
+    if(perfil){
+      this.perfil.set(perfil)
+    }
+   })
     
   }
 async ngOnInit(){
@@ -36,7 +39,7 @@ async obtenerPartidosCreados() {
   const inicio = Date.now(); // marca el inicio
   const todosPartidos = await this.partidosService.obtenerPartidos();
   const partidos = todosPartidos
-    .filter(partido => partido.usuario.id == this.userId)
+    .filter(partido => partido.usuario.id == this.perfil().id)
     .map(partido => partido.id);
   this.partidosCreados.set(partidos);
 
@@ -50,7 +53,7 @@ async obtenerPartidosApuntados() {
   this.loadingApuntados.set(true);
 
   const inicio = Date.now();
-  const todosPartidosApuntados = await this.partidosService.obtenerPartidosApuntado(this.userId);
+  const todosPartidosApuntados = await this.partidosService.obtenerPartidosApuntado(this.perfil().id);
   let idApuntados: any[] = [];
   todosPartidosApuntados.forEach(resp => {
     idApuntados.push(resp.id_partido);
