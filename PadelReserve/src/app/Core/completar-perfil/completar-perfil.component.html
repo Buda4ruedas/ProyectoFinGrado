@@ -27,7 +27,7 @@
         <!-- Fotografía -->
         <div class="mb-4">
           <label for="fotografia" class="form-label text-primary">Fotografía de perfil</label>
-          <input type="url" class="form-control" id="fotografia" formControlName="fotografia" placeholder="URL de tu foto" />
+          <input type="file" class="form-control" id="fotografia" (change)="onFileSelected($event)" />
           @if(formulario.get('fotografia')?.touched && formulario.get('fotografia')?.invalid){
             <div class="text-danger small mt-1">Campo obligatorio</div>
           }
