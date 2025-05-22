@@ -27,8 +27,7 @@ export class ComunidadComponent {
   constructor(){
     effect(()=>{
       const perfil = this.perfil()
-      const comunidad = this.comunidad()
-      this.coincide.set(perfil.comunidad?.id === comunidad!.id);
+      this.coincide.set(perfil.comunidad?.id === this.comunidad()!.id);
     })
   }
 

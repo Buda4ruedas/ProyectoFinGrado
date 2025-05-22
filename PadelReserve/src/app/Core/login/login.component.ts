@@ -39,12 +39,9 @@ export class LoginComponent {
   const resultado = await this.authService.login(email, password);
 
   if (!resultado.success) {
-    // aquí verás el mensaje adecuado: “email no confirmado”, credenciales, etc.
     this.errorLogin.set(resultado.mensaje);
     return;
   }
-
-  // sólo navegamos si login fue 100% correcto
   this.router.navigate(['/navbar/principal']);
 }
   async recuperarContrasenia(){

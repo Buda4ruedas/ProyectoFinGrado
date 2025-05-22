@@ -21,16 +21,18 @@ export class BuscarComunidadComponent {
   private autenticacionService = inject(AutenticacionService)
   private comunidadService = inject(ComunidadService)
 
-  filtro = '';
-  comunidades = signal<any[]>([]);
-  comunidadesFiltradas = signal<any[]>([]);
-  codigo: string = '';
-  comunidadSeleccionada: any;
-  mostrarCodigoPopUp = signal<boolean>(false);
-  mostrarPortalPopUp = signal<boolean>(false);
   perfil = this.autenticacionService.perfilSignal;
   loading = signal<boolean>(true);
-  mostrarConfirmacionPopUp = signal<boolean>(false)
+  comunidades = signal<any[]>([]);
+  comunidadesFiltradas = signal<any[]>([])
+  mostrarCodigoPopUp = signal<boolean>(false);
+  mostrarPortalPopUp = signal<boolean>(false);
+  mostrarConfirmacionPopUp = signal<boolean>(false);
+
+  filtro = '';
+  
+  codigo: string = '';
+  comunidadSeleccionada: any;
   cambio = false
   portal: any
   piso: any

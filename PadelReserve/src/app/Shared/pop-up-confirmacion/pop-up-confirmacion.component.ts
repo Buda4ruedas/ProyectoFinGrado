@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, effect, EventEmitter, input, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -8,9 +8,8 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './pop-up-confirmacion.component.css'
 })
 export class PopUpConfirmacionComponent { 
-  @Input() titulo:string = '';
-  @Input() subtitulo:string ='';
-  @Input()placeholder:string ='';
+  titulo = input <string>('');
+  subtitulo=input<string>('');
   @Output() cancelar = new EventEmitter<void>();  
   @Output() confirmar = new EventEmitter<string>();
   visible=false;
@@ -21,12 +20,6 @@ export class PopUpConfirmacionComponent {
   }
   confirm() {
     this.confirmar.emit();
-    this.visible = false
-  }
-  open(){
-    this.visible=true
-  }
-  close(){
     this.visible = false
   }
 }

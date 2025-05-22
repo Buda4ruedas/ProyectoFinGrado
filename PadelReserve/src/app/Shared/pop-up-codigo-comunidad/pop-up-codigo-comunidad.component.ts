@@ -9,18 +9,19 @@ import { FormsModule } from '@angular/forms';
 })
 export class PopUpCodigoComunidadComponent {
   codigo: string = '';  
-  @Input() titulo:string = '';
-  @Input() subtitulo:string ='';
-  @Input()placeholder:string ='';
-  @Output() close = new EventEmitter<void>();  
+  titulo = input <string>('');
+  subtitulo=input<string>('');
+  placeholder=input<string>('');
+  @Output() cancelar = new EventEmitter<void>();  
   @Output() confirmar = new EventEmitter<string>();
+  visible=false;
 
   closePopUp() {
-    this.close.emit();  
+    this.cancelar.emit();
+    this.visible = false  
   }
-
   confirm() {
-    console.log(this.codigo)
     this.confirmar.emit(this.codigo);
+    this.visible = false
   }
 }

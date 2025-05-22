@@ -11,17 +11,19 @@ import { Router, RouterModule } from '@angular/router';
   styleUrl: './buscar-partidos.component.css'
 })
 export class BuscarPartidosComponent {
+  private fb = inject(FormBuilder);
+  private partidosService = inject(PartidosService)
+  private autenticacionService = inject(AutenticacionService)
+  private router = inject(Router)
+
   data = signal<any[]>([]);
-  perfil=signal<any>(null);
+  perfil=this.autenticacionService.perfilSignal
   buscarForm: FormGroup;
   formMandado = false;
   loading = false;
   completo: boolean[] = [];
   jugadoresApuntados: number[] = [];
-  private fb = inject(FormBuilder);
-  private partidosService = inject(PartidosService)
-  private autenticacionService = inject(AutenticacionService)
-  private router = inject(Router)
+
 
   constructor() {
     this.buscarForm = this.fb.group({
@@ -30,11 +32,6 @@ export class BuscarPartidosComponent {
       genero: ['', Validators.required],
       nivel: ['', Validators.required]
     });
-
-  effect(()=>{
-      const perfil = this.autenticacionService.perfilSignal()
-      this.perfil.set(perfil)
-    })
   }
 
   onSubmit(): void {
@@ -50,27 +47,35 @@ export class BuscarPartidosComponent {
   }
 
   async partidosFiltrados(datos: any) {
-    const partidos = await this.partidosService.obtenerPartidos();
-    const partidosFiltrados: any[] = [];
+  const partidos = await this.partidosService.obtenerPartidos();
+  const partidosFiltrados: any[] = [];
 
-    const filtroBase = (resp: any) => resp.usuario.id !== this.perfil().id && resp.numero_jugadores == datos.jugadores;
+  const filtroBase = (resp: any) => resp.usuario.id !== this.perfil().id && resp.numero_jugadores == datos.jugadores;
 
-    for (const resp of partidos) {
-      if (!filtroBase(resp)) continue;
+  
+  const fechaHoy = new Date();
+  fechaHoy.setHours(0, 0, 0, 0);  
 
-      const generoMatch = datos.genero === 'Cualquiera' || resp.genero.toLowerCase() === datos.genero.toLowerCase();
-      const nivelMatch = datos.nivel === 'Cualquiera' || resp.nivel.toLowerCase() === datos.nivel.toLowerCase();
+  for (const resp of partidos) {
+    if (!filtroBase(resp)) continue;
 
-      if (generoMatch && nivelMatch) {
-        const apuntados = await this.partidosService.obtenerJugadoresPartido(resp.id);
-        resp.jugadores_apuntados = apuntados.length;
-        this.completo.push(apuntados.length >= resp.numero_jugadores);
-        partidosFiltrados.push(resp);
-      }
+    const generoMatch = datos.genero === 'Cualquiera' || resp.genero.toLowerCase() === datos.genero.toLowerCase();
+    const nivelMatch = datos.nivel === 'Cualquiera' || resp.nivel.toLowerCase() === datos.nivel.toLowerCase();
+
+    
+    const fechaPartido = new Date(resp.fecha);  
+    if (fechaPartido < fechaHoy) continue;  
+
+    if (generoMatch && nivelMatch) {
+      const apuntados = await this.partidosService.obtenerJugadoresPartido(resp.id);
+      resp.jugadores_apuntados = apuntados.length;
+      this.completo.push(apuntados.length >= resp.numero_jugadores);
+      partidosFiltrados.push(resp);
     }
-
-    this.data.set(partidosFiltrados);
   }
+
+  this.data.set(partidosFiltrados);
+}
 
   apuntarme(idPartido: number) {
     this.router.navigate([`/navbar/partido/${idPartido}`]);

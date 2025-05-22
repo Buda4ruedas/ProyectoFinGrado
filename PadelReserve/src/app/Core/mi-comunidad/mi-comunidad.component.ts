@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
 })
 export class MiComunidadComponent {
 
-  @ViewChild('contenedorPopUp', { read: ViewContainerRef }) contenedorPopUp!: ViewContainerRef;
+  
   private autenticationService= inject(AutenticacionService) 
   private comunidadService= inject(ComunidadService)
   private calendarioService = inject( CalendarioService)
@@ -23,7 +23,8 @@ export class MiComunidadComponent {
   private router= inject(Router)
   comunidad: any = null;
   perfil = this.autenticationService.perfilSignal;
-  private popUp: Signal<PopUpConfirmacionComponent> = viewChild.required(PopUpConfirmacionComponent)
+  popUpConfirmacion = signal(false)
+  
 
   async ngOnInit() {
     this.comunidad = await this.comunidadService.obtenerComunidad(this.perfil().comunidad.id);
@@ -51,16 +52,16 @@ export class MiComunidadComponent {
       return;
     }
 
-    this.popUp().open(); 
+    this.popUpConfirmacion.set(true); 
   }
 
   onConfirmarAbandono = async () => {
     await this.usuarioService.abandonarComunidad(this.perfil().id);
-    this.popUp().close();
+    this.popUpConfirmacion.set(false); 
     this.router.navigate(['/navbar/principal']);
   };
 
   onCerrarPopup = () => {
-    this.popUp().close();
+    this.popUpConfirmacion.set(false);
   };
 }
