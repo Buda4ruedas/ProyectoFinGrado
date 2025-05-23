@@ -13,19 +13,38 @@
                     </h5>
 
                     <div class="mb-2">
-                        <label class="form-label mb-1">Hora Inicio</label>
-                        <select class="form-select form-select-sm" [(ngModel)]="calendario?.horaInicio.id"
+                        <label class="form-label mb-1">Hora Inicio Diario</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="calendario.horaInicio.id"
                             [disabled]="!calendario.editando">
                             @for(hora of horas;track $index){
                             <option [ngValue]="hora.id">{{ hora.hora }}</option>
                             }
+                        </select>
+                    </div>
 
+                    <div class="mb-2">
+                        <label class="form-label mb-1">Hora Final Diario</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="calendario.horaFin.id"
+                            [disabled]="!calendario.editando">
+                            @for(hora of horas;track $index){
+                            <option [ngValue]="hora.id">{{ hora.hora }}</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label mb-1">Hora Inicio Fin de Semana</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="calendario.horaInicioFinde.id"
+                            [disabled]="!calendario.editando">
+                            @for(hora of horas;track $index){
+                            <option [ngValue]="hora.id">{{ hora.hora }}</option>
+                            }
                         </select>
                     </div>
 
                     <div>
-                        <label class="form-label mb-1">Hora Fin</label>
-                        <select class="form-select form-select-sm" [(ngModel)]="calendario.horaFin.id"
+                        <label class="form-label mb-1">Hora Final Fin de Semana</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="calendario.horaFinFinde.id"
                             [disabled]="!calendario.editando">
                             @for(hora of horas;track $index){
                             <option [ngValue]="hora.id">{{ hora.hora }}</option>

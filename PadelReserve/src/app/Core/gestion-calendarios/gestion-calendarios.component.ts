@@ -21,7 +21,9 @@ export class GestionCalendariosComponent {
   nuevoCalendario = {
   nombre: '',
   horaInicio: null,
-  horaFin: null
+  horaFin: null,
+  horaInicioFinde:null,
+  horaFinFinde:null
 };
  
   async ngOnInit() {
@@ -36,10 +38,12 @@ export class GestionCalendariosComponent {
     console.log('el id de la comunidad es ' , comunidadId)
     if (!comunidadId) return;
     const calendarios = await this.calendarioService.obtenerCalendarios(comunidadId);
+    
     this.calendarios = calendarios.map(c => ({
       ...c,
       editando: false
     }));
+    console.log("Los calendarios quedarian asi" , this.calendarios)
   }
   async eliminarCalendario(id: number) {
     if (!confirm('¿Estás seguro de que deseas eliminar este calendario?')) return;
@@ -51,9 +55,15 @@ async guardarCalendario(calendario: any) {
   try {
     const horaInicio = calendario.horaInicio.id;
     const horaFin = calendario.horaFin.id;
+    const horaInicioFinde = calendario.horaInicioFinde
+    const horaFinFinde = calendario.horaFinFinde
 
     if (horaFin <= horaInicio) {
       alert('La hora fin debe ser posterior a la hora inicio');
+      return;
+    }
+      if (horaFinFinde <= horaInicioFinde) {
+      alert('La hora fin  de los findes de semana debe ser posterior a la hora inicio');
       return;
     }
 
@@ -61,7 +71,9 @@ async guardarCalendario(calendario: any) {
       id: calendario.id,
       nombre: calendario.nombre,
       hora_inicio: horaInicio,
-      hora_fin: horaFin
+      hora_fin: horaFin,
+      hora_inicio_finde:horaInicioFinde,
+      hora_fin_finde:horaFinFinde
     });
     calendario.editando = false;
   } catch (error) {
@@ -70,11 +82,14 @@ async guardarCalendario(calendario: any) {
 }
   crearCalendario() {
   this.modoCreacion = true;
-  const [primera, segunda] = this.horas;
+  const [primera, segunda,tercera,cuarta] = this.horas;
   this.nuevoCalendario = {
     nombre: '',
     horaInicio: primera?.id || null,
-    horaFin: segunda?.id || null
+    horaFin: segunda?.id || null,
+    horaInicioFinde:tercera?.id || null,
+    horaFinFinde:cuarta?.id || null
+    
   };
 }
 
@@ -83,7 +98,10 @@ cancelarCreacion() {
   this.nuevoCalendario = {
     nombre: '',
     horaInicio: null,
-    horaFin: null
+    horaFin: null,
+    horaInicioFinde:null,
+    horaFinFinde:null
+
   };
 }
 

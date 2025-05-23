@@ -25,7 +25,7 @@
   </div>
 
   <h5 class="text-primary mb-3 text-center">
-    Reservas para {{ calendario().nombre }} (semana del {{ dias[0] | date: 'dd/MM/yyyy' }})
+    Reservas para {{ calendario()?.nombre }} (semana del {{ dias[0] | date: 'dd/MM/yyyy' }})
   </h5>
 
   <div class="table-responsive shadow-sm rounded">
@@ -33,30 +33,41 @@
       <thead class="table-light">
         <tr>
           <th class="bg-primary text-white">Hora</th>
-          <th *ngFor="let dia of dias" class="bg-primary text-white">
+          @for(dia of dias;track $index){
+          <th class="bg-primary text-white">
             {{ dia | date:'EEE d/M' }}
           </th>
+          }
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let horario of horarios()">
-          <td class="fw-semibold text-primary">{{ horario.hora }}</td>
-          <td *ngFor="let dia of dias"
-              (click)="onclick(dia, horario.id)"
-              [ngClass]="{
-                'bg-secondary text-white': estaReservado(dia, horario.id) && esDeMiVivienda(dia, horario.id),
-                'bg-warning text-dark': estaReservado(dia, horario.id) && !esDeMiVivienda(dia, horario.id),
-                'bg-success text-white': !estaReservado(dia, horario.id)
-              }"
-              class="calendar-cell"
-          >
-            {{
-              estaReservado(dia, horario.id)
-                ? 'Portal: ' + reservas()[dia.toLocaleDateString('es-ES') + '-' + horario.id].portal + ' - ' + reservas()[dia.toLocaleDateString('es-ES') + '-' + horario.id].piso
-                : 'Disponible'
-            }}
+        @for(horario of this.horarios();track horario!.id){
+        <tr>
+          <td class="fw-semibold text-primary">
+            {{ horario?.hora || '' }}
           </td>
+          @for(dia of dias;track dia){
+          <td>
+            @if(horarioDisponible(dia, horario!.id)){
+            <div (click)="onclick(dia, horario!.id)" [ngClass]="{
+            'calendar-cell': true,
+            'bg-secondary text-white': estaReservado(dia, horario!.id) && esDeMiVivienda(dia, horario!.id),
+            'bg-warning text-dark': estaReservado(dia, horario!.id) && !esDeMiVivienda(dia, horario!.id),
+            'bg-success text-white': !estaReservado(dia, horario!.id)
+              }">
+              {{
+              estaReservado(dia, horario!.id)
+              ? 'Portal: ' + reservas()[dia.toLocaleDateString('es-ES') + '-' + horario!.id].portal + ' - ' +
+              reservas()[dia.toLocaleDateString('es-ES') + '-' + horario!.id].piso
+              : 'Disponible'
+              }}
+            </div>
+            }
+          </td>
+          }
+
         </tr>
+        }
       </tbody>
     </table>
   </div>
