@@ -17,41 +17,46 @@
       </div>
     </div>
   </div>
-  
-  <h5 class="text-primary mb-3 text-center">Reservas para {{ calendario().nombre }}</h5>
+
+  <div class="d-flex justify-content-center align-items-center gap-2 mb-3 flex-wrap">
+    <button class="btn btn-outline-primary btn-sm" (click)="semanaAnterior()">← Semana anterior</button>
+    <button class="btn btn-outline-secondary btn-sm" (click)="volverAHoy()">Hoy</button>
+    <button class="btn btn-outline-primary btn-sm" (click)="semanaSiguiente()">Semana siguiente →</button>
+  </div>
+
+  <h5 class="text-primary mb-3 text-center">
+    Reservas para {{ calendario().nombre }} (semana del {{ dias[0] | date: 'dd/MM/yyyy' }})
+  </h5>
+
   <div class="table-responsive shadow-sm rounded">
     <table class="table table-bordered text-center align-middle mb-0">
       <thead class="table-light">
         <tr>
           <th class="bg-primary text-white">Hora</th>
-          @for(dia of dias;track $index){
-            <th class="bg-primary text-white">{{ dia }}</th>
-          }
+          <th *ngFor="let dia of dias" class="bg-primary text-white">
+            {{ dia | date:'EEE d/M' }}
+          </th>
         </tr>
       </thead>
       <tbody>
-        @for(horario of horarios(); track $index) {
-        <tr>
+        <tr *ngFor="let horario of horarios()">
           <td class="fw-semibold text-primary">{{ horario.hora }}</td>
-          @for(dia of dias; track $index) {
-          <td
-            (click)="onclick(dia, horario.id)"
-            [ngClass]="{
-              'bg-secondary text-white': estaReservado(dia, horario.id) && esDeMiVivienda(dia, horario.id),
-              'bg-warning text-dark': estaReservado(dia, horario.id) && !esDeMiVivienda(dia, horario.id),
-              'bg-success text-white': !estaReservado(dia, horario.id)
-            }"
-            class="calendar-cell"
+          <td *ngFor="let dia of dias"
+              (click)="onclick(dia, horario.id)"
+              [ngClass]="{
+                'bg-secondary text-white': estaReservado(dia, horario.id) && esDeMiVivienda(dia, horario.id),
+                'bg-warning text-dark': estaReservado(dia, horario.id) && !esDeMiVivienda(dia, horario.id),
+                'bg-success text-white': !estaReservado(dia, horario.id)
+              }"
+              class="calendar-cell"
           >
             {{
               estaReservado(dia, horario.id)
-                ? 'Portal: ' + reservas()[`${dia}-${horario.id}`].portal + ' - ' + reservas()[`${dia}-${horario.id}`].piso
+                ? 'Portal: ' + reservas()[dia.toLocaleDateString('es-ES') + '-' + horario.id].portal + ' - ' + reservas()[dia.toLocaleDateString('es-ES') + '-' + horario.id].piso
                 : 'Disponible'
             }}
           </td>
-          }
         </tr>
-        }
       </tbody>
     </table>
   </div>

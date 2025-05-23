@@ -13,43 +13,46 @@ import { CalendarioService } from '../../Services/calendario.service';
   styleUrl: './calendario.component.css'
 })
 export class CalendarioComponent {
-  private route = inject(ActivatedRoute)
-  private autenticationService= inject(AutenticacionService)
-  private reservaService= inject(ReservasService) 
-  private calendarioService= inject (CalendarioService)
+   private route = inject(ActivatedRoute);
+  private autenticationService = inject(AutenticacionService);
+  private reservaService = inject(ReservasService);
+  private calendarioService = inject(CalendarioService);
   
-  calendario =signal<any>(null);
-  perfil = this.autenticationService.perfilSignal
-  dias = this.obtenerDiasProximos(7);
+  calendario = signal<any>(null);
+  perfil = this.autenticationService.perfilSignal;
+  semanaActual = signal(new Date());
+  
+  dias: Date[] = this.obtenerSemana(new Date());
+  
   horarios = signal<{ id: string, hora: string }[]>([]);
-  reservas = signal<{ [key: string]: { id_usuario: string,portal:string,piso:string } }>({});
+  reservas = signal<{ [key: string]: { id_usuario: string, portal: string, piso: string } }>({});
 
   async ngOnInit(): Promise<void> {
     let calendarioId = this.route.snapshot.paramMap.get('id')!;
-    this.calendario.set(await this.calendarioService.obtenerCalendario(calendarioId))
-     await this.cargarHorarios()
-     await this.cargarReservas()
+    this.calendario.set(await this.calendarioService.obtenerCalendario(calendarioId));
+    await this.cargarHorarios();
+    await this.cargarReservas();
   }
 
   async cargarHorarios() {
-    console.log('el calendario es ', this.calendario())
-    console.log(this.calendario().hora_inicio,this.calendario().hora_fin)
-    const horas = await this.calendarioService.obtenerHorasCalendario(this.calendario().hora_inicio,this.calendario().hora_fin);
-      this.horarios.set(horas);
-      console.log('estos son los horarios' , this.horarios())
+    console.log('el calendario es ', this.calendario());
+    console.log(this.calendario().hora_inicio, this.calendario().hora_fin);
+    const horas = await this.calendarioService.obtenerHorasCalendario(this.calendario().hora_inicio, this.calendario().hora_fin);
+    this.horarios.set(horas);
+    console.log('estos son los horarios', this.horarios());
   }
 
   async cargarReservas() {
     const { data, error } = await supabase
       .from('reserva')
-      .select('fecha, id_horario, id_usuario,usuario(piso,portal)')
+      .select('fecha, id_horario, id_usuario, usuario(piso, portal)')
       .eq('id_calendario', this.calendario().id);
 
     if (!error) {
-      const reservasMap: { [key: string]: { id_usuario: string,portal:string,piso:string } } = {};
+      const reservasMap: { [key: string]: { id_usuario: string, portal: string, piso: string } } = {};
       data.forEach((r: any) => {
         const dia = new Date(r.fecha).toLocaleDateString('es-ES');
-        reservasMap[`${dia}-${r.id_horario}`] = { id_usuario: r.id_usuario,portal:r.usuario.portal,piso:r.usuario.piso };
+        reservasMap[`${dia}-${r.id_horario}`] = { id_usuario: r.id_usuario, portal: r.usuario.portal, piso: r.usuario.piso };
       });
       this.reservas.set(reservasMap);
     } else {
@@ -57,46 +60,59 @@ export class CalendarioComponent {
     }
   }
 
-  obtenerDiasProximos(dias: number): string[] {
-    const fechas: string[] = [];
-    const hoy = new Date();
-    for (let i = 0; i < dias; i++) {
-      const nueva = new Date(hoy);
-      nueva.setDate(hoy.getDate() + i);
-      fechas.push(nueva.toLocaleDateString('es-ES'));
+  
+  obtenerLunes(fecha: Date): Date {
+    const dia = fecha.getDay();
+    const diff = (dia === 0 ? -6 : 1) - dia;
+    const lunes = new Date(fecha);
+    lunes.setDate(fecha.getDate() + diff);
+    lunes.setHours(0, 0, 0, 0);
+    return lunes;
+  }
+
+  
+  obtenerSemana(fecha: Date): Date[] {
+    const lunes = this.obtenerLunes(fecha);
+    const semana: Date[] = [];
+    for (let i = 0; i < 7; i++) {
+      const dia = new Date(lunes);
+      dia.setDate(lunes.getDate() + i);
+      semana.push(dia);
     }
-    return fechas;
+    return semana;
   }
 
-  estaReservado(dia: string, horarioId: string): boolean {
-    return !!this.reservas()[`${dia}-${horarioId}`];
+  estaReservado(dia: Date, horarioId: string): boolean {
+    const diaStr = dia.toLocaleDateString('es-ES');
+    return !!this.reservas()[`${diaStr}-${horarioId}`];
   }
 
-  esDeMiVivienda(dia: string, horarioId: string): boolean {
-    const reserva = this.reservas()[`${dia}-${horarioId}`];
+  esDeMiVivienda(dia: Date, horarioId: string): boolean {
+    const diaStr = dia.toLocaleDateString('es-ES');
+    const reserva = this.reservas()[`${diaStr}-${horarioId}`];
     return reserva?.portal === this.perfil().portal && reserva?.piso === this.perfil().piso;
   }
 
-  async reservar(dia: string, horarioId: string,) {
-    const [dd, mm, yyyy] = dia.split('/').map(Number);
+  async reservar(dia: Date, horarioId: string) {
+    const diaStr = dia.toLocaleDateString('es-ES');
+    const [dd, mm, yyyy] = diaStr.split('/').map(Number);
     const diaReserva = `${yyyy}-${String(mm).padStart(2, '0')}-${String(dd).padStart(2, '0')}`;
-  
+
     const horario = this.horarios().find(h => h.id === horarioId);
     if (!horario) return;
-  
+
     const [hora, minutos] = horario.hora.split(':').map(Number);
-  
-  
+
     const fechaReserva = new Date(yyyy, mm - 1, dd, hora, minutos);
-  
+
     const ahora = new Date();
     const dentroDe72Horas = new Date(ahora.getTime() + 144 * 60 * 60 * 1000);
-  
+
     if (fechaReserva > dentroDe72Horas) {
-      alert('No puedes reservar con más de 6 dias de antelación.');
+      alert('No puedes reservar con más de 6 días de antelación.');
       return;
     }
-  
+
     if (fechaReserva < ahora) {
       alert('No puedes reservar en el pasado.');
       return;
@@ -111,11 +127,10 @@ export class CalendarioComponent {
       alert("No puedes reservar más de 2 horas por vivienda en un día");
       return;
     }
-    const confirmado = window.confirm(`¿Confirmas tu reserva para el ${dia}?`);
+    const confirmado = window.confirm(`¿Confirmas tu reserva para el ${diaStr}?`);
     if (!confirmado) return;
 
-    const fechaParts = dia.split('/');
-    const fechaISO = `${fechaParts[2]}-${fechaParts[1]}-${fechaParts[0]}`;
+    const fechaISO = `${yyyy}-${String(mm).padStart(2, '0')}-${String(dd).padStart(2, '0')}`;
 
     const { error } = await supabase.from('reserva').insert({
       id_usuario: this.perfil().id,
@@ -130,23 +145,39 @@ export class CalendarioComponent {
       console.error('Error al hacer reserva:', error);
     }
   }
- async  onclick(dia:string , horarioId:string ){
-    if(this.estaReservado(dia,horarioId)){
-      if(this.esDeMiVivienda(dia,horarioId)){
-        const confirmar = confirm("Estas seguro que quiere cancelar esta reserva")
-        if(confirmar){
-          const fechaParts = dia.split('/');
-          const fechaISO = `${fechaParts[2]}-${fechaParts[1]}-${fechaParts[0]}`;
-          await this.reservaService.eliminarReserva(fechaISO,this.perfil().id,this.calendario().id,horarioId);
+
+  async onclick(dia: Date, horarioId: string) {
+    const diaStr = dia.toLocaleDateString('es-ES');
+    if (this.estaReservado(dia, horarioId)) {
+      if (this.esDeMiVivienda(dia, horarioId)) {
+        const confirmar = confirm("¿Estás seguro que quieres cancelar esta reserva?");
+        if (confirmar) {
+          const [dd, mm, yyyy] = diaStr.split('/').map(Number);
+          const fechaISO = `${yyyy}-${String(mm).padStart(2, '0')}-${String(dd).padStart(2, '0')}`;
+          await this.reservaService.eliminarReserva(fechaISO, this.perfil().id, this.calendario().id, horarioId);
           this.cargarReservas();
         }
-     
       }
-    }else{
-      this.reservar(dia,horarioId)
+    } else {
+      this.reservar(dia, horarioId);
     }
-
-
   }
+  semanaAnterior() {
+  const fecha = new Date(this.semanaActual());
+  fecha.setDate(fecha.getDate() - 7);
+  this.semanaActual.set(fecha);
+  this.dias = this.obtenerSemana(fecha);
+}
 
+semanaSiguiente() {
+  const fecha = new Date(this.semanaActual());
+  fecha.setDate(fecha.getDate() + 7);
+  this.semanaActual.set(fecha);
+  this.dias = this.obtenerSemana(fecha);
+}
+volverAHoy() {
+  const hoy = new Date();
+  this.semanaActual.set(hoy);
+  this.dias = this.obtenerSemana(hoy);
+}
 }
