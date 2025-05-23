@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder, Validators, FormArray, ReactiveFormsModule } fr
 import { ComunidadService } from '../../Services/comunidad.service';
 import { AutenticacionService } from '../../Services/autenticacion.service';
 import { Router } from '@angular/router';
+import { ImagenesService } from '../../Services/imagenes.service';
 
 @Component({
   selector: 'app-gestion-comunidad',
@@ -15,9 +16,11 @@ export class GestionComunidadComponent {
   private comunidadService = inject(ComunidadService)
   private autenticationService = inject(AutenticacionService)
   private router = inject(Router)
+  private imagenesService = inject(ImagenesService)
   comunidadForm: FormGroup;
   perfil = this.autenticationService.perfilSignal
   comunidad = signal<any>(null)
+  archivoSeleccionado: File | null = null;
 
   constructor() {
     this.comunidadForm = this.fb.group({
@@ -27,7 +30,8 @@ export class GestionComunidadComponent {
       provincia: ['', Validators.required],
       direccion: ['', Validators.required],
       seguridad: ['', Validators.required],
-      codigoAcceso: [null]
+      codigoAcceso: [null],
+      fotografia:['',Validators.required]
     });
 
     this.comunidadForm.get('seguridad')?.valueChanges.subscribe(valor => {
@@ -44,12 +48,31 @@ export class GestionComunidadComponent {
   async ngOnInit() {
     await this.obtenerComunidad()
   }
+  onArchivoSeleccionado(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  if (input.files && input.files.length > 0) {
+    this.archivoSeleccionado = input.files[0];
+  }
+}
 
   async guardarComunidad() {
     if (this.comunidadForm.valid) {
-      await this.comunidadService.actualizarComunidad(this.perfil().comunidad.id, this.comunidadForm.value);
+      const datos = this.comunidadForm.value;
+
+      if (this.archivoSeleccionado) {
+        try {
+          const path = `${this.comunidad().id}/${this.archivoSeleccionado.name}`;
+          const imageUrl = await this.imagenesService.subirImagen(this.archivoSeleccionado, path,'fotoscomunidad');
+          datos.fotografia = imageUrl;
+        } catch (error) {
+          console.error('Error al subir la imagen:', error);
+          return;
+        }
+      }
+      await this.comunidadService.actualizarComunidad(this.perfil().comunidad.id, datos);
       await this.obtenerComunidad()
       alert('Comunidad actualizada correctamente.');
+      this.archivoSeleccionado=null;
     }
   }
 
@@ -74,6 +97,7 @@ export class GestionComunidadComponent {
         direccion: comunidad.direccion,
         seguridad: comunidad.seguridad,
         codigoAcceso: comunidad.codigoAcceso || null,
+        fotografia:comunidad.fotografia
       });
     }
   }

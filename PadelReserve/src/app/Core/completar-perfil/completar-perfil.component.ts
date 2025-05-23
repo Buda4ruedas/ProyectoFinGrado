@@ -41,11 +41,10 @@ export class CompletarPerfilComponent {
     if (this.formulario.valid) {
       const datos = this.formulario.value;
 
-      // Subimos la imagen si se ha seleccionado un archivo
       if (this.selectedFile) {
         try {
           const path = `${this.perfil().id}/${this.selectedFile.name}`;
-          const imageUrl = await this.imagenesService.subirImagen(this.selectedFile, path);
+          const imageUrl = await this.imagenesService.subirImagen(this.selectedFile, path,"fotosperfil");
           datos.fotografia = imageUrl; 
         } catch (error) {
           console.error('Error al subir la imagen:', error);

@@ -1,10 +1,11 @@
-import { Component, effect, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { AutenticacionService } from '../../Services/autenticacion.service';
 import { CommonModule } from '@angular/common';
-import { supabase } from '../../app.config';
+
 import { UsuarioService } from '../../Services/usuario.service';
+import { ImagenesService } from '../../Services/imagenes.service';
 
 @Component({
   selector: 'app-perfil',
@@ -13,12 +14,18 @@ import { UsuarioService } from '../../Services/usuario.service';
   styleUrl: './perfil.component.css'
 })
 export class PerfilComponent {
+  private authService= inject( AutenticacionService)
+  private fb = inject ( FormBuilder)
+  private usuarioService = inject( UsuarioService)
+  private imagenesService = inject(ImagenesService)
+
   perfilForm: FormGroup;
   perfil = signal<any>(null)
   nombreComunidad:string='';
+  selectedFile: File | null = null;
   
 
-  constructor(private authService: AutenticacionService, private fb: FormBuilder,private usuarioService : UsuarioService) {
+  constructor() {
     effect(() => {
       const perfil = this.authService.perfilSignal()
       if(perfil){
@@ -48,9 +55,31 @@ export class PerfilComponent {
     });
   }
 
-  guardarCambios() {
+ onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input?.files?.length) {
+      this.selectedFile = input.files[0];
+      this.perfilForm.patchValue({
+        fotografia: this.selectedFile.name
+      });
+    }
+  }
+
+  async guardarCambios() {
     if (this.perfilForm.valid) {
       const datos = this.perfilForm.value;
+
+      if (this.selectedFile) {
+        try {
+          const path = `${this.perfil().id}/${this.selectedFile.name}`;
+          const imageUrl = await this.imagenesService.subirImagen(this.selectedFile, path,'fotosperfil');
+          datos.fotografia = imageUrl;
+        } catch (error) {
+          console.error('Error al subir la imagen:', error);
+          return;
+        }
+      }
+
       this.usuarioService.modificarPerfil(datos);
     }
   }

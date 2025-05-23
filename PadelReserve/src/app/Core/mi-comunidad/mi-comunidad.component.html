@@ -3,27 +3,47 @@
 
   <div class="card shadow rounded-3 mb-4">
     <div class="card-body">
-      <h5 class="text-secondary mb-3">Datos Generales</h5>
-      <h4 class="card-title mb-3">{{ comunidad?.nombre }}</h4>
-      <p class="card-text"><strong>Dirección:</strong> {{ comunidad?.direccion }}</p>
-      <p class="card-text"><strong>Código Postal:</strong> {{ comunidad?.cp }}</p>
-      <p class="card-text"><strong>Provincia:</strong> {{ comunidad?.provincia }}</p>
-      <p class="card-text"><strong>Tipo de Comunidad:</strong> {{ comunidad?.seguridad }}</p>
-      <p class="card-text"><strong>Número de vecinos:</strong> {{ comunidad?.numeroVecinos }}</p>
+      <h5 class="text-secondary mb-4">Datos Generales</h5>
+      <div class="row align-items-start">
+        <!-- Columna izquierda: Datos -->
+        <div class="col-md-8">
+          <h4 class="card-title mb-3">{{ comunidad?.nombre }}</h4>
 
-      <p class="card-text"><strong>Administradores:</strong></p>
-      <ul class="mb-3">
-        @for(admin of comunidad?.administradores; track $index) {
-          <li>{{ admin.nombre }} ({{ admin.email }})</li>
-        }
-      </ul>
+          <p class="card-text"><strong>Dirección:</strong> {{ comunidad?.direccion }}</p>
+          <p class="card-text"><strong>Código Postal:</strong> {{ comunidad?.cp }}</p>
+          <p class="card-text"><strong>Provincia:</strong> {{ comunidad?.provincia }}</p>
+          <p class="card-text"><strong>Tipo de Comunidad:</strong> {{ comunidad?.seguridad }}</p>
+          <p class="card-text"><strong>Número de vecinos:</strong> {{ comunidad?.numeroVecinos }}</p>
 
-      <button class="btn btn-outline-danger"  (click)="abandonarComunidad()">
-        <i class="bi bi-door-open-fill me-1"></i> Abandonar Comunidad
-      </button>
+          <p class="card-text"><strong>Administradores:</strong></p>
+          <ul class="mb-3">
+            @for(admin of comunidad?.administradores; track $index) {
+              <li>{{ admin.nombre }} ({{ admin.email }})</li>
+            }
+          </ul>
+
+      <div class="d-grid">
+  <button class="btn btn-outline-danger btn-sm" style="max-width: 200px;" (click)="abandonarComunidad()">
+    <i class="bi bi-door-open-fill me-1"></i> Abandonar Comunidad
+  </button>
+</div>
+        </div>
+
+        <!-- Columna derecha: Imagen -->
+        <div class="col-md-4 text-center">
+          @if(comunidad?.fotografia) {
+            <img 
+              [src]="comunidad?.fotografia"
+              alt="Fotografía de la Comunidad"
+              class="img-fluid rounded mb-3"
+              style="max-width: 100%; height: auto; object-fit: cover;" />
+          }
+        </div>
+      </div>
     </div>
   </div>
 
+  <!-- Calendarios -->
   <div class="card shadow rounded-3">
     <div class="card-body">
       <h5 class="text-secondary mb-3">Calendarios Disponibles</h5>
@@ -38,14 +58,13 @@
     </div>
   </div>
 </div>
-@if(popUpConfirmacion()){
-<app-pop-up-confirmacion
-  [titulo]="'Abandonar Comunidad'"
-  [subtitulo]="'Vas a abandonar tu comunidad actual'"
 
-  (confirmar)="onConfirmarAbandono()"
-  (cancelar)="onCerrarPopup()">
-</app-pop-up-confirmacion>
+<!-- Pop-up de confirmación -->
+@if(popUpConfirmacion()) {
+  <app-pop-up-confirmacion
+    [titulo]="'Abandonar Comunidad'"
+    [subtitulo]="'Vas a abandonar tu comunidad actual'"
+    (confirmar)="onConfirmarAbandono()"
+    (cancelar)="onCerrarPopup()">
+  </app-pop-up-confirmacion>
 }
-
-

@@ -20,7 +20,8 @@ export class ComunidadService {
         seguridad: datos.seguridad,
         direccion: datos.direccion,
         provincia: datos.provincia,
-        codigo_acceso: datos.codigoAcceso
+        codigo_acceso: datos.codigoAcceso,
+        fotografia:datos?.fotografia
       }]).select('id')
     console.log('datos', data)
 
@@ -95,7 +96,8 @@ export class ComunidadService {
       cp:datos.cp,
       poblacion:datos.poblacion,
       seguridad:datos.seguridad,
-      codigo_acceso:datos.codigoAcceso}).eq('id',idComunidad)
+      codigo_acceso:datos.codigoAcceso,
+      fotografia:datos?.fotografia}).eq('id',idComunidad)
       if(error){
         throw error
       }
