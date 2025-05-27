@@ -41,12 +41,12 @@
         </tr>
       </thead>
       <tbody>
-        @for(horario of this.horarios();track horario!.id){
+        @for( horario of horario() ; track $index){
         <tr>
           <td class="fw-semibold text-primary">
             {{ horario?.hora || '' }}
           </td>
-          @for(dia of dias;track dia){
+          @for(dia of dias;track $index){
           <td>
             @if(horarioDisponible(dia, horario!.id)){
             <div (click)="onclick(dia, horario!.id)" [ngClass]="{
@@ -62,6 +62,9 @@
               : 'Disponible'
               }}
             </div>
+            }@else { <div class="d-flex justify-content-center align-items-center" style="height: 100%;">
+    <p class="mb-0 text-muted">No disponible</p>
+  </div>
             }
           </td>
           }

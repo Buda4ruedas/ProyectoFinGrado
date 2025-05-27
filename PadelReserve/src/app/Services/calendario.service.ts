@@ -52,7 +52,12 @@ export class CalendarioService {
   }
   async crearCalendarios(idComunidad: any, datos: any) {
     console.log('esto es lo que llega al servicio calendario', datos)
-    const { data, error } = await supabase.from('calendario').insert([{ comunidad_id: idComunidad, nombre: datos.nombre, hora_inicio: datos.horaInicio, hora_fin: datos.horaFin }])
+    const { data, error } = await supabase.from('calendario').insert([{ comunidad_id: idComunidad,
+       nombre: datos.nombre,
+        hora_inicio: datos.horaInicio,
+        hora_fin: datos.horaFin,
+        hora_inicio_finde: datos.horaInicioFinde,
+        hora_fin_finde: datos.horaFinFinde }])
     if (error) {
       console.log('no se ha podido crear el calendario',)
     }

@@ -79,6 +79,26 @@
                   </select>
                 </div>
               </div>
+              <div class="row mt-3">
+                <div class="col">
+                  <label class="form-label">Hora de inicio (fin de semana)</label>
+                  <select class="form-select" formControlName="horaInicioFinde" required>
+                    <option value="">Seleccione...</option>
+                    @for(hora of horasDisponibles; track $index) {
+                    <option [ngValue]="hora.id">{{hora.hora}}</option>
+                    }
+                  </select>
+                </div>
+                <div class="col">
+                  <label class="form-label">Hora de fin (fin de semana)</label>
+                  <select class="form-select" formControlName="horaFinFinde" required>
+                    <option value="">Seleccione...</option>
+                    @for(hora of horasDisponibles; track $index) {
+                    <option [ngValue]="hora.id">{{hora.hora}}</option>
+                    }
+                  </select>
+                </div>
+              </div>
 
               @if(calendario.errors?.['horaInvalida'] && calendario.touched){
               <div class="text-danger mt-2">La hora de fin debe ser posterior a la hora de inicio.</div>
@@ -102,7 +122,9 @@
       </form>
 
       @if(popUp){
-      <app-pop-up-codigo-comunidad [titulo]="'Introduce tu Portal y Piso'" [subtitulo]="'Portal y Piso'" [placeholder]="'4-4B'" (close)="onCerrarPopup()" (confirmar)="onConfirmarCodigo($event)"></app-pop-up-codigo-comunidad>
+      <app-pop-up-codigo-comunidad [titulo]="'Introduce tu Portal y Piso'" [subtitulo]="'Portal y Piso'"
+        [placeholder]="'4-4B'" (close)="onCerrarPopup()"
+        (confirmar)="onConfirmarCodigo($event)"></app-pop-up-codigo-comunidad>
       }
     </div>
   </div>

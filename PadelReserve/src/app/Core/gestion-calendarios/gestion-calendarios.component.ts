@@ -29,11 +29,11 @@ export class GestionCalendariosComponent {
   async ngOnInit() {
     await this.obtenerCalendarios();
     this.horas = await this.reservasService.obtenerHorarios();
-    console.log('las horas son ' , this.horas)
+    
   }
 
   async obtenerCalendarios() {
-    console.log("el perfil que hay cundo carga esta parte es " , this.perfil())
+    
     const comunidadId = this.perfil()?.comunidad?.id;
     console.log('el id de la comunidad es ' , comunidadId)
     if (!comunidadId) return;
@@ -43,7 +43,7 @@ export class GestionCalendariosComponent {
       ...c,
       editando: false
     }));
-    console.log("Los calendarios quedarian asi" , this.calendarios)
+    
   }
   async eliminarCalendario(id: number) {
     if (!confirm('¿Estás seguro de que deseas eliminar este calendario?')) return;
@@ -55,15 +55,17 @@ async guardarCalendario(calendario: any) {
   try {
     const horaInicio = calendario.horaInicio.id;
     const horaFin = calendario.horaFin.id;
-    const horaInicioFinde = calendario.horaInicioFinde
-    const horaFinFinde = calendario.horaFinFinde
+    const horaInicioFinde = calendario.horaInicioFinde.id
+    const horaFinFinde = calendario.horaFinFinde.id
+    console.log('hora inicio finde' , horaInicioFinde)
+    console.log('hora fin finde' , horaFinFinde)
 
     if (horaFin <= horaInicio) {
       alert('La hora fin debe ser posterior a la hora inicio');
       return;
     }
       if (horaFinFinde <= horaInicioFinde) {
-      alert('La hora fin  de los findes de semana debe ser posterior a la hora inicio');
+      alert('La hora fin de los findes de semana debe ser posterior a la hora inicio');
       return;
     }
 

@@ -210,7 +210,19 @@ async obtenerRangoHorario() {
   const ids = todos.map(h => +h.id); // nos aseguramos de que sean números
   const idInicio = Math.min(...ids);
   const idFin = Math.max(...ids);
-  this.horario = await this.calendarioService.obtenerHorasCalendario(idInicio, idFin); 
+  console.log("Paso por aqui", idInicio,idFin )
+  const horas = await this.calendarioService.obtenerHorasCalendario(idInicio, idFin);
+  this.horario.set(horas) 
+  console.log("AASDFASDFGASD" , this.horario())
 
+}
+horarioDisponible(dia: Date, horarioId: string): boolean {
+  const diaSemana = dia.getDay(); // 0=Domingo, 1=Lunes, ..., 6=Sábado
+
+  if (diaSemana > 0 && diaSemana < 6) { // días de semana (lunes a viernes)
+    return this.horariosDiario().some(h => h.id === horarioId);
+  } else { // fin de semana (sábado y domingo)
+    return this.horariosFinde().some(h => h.id === horarioId);
+  }
 }
 }

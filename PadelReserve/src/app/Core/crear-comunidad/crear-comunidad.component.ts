@@ -1,4 +1,4 @@
-import { Component, effect, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule, FormArray } from '@angular/forms';
 import { ComunidadService } from '../../Services/comunidad.service';
 import { AutenticacionService } from '../../Services/autenticacion.service';
@@ -14,24 +14,20 @@ import { Router } from '@angular/router';
   styleUrl: './crear-comunidad.component.css'
 })
 export class CrearComunidadComponent {
+  private route= inject(Router)
+  private comunidadServices= inject(ComunidadService)
+  private autenticationService= inject(AutenticacionService)
+  private reservasService= inject (ReservasService)
+  private fb = inject(FormBuilder) 
+
+
   comunidadForm!: FormGroup;
-  perfil = signal<any>(null)
+  perfil = this.autenticationService.perfilSignal
   popUp=false;
   datos:any=null
   horasDisponibles: any = null;
   datosCalendario:any=null;
 
-  constructor(private fb: FormBuilder,
-    private route:Router,
-    private comunidadServices:ComunidadService,
-    private autenticationService:AutenticacionService,
-    private reservasService:ReservasService,
-    ) {
-    effect(()=>{
-      const perfil = this.autenticationService.perfilSignal()
-      this.perfil.set(perfil)
-    })
-  }
 
   ngOnInit(): void {
     this.comunidadForm = this.fb.group({
@@ -94,16 +90,20 @@ export class CrearComunidadComponent {
     return this.fb.group({
       nombre: ['', Validators.required],
       horaInicio: ['', Validators.required],
-      horaFin: ['', Validators.required]
+      horaFin: ['', Validators.required],
+      horaInicioFinde:['',Validators.required],
+      horaFinFinde:['',Validators.required]
     }, { validators: this.validarHoras });
   }
   validarHoras(group: FormGroup): { [key: string]: any } | null {
     const inicio = group.get('horaInicio')?.value;
     const fin = group.get('horaFin')?.value;
+    const inicioFinde = group.get('horaInicioFinde')?.value;
+    const finFinde = group.get('horaFinFinde')?.value;
   
     if (!inicio || !fin) return null;
   
-    return inicio >= fin ? { horaInvalida: true } : null;
+    return inicio >= fin || inicioFinde>=finFinde ? { horaInvalida: true } : null;
   }
 
   agregarCalendario(): void {
