@@ -17,6 +17,7 @@ export class ComunidadComponent {
     poblacion: string;
     provincia: string;
     seguridad: 'publica' | 'privada';
+    fotografia:string;
   }>();
   coincide = signal<boolean>(false)
   private autenticacionService = inject(AutenticacionService)

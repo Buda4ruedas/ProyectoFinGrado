@@ -26,7 +26,7 @@ export class CambiarContraseniaComponent {
       this.form.markAllAsTouched();
       return;
     }
-
+  
     const { nuevaPassword, confirmarPassword } = this.form.value;
 
     if (nuevaPassword !== confirmarPassword) {

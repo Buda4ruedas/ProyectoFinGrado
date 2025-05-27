@@ -6,62 +6,64 @@ import { supabase } from '../app.config';
 })
 export class ImagenesService {
 
-  async subirImagen(file: File, path: string,tabla:string): Promise<string> {
-  console.log("El path es", path);
-  console.log(tabla)
+  async subirImagen(file: File, path: string, tabla: string): Promise<string | null> {
+    try {
+      console.log("El path es", path);
+      console.log(tabla);
 
-  // Extraer la carpeta (el id) del path
-  const partes = path.split('/');
-  const carpeta = partes[0];  // El id del usuario
+      const partes = path.split('/');
+      const carpeta = partes[0];  
 
-  // Listar los archivos dentro de la carpeta del usuario
-  const { data: imagenes, error: erroreseleccion } = await supabase.storage.from(tabla).list(carpeta);
+      const { data: imagenes, error: erroreseleccion } = await supabase.storage.from(tabla).list(carpeta);
 
-  if (erroreseleccion) {
-    throw new Error(`Error al listar las imágenes: ${erroreseleccion.message}`);
-  }
+      if (erroreseleccion) {
+        console.error('Error al listar las imágenes:', erroreseleccion.message);
+        return null;
+      }
 
-  // Verificar si hay una foto existente (en este caso "fotoPerfil.jpg")
-  const imagenExistente = imagenes[0]?.name
+      
+      const imagenExistente = imagenes[0]?.name;
+      if (imagenExistente) {
+        const { error: erroreliminacion } = await supabase.storage.from(tabla).remove([`${carpeta}/${imagenExistente}`]);
+        if (erroreliminacion) {
+          console.error('Error al eliminar la imagen existente:', erroreliminacion.message);
+          return null;
+        }
+        console.log(`Imagen ${imagenExistente} eliminada correctamente.`);
+      }
 
-  if (imagenExistente) {
-    
-    const { data: eliminados, error: erroreliminacion } = await supabase.storage.from(tabla).remove([`${carpeta}/${imagenExistente}`]);
+      const { data, error } = await supabase.storage
+        .from(tabla)
+        .upload(path, file, {
+          cacheControl: '3600',
+          upsert: true,
+        });
 
-    if (erroreliminacion) {
-      throw new Error(`Error al eliminar la imagen existente: ${erroreliminacion.message}`);
+      if (error || !data?.path) {
+        console.error('Error al subir la imagen:', error?.message || 'Ruta no encontrada');
+        return null;
+      }
+
+      return await this.obtenerUrlPublica(data.path, tabla);
+    } catch (err) {
+      console.error('Error inesperado al subir imagen:', err);
+      return null;
     }
-
-    console.log(`Imagen ${imagenExistente} eliminada correctamente.`);
-  }
-  const { data, error } = await supabase.storage
-    .from(tabla)
-    .upload(path, file, {
-      cacheControl: '3600',
-      upsert: true,
-    });
-
-  if (error) {
-    throw new Error(`Error al subir la imagen: ${error.message}`);
   }
 
-  if (!data?.path) {
-    throw new Error('No se encontró la ruta del archivo subido');
-  }
+  async obtenerUrlPublica(path: string, tabla: string): Promise<any> {
+    try {
+      const { data } = await supabase.storage.from(tabla).getPublicUrl(path);
 
-  // Obtener la URL pública
-  return this.obtenerUrlPublica(data.path,tabla);
-}
+      if (!data?.publicUrl) {
+        console.error('No se pudo obtener la URL pública');
+        return null;
+      }
 
-  async obtenerUrlPublica(path: string, tabla:string): Promise<string> {
-    
-    const { data } = await supabase.storage.from(tabla).getPublicUrl(path);
-
-    if (!data?.publicUrl) {
-      throw new Error('No se pudo obtener la URL pública');
+      return data.publicUrl;
+    } catch (err) {
+      console.error('Error al obtener URL pública:', err);
+      return null;
     }
-
-    return data.publicUrl;
   }
 }
-

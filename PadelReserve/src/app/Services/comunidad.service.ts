@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { supabase } from '../app.config';
 import { UsuarioService } from './usuario.service';
 import { CalendarioService } from './calendario.service';
@@ -8,10 +8,12 @@ import { CalendarioService } from './calendario.service';
 })
 export class ComunidadService {
 
-  constructor(private usuarioService: UsuarioService, private calendarioService: CalendarioService) {
+ private usuarioService= inject( UsuarioService)
+  private calendarioService= inject (CalendarioService)
 
-  }
-  async crearComunidad(datos: any, userId: any, portal: any, piso: any) {
+  
+  async crearComunidad(datos: any, userId: any, portal: any, piso: any): Promise<any> {
+  try {
     const { data, error } = await supabase.from('comunidad')
       .insert([{
         nombre: datos.nombre,
@@ -21,100 +23,157 @@ export class ComunidadService {
         direccion: datos.direccion,
         provincia: datos.provincia,
         codigo_acceso: datos.codigoAcceso,
-        fotografia:datos?.fotografia
-      }]).select('id')
-    console.log('datos', data)
+        fotografia: datos?.fotografia
+      }])
+      .select('id');
 
-
-    if (error) {
-      console.log('no se ha podido añadir la comunidad')
-      return;
-    }
-    await this.usuarioService.ponerRolAdministrador(data[0].id, userId, portal, piso)
-    console.log('los datos son ', datos)
-    console.log('los calendarios son ', datos.calendarios)
-    for (let i = 0; i < datos.calendarios.length; i++) {
-      await this.calendarioService.crearCalendarios(data[0].id, datos.calendarios[i])
-    }
-  }
-
-  async obtenerComunidad(idComunidad: any): Promise<any> {
-    const { data, error } = await supabase.from('comunidad').select('*').eq('id', idComunidad).single()
-    if (error) {
-      console.log('No se ha podido obtener los datos de la comunidad', error)
-      return;
-    } else {
-      console.log(data, 'datos de obtener comunidad')
-      return data
-    }
-
-  }
-
-  async obtenerNumeroVecinos(idComunidad: any): Promise<any> {
-    const { data, error } = await supabase.from('usuario').select('*').eq('comunidad_id', idComunidad)
-    if (error) {
-      return
-    } else {
-      let contador = 0
-      data.forEach(resp => {
-        contador++
-      })
-      return contador
-    }
-  }
-  async obtenerAdministradores(idComunidad?: any):Promise<any[]> {
-    const { data, error } = await supabase.from('usuario').select('nombre,email').eq('comunidad_id', idComunidad).eq('rol','administrador')
-    if (error) {
-      console.log("no se ha podido obtener los administradores de la comunidad", error)
-      return[]
-    }else{
-        return data.map((admin) => ({
-      nombre: admin.nombre,
-      email: admin.email
-    }));
-    }
-  }
-  async obtenerCalendarios(idComunidad:any):Promise<string[]>{
-    const {data,error}  =await supabase.from('calendario').select('nombre').eq('comunidad_id',idComunidad)
-    if(error){
-      console.log('no se ha podido obtener los calendaros', error)
-      return[]
-    }else{
-     return data.map((calendarios)=>calendarios.nombre)
-    }
-  }
-  async eliminarComunidad(idComunidad:any){
-    const {data,error}  = await supabase.from('comunidad').delete().eq('id',idComunidad)
-    if(error){
-      throw error
-    }
-  }
-  async actualizarComunidad(idComunidad:any,datos:any){
-    const {data,error}  = await supabase.from('comunidad')
-    .update({nombre:datos.nombre,
-      direccion:datos.direccion,
-      cp:datos.cp,
-      poblacion:datos.poblacion,
-      seguridad:datos.seguridad,
-      codigo_acceso:datos.codigoAcceso,
-      fotografia:datos?.fotografia}).eq('id',idComunidad)
-      if(error){
-        throw error
-      }
-  }
-  async obtenerComunidades():Promise<any>{
-    const {data,error} = await supabase.from('comunidad').select('*')
-    if(error){
-      console.log('no se han podido obtener las comunidades')
+    if (error || !data || !data[0]?.id) {
+      console.error('Error al insertar comunidad:', error?.message);
       return null;
-    }else{
-      return data
     }
 
+    const idComunidad = data[0].id;
+
+    
+    const rolAsignado = await this.usuarioService.ponerRolAdministrador(idComunidad, userId, portal, piso);
+    if (!rolAsignado) {
+      await this.eliminarComunidad(idComunidad); // rollback
+      console.error('Error al asignar rol de administrador. Comunidad eliminada.');
+      return null;
+    }
+
+    for (let calendario of datos.calendarios) {
+      const ok = await this.calendarioService.crearCalendarios(idComunidad, calendario);
+      if (!ok) {
+        await this.eliminarComunidad(idComunidad); // rollback
+        console.error('Error al crear calendarios. Comunidad eliminada.');
+        return null;
+      }
+    }
+
+    return idComunidad;
+  } catch (error) {
+    console.error('Error inesperado al crear la comunidad:', error);
+    return null;
+  }
+}
+
+    async obtenerComunidad(idComunidad: any): Promise<any> {
+    try {
+      const { data, error } = await supabase.from('comunidad')
+        .select('*')
+        .eq('id', idComunidad)
+        .single();
+
+      if (error) return null;
+      return data;
+    } catch (error) {
+      console.error('Error al obtener comunidad:', error);
+      return null;
+    }
   }
 
+  async obtenerNumeroVecinos(idComunidad: any): Promise<number> {
+    try {
+      const { data, error } = await supabase.from('usuario')
+        .select('id')
+        .eq('comunidad_id', idComunidad);
 
+      if (error || !data) return 0;
+      return data.length;
+    } catch (error) {
+      console.error('Error al obtener número de vecinos:', error);
+      return 0;
+    }
+  }
 
+  async obtenerAdministradores(idComunidad: any): Promise<any[]> {
+    try {
+      const { data, error } = await supabase.from('usuario')
+        .select('nombre,email')
+        .eq('comunidad_id', idComunidad)
+        .eq('rol', 'administrador');
 
+      if (error || !data) return [];
+      return data.map(admin => ({
+        nombre: admin.nombre,
+        email: admin.email
+      }));
+    } catch (error) {
+      console.error('Error al obtener administradores:', error);
+      return [];
+    }
+  }
 
+  async obtenerCalendarios(idComunidad: any): Promise<string[]> {
+    try {
+      const { data, error } = await supabase.from('calendario')
+        .select('nombre')
+        .eq('comunidad_id', idComunidad);
+
+      if (error || !data) return [];
+      return data.map(c => c.nombre);
+    } catch (error) {
+      console.error('Error al obtener calendarios:', error);
+      return [];
+    }
+  }
+
+  async eliminarComunidad(idComunidad: any): Promise<boolean> {
+    try {
+      const { error } = await supabase.from('comunidad')
+        .delete()
+        .eq('id', idComunidad);
+
+      return !error;
+    } catch (error) {
+      console.error('Error al eliminar comunidad:', error);
+      return false;
+    }
+  }
+
+  async actualizarComunidad(idComunidad: any, datos: any): Promise<boolean> {
+    try {
+      const { error } = await supabase.from('comunidad')
+        .update({
+          nombre: datos.nombre,
+          direccion: datos.direccion,
+          cp: datos.cp,
+          poblacion: datos.poblacion,
+          seguridad: datos.seguridad,
+          codigo_acceso: datos.codigoAcceso,
+          fotografia: datos?.fotografia
+        })
+        .eq('id', idComunidad);
+
+      return !error;
+    } catch (error) {
+      console.error('Error al actualizar comunidad:', error);
+      return false;
+    }
+  }
+
+  async obtenerComunidades(): Promise<any[] | null> {
+    try {
+      const { data, error } = await supabase.from('comunidad').select('*');
+      if (error || !data) return null;
+      return data;
+    } catch (error) {
+      console.error('Error al obtener comunidades:', error);
+      return null;
+    }
+  }
+
+  async actualizarFotoComunidad(idComunidad: any, url: string): Promise<boolean> {
+    try {
+      const { error } = await supabase.from('comunidad')
+        .update({ fotografia: url })
+        .eq('id', idComunidad);
+
+      return !error;
+    } catch (error) {
+      console.error('Error al actualizar la foto de la comunidad:', error);
+      return false;
+    }
+  }
 }

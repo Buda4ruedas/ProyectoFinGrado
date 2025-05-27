@@ -40,6 +40,10 @@
               <option value="privada">Privada</option>
             </select>
           </div>
+          <div class="mb-3">
+            <label for="fotografia" class="form-label">Fotografía</label>
+            <input type="file" class="form-control" id="fotografia" (change)="onFileSelected($event)" />
+          </div>
 
           @if(comunidadForm.get('seguridad')?.value === 'privada'){
           <div class="mb-3">

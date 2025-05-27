@@ -9,119 +9,156 @@ import { supabase } from '../app.config';
 export class UsuarioService {
   private authService = inject(AutenticacionService) 
 
-  constructor() {}
 
-  async modificarPerfil(datos: any): Promise<void> {
-    const resp = this.authService.perfil;
-    if (!resp?.id) {
-      console.error('No se ha encontrado el ID del usuario');
-      throw new Error('ID de usuario no disponible');
-    }
-    const { data, error } = await supabase
-      .from('usuario')
-      .update(datos)
-      .eq('id', resp.id)
-      .select('*')
-      .single();
-    if (error) {
-      console.error('Error al actualizar perfil:', error);
-      throw error;
-    }
-    console.log(data);
-    console.log('Perfil actualizado correctamente');
-    await this.authService.loadProfile(data.id);
-  }
-  async modificarComunidadaUsuario(idComunidad: any, idUsuario: any, portal: string, piso: string) {
-    const { data, error } = await supabase
-      .from('usuario')
-      .update({ comunidad_id: idComunidad, portal: portal, piso: piso,rol:null })
-      .eq('id', idUsuario)
-    if (error) {
-      console.log('no se ha podido añadir la comunidad')
-    } else {
-      await this.authService.loadProfile(idUsuario);
-    }
-  }
-  async ponerRolAdministrador(idComunidad: any, idUsuario: any, portal: string, piso: string) {
-    const { data, error } = await supabase
-      .from('usuario')
-      .update({ comunidad_id: idComunidad, portal: portal, piso: piso, rol: 'administrador' })
-      .eq('id', idUsuario)
+  async modificarPerfil(datos: any): Promise<boolean> {
+    try {
+      const resp = this.authService.perfil;
+      if (!resp?.id) {
+        console.error('No se ha encontrado el ID del usuario');
+        return false;
+      }
+      const { data, error } = await supabase
+        .from('usuario')
+        .update(datos)
+        .eq('id', resp.id)
+        .select('*')
+        .single();
 
-    if (error) {
-      console.log('no se ha podido añadir el rol de administrador')
-    }else{
+      if (error) throw error;
+
+      console.log('Perfil actualizado correctamente', data);
+      await this.authService.loadProfile(data.id);
+      return true;
+    } catch (e) {
+      console.error('Error al actualizar perfil:', (e as Error).message);
+      return false;
+    }
+  }
+
+  async modificarComunidadaUsuario(idComunidad: any, idUsuario: any, portal: string, piso: string): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('usuario')
+        .update({ comunidad_id: idComunidad, portal, piso, rol: null })
+        .eq('id', idUsuario);
+      if (error) throw error;
       await this.authService.loadProfile(idUsuario);
+      return true;
+    } catch (e) {
+      console.error('No se ha podido añadir la comunidad:', (e as Error).message);
+      return false;
     }
   }
-  async obtenerUsuariosSinVerificar(idComunidad: any): Promise<any> {
-    const { data, error } = await supabase
-      .from('usuario')
-      .select('id,nombre,apellidos,email,portal,piso')
-      .eq('comunidad_id', idComunidad)
-      .is('rol', null)
-    if (!error) {
-      console.log('usuarios sin autenticar', data)
-      return data;
-    } else {
-      console.log("no he podido conseguir los usuarios pendientes")
+
+  async ponerRolAdministrador(idComunidad: any, idUsuario: any, portal: string, piso: string): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('usuario')
+        .update({ comunidad_id: idComunidad, portal, piso, rol: 'administrador' })
+        .eq('id', idUsuario);
+      if (error) throw error;
+      await this.authService.loadProfile(idUsuario);
+      return true;
+    } catch (e) {
+      console.error('No se ha podido añadir el rol de administrador:', (e as Error).message);
+      return false;
     }
   }
-  async modificarRol(idUser: any, rol: any) {
-    const { data, error } = await supabase
-      .from('usuario')
-      .update({ rol: rol })
-      .eq('id', idUser).select('*')
-    if (error) {
-      console.log("no se ha podido asignar el rol")
-    }else{
-      console.log(data)
+
+  async obtenerUsuariosSinVerificar(idComunidad: any): Promise<any[]> {
+    try {
+      const { data, error } = await supabase
+        .from('usuario')
+        .select('id,nombre,apellidos,email,portal,piso')
+        .eq('comunidad_id', idComunidad)
+        .is('rol', null);
+      if (error) throw error;
+      console.log('Usuarios sin autenticar:', data);
+      return data ?? [];
+    } catch (e) {
+      console.error('No he podido conseguir los usuarios pendientes:', (e as Error).message);
+      return [];
     }
   }
-  async rechazarUsuario(idUser: any) {
-    const { data, error } = await supabase
-      .from('usuario')
-      .update({ comunidad_id: null, portal: null, piso: null,rol:null })
-      .eq('id', idUser)
-    if (error) {
-      console.log("no se ha podido actualizar los campos a null")
+
+  async modificarRol(idUser: any, rol: any): Promise<boolean> {
+    try {
+      const { data, error } = await supabase
+        .from('usuario')
+        .update({ rol })
+        .eq('id', idUser)
+        .select('*');
+      if (error) throw error;
+      console.log('Rol modificado:', data);
+      return true;
+    } catch (e) {
+      console.error('No se ha podido asignar el rol:', (e as Error).message);
+      return false;
     }
   }
-    async abandonarComunidad(idUser: any) {
-    const { data, error } = await supabase
-      .from('usuario')
-      .update({ comunidad_id: null, portal: null, piso: null,rol:null })
-      .eq('id', idUser)
-    if (error) {
-      console.log("no se ha podido actualizar los campos a null")
-    }else{
+
+  async rechazarUsuario(idUser: any): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('usuario')
+        .update({ comunidad_id: null, portal: null, piso: null, rol: null })
+        .eq('id', idUser);
+      if (error) throw error;
+      return true;
+    } catch (e) {
+      console.error('No se ha podido actualizar los campos a null:', (e as Error).message);
+      return false;
+    }
+  }
+
+  async abandonarComunidad(idUser: any): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('usuario')
+        .update({ comunidad_id: null, portal: null, piso: null, rol: null })
+        .eq('id', idUser);
+      if (error) throw error;
       await this.authService.loadProfile(idUser);
-    }
-  }
-  async obtenerUsuariosdeComunidad(idComunidad:any):Promise<any>{
-    const {data,error}  = await supabase.from('usuario').select('*').eq('comunidad_id',idComunidad)
-    if(error){
-      console.log('no se ha podido obtener los usuarios de esta comunidad')
-      return ;
-    }
-    return data
-  }
-  async obtenerCorreos():Promise<any>{
-    const {data , error} = await supabase.from('usuario').select('email')
-    if(error){
-      console.log("no se ha podido obtener los correos")
-    }else{
-      return data
+      return true;
+    } catch (e) {
+      console.error('No se ha podido actualizar los campos a null:', (e as Error).message);
+      return false;
     }
   }
 
-  async usuarioYaRegistrado(email:any):Promise<boolean>{
-  const usuarios = await this.obtenerCorreos();
-  console.log("correos que llegan" , usuarios)
-  const exito  = usuarios.find((resp:any)=> resp.email ==email)
-  console.log("exito" , exito)
-  if(exito) return true
-  return false
-}
+  async obtenerUsuariosdeComunidad(idComunidad: any): Promise<any[]> {
+    try {
+      const { data, error } = await supabase
+        .from('usuario')
+        .select('*')
+        .eq('comunidad_id', idComunidad);
+      if (error) throw error;
+      return data ?? [];
+    } catch (e) {
+      console.error('No se ha podido obtener los usuarios de esta comunidad:', (e as Error).message);
+      return [];
+    }
+  }
 
+  async obtenerCorreos(): Promise<any[]> {
+    try {
+      const { data, error } = await supabase.from('usuario').select('email');
+      if (error) throw error;
+      return data ?? [];
+    } catch (e) {
+      console.error('No se ha podido obtener los correos:', (e as Error).message);
+      return [];
+    }
+  }
+
+  async usuarioYaRegistrado(email: any): Promise<boolean> {
+    try {
+      const usuarios = await this.obtenerCorreos();
+      const existe = usuarios.find((resp: any) => resp.email === email);
+      return !!existe;
+    } catch (e) {
+      console.error('Error verificando si usuario ya está registrado:', (e as Error).message);
+      return false;
+    }
+  }
 }

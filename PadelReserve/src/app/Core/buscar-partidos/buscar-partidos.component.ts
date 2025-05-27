@@ -39,6 +39,8 @@ export class BuscarPartidosComponent {
       const datos = this.buscarForm.value;
       this.formMandado = false;
       this.loading = true;
+      
+
       this.partidosFiltrados(datos).then(() => {
         this.formMandado = true;
         this.loading = false;
@@ -47,35 +49,44 @@ export class BuscarPartidosComponent {
   }
 
   async partidosFiltrados(datos: any) {
-  const partidos = await this.partidosService.obtenerPartidos();
-  const partidosFiltrados: any[] = [];
+    this.completo = [];
+    this.data.set([]);
 
-  const filtroBase = (resp: any) => resp.usuario.id !== this.perfil().id && resp.numero_jugadores == datos.jugadores;
+    try {
+      const partidos = await this.partidosService.obtenerPartidos();
+      const partidosFiltrados: any[] = [];
 
-  
-  const fechaHoy = new Date();
-  fechaHoy.setHours(0, 0, 0, 0);  
+      const filtroBase = (resp: any) => resp.usuario.id !== this.perfil().id && resp.numero_jugadores == datos.jugadores;
 
-  for (const resp of partidos) {
-    if (!filtroBase(resp)) continue;
+      const fechaHoy = new Date();
+      fechaHoy.setHours(0, 0, 0, 0);
 
-    const generoMatch = datos.genero === 'Cualquiera' || resp.genero.toLowerCase() === datos.genero.toLowerCase();
-    const nivelMatch = datos.nivel === 'Cualquiera' || resp.nivel.toLowerCase() === datos.nivel.toLowerCase();
+      for (const resp of partidos) {
+        if (!filtroBase(resp)) continue;
 
-    
-    const fechaPartido = new Date(resp.fecha);  
-    if (fechaPartido < fechaHoy) continue;  
+        const generoMatch = datos.genero === 'Cualquiera' || resp.genero.toLowerCase() === datos.genero.toLowerCase();
+        const nivelMatch = datos.nivel === 'Cualquiera' || resp.nivel.toLowerCase() === datos.nivel.toLowerCase();
 
-    if (generoMatch && nivelMatch) {
-      const apuntados = await this.partidosService.obtenerJugadoresPartido(resp.id);
-      resp.jugadores_apuntados = apuntados.length;
-      this.completo.push(apuntados.length >= resp.numero_jugadores);
-      partidosFiltrados.push(resp);
+        const fechaPartido = new Date(resp.fecha);
+        if (fechaPartido < fechaHoy) continue;
+
+        if (generoMatch && nivelMatch) {
+          try {
+            const apuntados = await this.partidosService.obtenerJugadoresPartido(resp.id);
+            resp.jugadores_apuntados = apuntados.length;
+            this.completo.push(apuntados.length >= resp.numero_jugadores);
+            partidosFiltrados.push(resp);
+          } catch (error) {
+            alert('Error al obtener jugadores del partido:');
+          }
+        }
+      }
+
+      this.data.set(partidosFiltrados);
+    } catch (error) {
+      alert('Error al obtener partidos:')
     }
   }
-
-  this.data.set(partidosFiltrados);
-}
 
   apuntarme(idPartido: number) {
     this.router.navigate([`/navbar/partido/${idPartido}`]);

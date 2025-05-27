@@ -6,6 +6,7 @@ import { PopUpCodigoComunidadComponent } from '../../Shared/pop-up-codigo-comuni
 import { ReservasService } from '../../Services/reservas.service';
 import { CalendarioService } from '../../Services/calendario.service';
 import { Router } from '@angular/router';
+import { ImagenesService } from '../../Services/imagenes.service';
 
 @Component({
   selector: 'app-crear-comunidad',
@@ -19,6 +20,7 @@ export class CrearComunidadComponent {
   private autenticationService= inject(AutenticacionService)
   private reservasService= inject (ReservasService)
   private fb = inject(FormBuilder) 
+  private imagenesService = inject(ImagenesService)
 
 
   comunidadForm!: FormGroup;
@@ -27,6 +29,7 @@ export class CrearComunidadComponent {
   datos:any=null
   horasDisponibles: any = null;
   datosCalendario:any=null;
+  selectedFile: File | null = null;
 
 
   ngOnInit(): void {
@@ -38,6 +41,7 @@ export class CrearComunidadComponent {
       direccion: ['', Validators.required],
       seguridad: ['', Validators.required],
       codigoAcceso: [null],
+      fotografia: [''],
       calendarios: this.fb.array([this.crearCalendario()])
     });
 
@@ -55,7 +59,7 @@ export class CrearComunidadComponent {
   }
 
   onSubmit(): void {
-    if (this.comunidadForm.valid) {
+    if (this.comunidadForm.valid&&this.selectedFile) {
       console.log(this.comunidadForm.value);
       this.datos = this.comunidadForm.value
       this.datosCalendario = this.datos.calendario
@@ -78,12 +82,25 @@ export class CrearComunidadComponent {
     console.error('Formato inválido. Debe ser algo como "2-2B".');
     return;
   }
-
-   const portal = partes[0].trim();
+  try{   
+    const portal = partes[0].trim();
     const piso = partes[1].trim();
-    await this.comunidadServices.crearComunidad(this.datos,this.perfil().id,portal,piso)
+    const id = await this.comunidadServices.crearComunidad(this.datos,this.perfil().id,portal,piso)
+    console.log("lo que responde es ", id)
+
+    const path = `${id}/${this.selectedFile!.name}`;
+    const imageUrl = await this.imagenesService.subirImagen(this.selectedFile!, path,"fotoscomunidad");
+    await this.comunidadServices.actualizarFotoComunidad(id,imageUrl!) 
+       
+
   this.popUp=false
   this.route.navigate(['/navbar/principal'])
+
+  }catch{
+    console.log('error en el sistema')
+    this.popUp=false
+  }
+
   }
 
   crearCalendario(): FormGroup {
@@ -121,6 +138,13 @@ export class CrearComunidadComponent {
     this.reservasService.obtenerHorarios().then(horas => {
       this.horasDisponibles = horas; 
     });
+  }
+    onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input?.files?.length) {
+      this.selectedFile = input.files[0];
+      this.comunidadForm.get('fotografia')?.setValue(this.selectedFile?.name);
+    }
   }
   
 }

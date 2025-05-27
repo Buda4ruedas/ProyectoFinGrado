@@ -198,13 +198,13 @@ export class PartidoComponent {
     const confirmado = confirm('¿Estás seguro de que deseas eliminar este partido?');
     if (!confirmado) return;
   
-    const { error } = await this.partidosService.eliminarPartido(this.partidoId);
+    const exito = await this.partidosService.eliminarPartido(this.partidoId);
   
-    if (!error) {
+    if (exito) {
       this.partidoEliminado.emit(this.partidoId);
      
     } else {
-      console.error('Error al eliminar el partido', error);
+      console.error('Error al eliminar el partido');
       alert('Error al eliminar el partido');
     }
   }

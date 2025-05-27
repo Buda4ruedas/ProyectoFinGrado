@@ -12,14 +12,14 @@ export class PopUpConfirmacionComponent {
   subtitulo=input<string>('');
   @Output() cancelar = new EventEmitter<void>();  
   @Output() confirmar = new EventEmitter<string>();
-  visible=false;
+
 
   closePopUp() {
     this.cancelar.emit();
-    this.visible = false  
+     
   }
   confirm() {
     this.confirmar.emit();
-    this.visible = false
+
   }
 }

@@ -14,14 +14,14 @@ export class PopUpCodigoComunidadComponent {
   placeholder=input<string>('');
   @Output() cancelar = new EventEmitter<void>();  
   @Output() confirmar = new EventEmitter<string>();
-  visible=false;
+  
 
   closePopUp() {
     this.cancelar.emit();
-    this.visible = false  
+    
   }
   confirm() {
     this.confirmar.emit(this.codigo);
-    this.visible = false
+   
   }
 }
