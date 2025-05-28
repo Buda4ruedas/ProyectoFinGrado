@@ -39,7 +39,6 @@ export class BuscarComunidadComponent {
 
   async ngOnInit() {
     const comunidades = await this.comunidadService.obtenerComunidades()
-    console.log("las comunidades son " , comunidades)
     this.comunidades.set(comunidades)
     this.comunidadesFiltradas.set(comunidades)
     setTimeout(() => {
@@ -134,17 +133,14 @@ export class BuscarComunidadComponent {
   }
 
   onCerrarPopup() {
-    console.log("se pulsa")
     this.mostrarCodigoPopUp.set(false);
   }
 
   onCerrarPortalPopup() {
-    console.log("se pulsa")
     this.mostrarPortalPopUp.set(false);
   }
 
   onCerrarConfirmacionPopup() {
-    console.log("se pulsa")
     this.mostrarConfirmacionPopUp.set(false);
   }
 

@@ -25,37 +25,36 @@ export class PerfilComponent {
   selectedFile: File | null = null;
   
 
-  constructor() {
-    effect(() => {
-      const perfil = this.authService.perfilSignal()
-      if(perfil){
-        this.perfil.set(perfil)
-        this.nombreComunidad = perfil.comunidad?.nombre;
-        this.perfilForm.patchValue({
-          nombre: perfil.nombre,
-          email: perfil.email,
-          apellidos:perfil.apellidos,
-          portal: perfil?.portal,
-          piso: perfil?.piso,
-          fotografia:perfil.fotografia,
-          comunidad:perfil.comunidad?.id
-        });
-
-      }
-    })
+    constructor() {
     this.perfilForm = this.fb.group({
       email: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
       nombre: ['', Validators.required],
       apellidos: ['', Validators.required],
-      portal: [{value:'', disabled:true}, Validators.required],
-      piso: [{value:'', disabled:true}, Validators.required],
+      portal: [{ value: '', disabled: true }, Validators.required],
+      piso: [{ value: '', disabled: true }, Validators.required],
       fotografia: ['', Validators.required],
-      comunidad: [{value:'', disabled:true}, Validators.required],
+      comunidad: [{ value: '', disabled: true }, Validators.required],
+    });
 
+    effect(() => {
+      const perfil = this.authService.perfilSignal();
+      if (perfil) {
+        this.perfil.set(perfil);
+        this.nombreComunidad = perfil.comunidad?.nombre ?? '';
+        this.perfilForm.patchValue({
+          nombre: perfil.nombre,
+          email: perfil.email,
+          apellidos: perfil.apellidos,
+          portal: perfil.portal,
+          piso: perfil.piso,
+          fotografia: perfil.fotografia,
+          comunidad: perfil.comunidad?.id
+        });
+      }
     });
   }
 
- onFileSelected(event: Event) {
+  onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input?.files?.length) {
       this.selectedFile = input.files[0];
@@ -66,21 +65,26 @@ export class PerfilComponent {
   }
 
   async guardarCambios() {
-    if (this.perfilForm.valid) {
-      const datos = this.perfilForm.value;
+    if (this.perfilForm.invalid) {
+      this.perfilForm.markAllAsTouched();
+      alert('Por favor, completa todos los campos obligatorios.');
+      return;
+    }
 
+    const datos = this.perfilForm.getRawValue();
+
+    try {
       if (this.selectedFile) {
-        try {
-          const path = `${this.perfil().id}/${this.selectedFile.name}`;
-          const imageUrl = await this.imagenesService.subirImagen(this.selectedFile, path,'fotosperfil');
-          datos.fotografia = imageUrl;
-        } catch (error) {
-          console.error('Error al subir la imagen:', error);
-          return;
-        }
+        const path = `${this.perfil().id}/${this.selectedFile.name}`;
+        const imageUrl = await this.imagenesService.subirImagen(this.selectedFile, path, 'fotosperfil');
+        datos.fotografia = imageUrl;
       }
 
-      this.usuarioService.modificarPerfil(datos);
+      await this.usuarioService.modificarPerfil(datos);
+      alert('Perfil actualizado correctamente.');
+    } catch (error) {
+      console.error('Error al guardar los cambios del perfil:', error);
+      alert('Ocurrió un error al guardar los cambios. Inténtalo de nuevo más tarde.');
     }
   }
 }

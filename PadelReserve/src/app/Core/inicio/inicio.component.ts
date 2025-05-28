@@ -17,14 +17,6 @@ export class InicioComponent {
   autenticacionService = inject (AutenticacionService)
   route = inject(Router)
 
- // async ngAfterViewInit() {
- //   const perfil =  this.autenticacionService.perfilSignal();
- //   console.log("Perfil en ngAfterViewInit", perfil);
- //   if (perfil) {
- //     this.route.navigate(['navbar/principal']);
- //   }
- // }
-
   irRegistrarse() {
     this.mostrarRegistro.set(true)
   }

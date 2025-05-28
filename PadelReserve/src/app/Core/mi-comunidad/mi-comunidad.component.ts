@@ -26,39 +26,59 @@ export class MiComunidadComponent {
   popUpConfirmacion = signal(false)
   
 
-  async ngOnInit() {
-    this.comunidad = await this.comunidadService.obtenerComunidad(this.perfil().comunidad.id);
-    const numeroVecinos = await this.comunidadService.obtenerNumeroVecinos(this.perfil().comunidad.id);
-    const administradores = await this.comunidadService.obtenerAdministradores(this.perfil().comunidad.id);
-    const calendarios = await this.calendarioService.obtenerCalendarios(this.perfil().comunidad.id);
+ async ngOnInit() {
+    try {
+      const comunidadId = this.perfil().comunidad.id;
 
-    this.comunidad.numeroVecinos = numeroVecinos;
-    this.comunidad.administradores = administradores;
-    this.comunidad.calendarios = calendarios;
+      this.comunidad = await this.comunidadService.obtenerComunidad(comunidadId);
+      const numeroVecinos = await this.comunidadService.obtenerNumeroVecinos(comunidadId);
+      const administradores = await this.comunidadService.obtenerAdministradores(comunidadId);
+      const calendarios = await this.calendarioService.obtenerCalendarios(comunidadId);
 
-    console.log("los datos obtenidos son", this.comunidad);
-  }
-    async puedeAbandonar(): Promise<boolean> {
-    const administradores = await this.comunidadService.obtenerAdministradores(this.perfil().comunidad.id);
-    console.log(administradores,'administradores :')
-    return !(this.perfil().rol == 'administrador' && administradores.length <= 1);
-  }
+      this.comunidad.numeroVecinos = numeroVecinos;
+      this.comunidad.administradores = administradores;
+      this.comunidad.calendarios = calendarios;
 
-   async abandonarComunidad() {
-    const administradores = await this.comunidadService.obtenerAdministradores(this.perfil().comunidad.id);
-    const puede = !(this.perfil().rol === 'administrador' && administradores.length <= 1);
-    if (!puede) {
-      alert('No puedes abandonar la comunidad siendo el único administrador.');
-      return;
+    } catch (error) {
+      console.error("Error al cargar la comunidad:", error);
+      alert("Hubo un error al cargar los datos de la comunidad.");
     }
+  }
 
-    this.popUpConfirmacion.set(true); 
+  async puedeAbandonar(): Promise<boolean> {
+    try {
+      const administradores = await this.comunidadService.obtenerAdministradores(this.perfil().comunidad.id);
+      return !(this.perfil().rol === 'administrador' && administradores.length <= 1);
+    } catch (error) {
+      console.error("Error al verificar si puede abandonar:", error);
+      alert("Hubo un error al verificar si puedes abandonar la comunidad.");
+      return false;
+    }
+  }
+
+  async abandonarComunidad() {
+    try {
+      const puede = await this.puedeAbandonar();
+      if (!puede) {
+        alert('No puedes abandonar la comunidad siendo el único administrador.');
+        return;
+      }
+      this.popUpConfirmacion.set(true);
+    } catch (error) {
+      console.error("Error al intentar abandonar la comunidad:", error);
+      alert("Hubo un error al intentar abandonar la comunidad.");
+    }
   }
 
   onConfirmarAbandono = async () => {
-    await this.usuarioService.abandonarComunidad(this.perfil().id);
-    this.popUpConfirmacion.set(false); 
-    this.router.navigate(['/navbar/principal']);
+    try {
+      await this.usuarioService.abandonarComunidad(this.perfil().id);
+      this.popUpConfirmacion.set(false);
+      this.router.navigate(['/navbar/principal']);
+    } catch (error) {
+      console.error("Error al abandonar la comunidad:", error);
+      alert("Hubo un error al abandonar la comunidad.");
+    }
   };
 
   onCerrarPopup = () => {

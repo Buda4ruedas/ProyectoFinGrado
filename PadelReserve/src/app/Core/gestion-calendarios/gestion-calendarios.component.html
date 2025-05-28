@@ -97,6 +97,22 @@
                             }
                         </select>
                     </div>
+                    <div class="col">
+                        <label class="form-label">Hora Inicio Fin de Semana</label>
+                        <select class="form-select" [(ngModel)]="nuevoCalendario.horaInicioFinde">
+                            @for(hora of horas;track $index){
+                            <option [ngValue]="hora.id">{{ hora.hora}}</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label class="form-label">Hora Fin Fin de Semana</label>
+                        <select class="form-select" [(ngModel)]="nuevoCalendario.horaFinFinde">
+                            @for(hora of horas;track $index){
+                            <option [ngValue]="hora.id">{{ hora.hora }}</option>
+                            }
+                        </select>
+                    </div>
                 </div>
 
                 <div class="d-flex gap-2">

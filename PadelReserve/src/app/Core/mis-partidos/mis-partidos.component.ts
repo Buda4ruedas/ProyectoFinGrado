@@ -1,4 +1,4 @@
-import { Component, effect, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { PartidosService } from '../../Services/partidos.service';
 import { AutenticacionService } from '../../Services/autenticacion.service';
 import { supabase } from '../../app.config';
@@ -11,60 +11,60 @@ import { PartidoComponent } from '../../Shared/partido/partido.component';
   styleUrl: './mis-partidos.component.css'
 })
 export class MisPartidosComponent {
+  private partidosService = inject( PartidosService)
+  private autenticacionService = inject( AutenticacionService)
+
   partidosCreados = signal<any[]>([])
   partidosApuntados = signal<any[]>([])
-  perfil = signal<any>(null)
+  perfil = this.autenticacionService.perfilSignal
   vistaActiva='creados'
   loadingCreados = signal(true);
   loadingApuntados = signal(true);
-  constructor(private partidosService: PartidosService, private autenticacionService: AutenticacionService) {
-   effect(()=>{
-    const perfil = this.autenticacionService.perfilSignal()
-    if(perfil){
-      this.perfil.set(perfil)
-    }
-   })
-    
-  }
-async ngOnInit(){
+
+async ngOnInit() {
   await this.obtenerPartidosCreados();
-   await this.obtenerPartidosApuntados()
+  await this.obtenerPartidosApuntados();
 }
-
-
 
 async obtenerPartidosCreados() {
   this.loadingCreados.set(true);
+  const inicio = Date.now();
 
-  const inicio = Date.now(); // marca el inicio
-  const todosPartidos = await this.partidosService.obtenerPartidos();
-  const partidos = todosPartidos
-    .filter(partido => partido.usuario.id == this.perfil().id)
-    .map(partido => partido.id);
-  this.partidosCreados.set(partidos);
-
-  const duracion = Date.now() - inicio;
-  const espera = Math.max(500 - duracion, 0); // espera lo que falte hasta 2s
-
-  setTimeout(() => this.loadingCreados.set(false), espera);
+  try {
+    const todosPartidos = await this.partidosService.obtenerPartidos();
+    const partidos = todosPartidos
+      .filter(partido => partido.usuario.id === this.perfil().id)
+      .map(partido => partido.id);
+    this.partidosCreados.set(partidos);
+  } catch (error) {
+    console.error("Error al obtener partidos creados:", error);
+    alert("Hubo un error al cargar tus partidos creados.");
+  } finally {
+    const duracion = Date.now() - inicio;
+    const espera = Math.max(500 - duracion, 0);
+    setTimeout(() => this.loadingCreados.set(false), espera);
+  }
 }
 
 async obtenerPartidosApuntados() {
   this.loadingApuntados.set(true);
-
   const inicio = Date.now();
-  const todosPartidosApuntados = await this.partidosService.obtenerPartidosApuntado(this.perfil().id);
-  let idApuntados: any[] = [];
-  todosPartidosApuntados.forEach(resp => {
-    idApuntados.push(resp.id_partido);
-  });
-  const idsSoloApuntado = idApuntados.filter(id => !this.partidosCreados().includes(id));
-  this.partidosApuntados.set(idsSoloApuntado);
 
-  const duracion = Date.now() - inicio;
-  const espera = Math.max(500 - duracion, 0);
-  setTimeout(() => this.loadingApuntados.set(false), espera);
+  try {
+    const todosPartidosApuntados = await this.partidosService.obtenerPartidosApuntado(this.perfil().id);
+    const idApuntados = todosPartidosApuntados.map(resp => resp.id_partido);
+    const idsSoloApuntado = idApuntados.filter(id => !this.partidosCreados().includes(id));
+    this.partidosApuntados.set(idsSoloApuntado);
+  } catch (error) {
+    console.error("Error al obtener partidos apuntados:", error);
+    alert("Hubo un error al cargar los partidos donde estás apuntado.");
+  } finally {
+    const duracion = Date.now() - inicio;
+    const espera = Math.max(500 - duracion, 0);
+    setTimeout(() => this.loadingApuntados.set(false), espera);
+  }
 }
+
 cambiarVista(vista: string) {
   this.vistaActiva = vista;
 
@@ -74,9 +74,13 @@ cambiarVista(vista: string) {
     this.obtenerPartidosApuntados();
   }
 }
+
 async onPartidoEliminado(partidoId: string) {
-
-  await this.obtenerPartidosCreados();
+  try {
+    await this.obtenerPartidosCreados();
+  } catch (error) {
+    console.error("Error al actualizar lista de partidos tras eliminar:", error);
+    alert("Hubo un error al actualizar la lista de partidos.");
+  }
 }
-
 }

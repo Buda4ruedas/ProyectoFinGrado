@@ -45,50 +45,66 @@ export class GestionComunidadComponent {
       codigoAccesoControl?.updateValueAndValidity();
     });
   }
-  async ngOnInit() {
-    await this.obtenerComunidad()
+ async ngOnInit() {
+  try {
+    await this.obtenerComunidad();
+  } catch (error) {
+    console.error('Error al cargar la comunidad:', error);
+    alert('Error al cargar la comunidad');
   }
-  onArchivoSeleccionado(event: Event): void {
+}
+
+onArchivoSeleccionado(event: Event): void {
   const input = event.target as HTMLInputElement;
   if (input.files && input.files.length > 0) {
     this.archivoSeleccionado = input.files[0];
   }
 }
 
-  async guardarComunidad() {
-    if (this.comunidadForm.valid) {
-      const datos = this.comunidadForm.value;
+async guardarComunidad() {
+  if (this.comunidadForm.valid) {
+    const datos = this.comunidadForm.value;
 
+    try {
       if (this.archivoSeleccionado) {
-        try {
-          const path = `${this.comunidad().id}/${this.archivoSeleccionado.name}`;
-          const imageUrl = await this.imagenesService.subirImagen(this.archivoSeleccionado, path,'fotoscomunidad');
-          datos.fotografia = imageUrl;
-        } catch (error) {
-          console.error('Error al subir la imagen:', error);
-          return;
-        }
+        const path = `${this.comunidad().id}/${this.archivoSeleccionado.name}`;
+        const imageUrl = await this.imagenesService.subirImagen(this.archivoSeleccionado, path, 'fotoscomunidad');
+        datos.fotografia = imageUrl;
       }
+
       await this.comunidadService.actualizarComunidad(this.perfil().comunidad.id, datos);
-      await this.obtenerComunidad()
+      await this.obtenerComunidad();
       alert('Comunidad actualizada correctamente.');
-      this.archivoSeleccionado=null;
+      this.archivoSeleccionado = null;
+    } catch (error) {
+      console.error('Error al guardar la comunidad:', error);
+      alert('Error al guardar los datos de la comunidad');
     }
+  } else {
+    alert('Por favor, completa todos los campos requeridos.');
   }
+}
 
-  async eliminarComunidad() {
-    if (confirm('¿Estás seguro de que deseas eliminar esta comunidad?')) {
+async eliminarComunidad() {
+  if (confirm('¿Estás seguro de que deseas eliminar esta comunidad?')) {
+    try {
       await this.comunidadService.eliminarComunidad(this.perfil().comunidad.id);
-      await this.autenticationService.loadProfile(this.perfil().id)
-      this.router.navigate(['navbar/principal'])
-
+      await this.autenticationService.loadProfile(this.perfil().id);
+      this.router.navigate(['navbar/principal']);
       alert('Comunidad eliminada.');
+    } catch (error) {
+      console.error('Error al eliminar la comunidad:', error);
+      alert('Hubo un error al eliminar la comunidad');
     }
   }
-  async obtenerComunidad(): Promise<void> {
+}
+
+async obtenerComunidad(): Promise<void> {
+  try {
     const comunidad = await this.comunidadService.obtenerComunidad(this.perfil().comunidad.id);
-    this.comunidad.set(comunidad)
-    if (this.comunidad()) {
+    this.comunidad.set(comunidad);
+
+    if (comunidad) {
       this.comunidadForm.patchValue({
         nombre: comunidad.nombre,
         cp: comunidad.cp,
@@ -97,8 +113,12 @@ export class GestionComunidadComponent {
         direccion: comunidad.direccion,
         seguridad: comunidad.seguridad,
         codigoAcceso: comunidad.codigoAcceso || null,
-        fotografia:comunidad.fotografia
+        fotografia: comunidad.fotografia
       });
     }
+  } catch (error) {
+    console.error('Error al obtener la comunidad:', error);
+    alert('No se pudo obtener la información de la comunidad');
   }
+}
 }

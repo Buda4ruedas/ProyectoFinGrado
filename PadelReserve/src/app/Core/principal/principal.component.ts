@@ -17,8 +17,9 @@ export class PrincipalComponent {
 
   calendarios = signal<{ id: string; nombre: string }[]>([]);
   perfil = signal<any>(null);
-  private calendarioService = inject (CalendarioService)
-  private autenticacionService = inject (AutenticacionService)
+
+  private calendarioService = inject(CalendarioService);
+  private autenticacionService = inject(AutenticacionService);
 
   constructor() {
     effect(() => {
@@ -26,12 +27,22 @@ export class PrincipalComponent {
       if (perfilActual) {
         this.perfil.set(perfilActual);
         if (perfilActual.comunidad) {
-          this.calendarioService
-            .obtenerCalendarios(perfilActual.comunidad.id)
-            .then((cals) => this.calendarios.set(cals));
+          this.cargarCalendarios(perfilActual.comunidad.id);
+        } else {
+          this.calendarios.set([]);
         }
       }
     });
   }
-}
 
+  private async cargarCalendarios(comunidadId: string) {
+    try {
+      const cals = await this.calendarioService.obtenerCalendarios(comunidadId);
+      this.calendarios.set(cals);
+    } catch (error) {
+      console.error('Error al cargar los calendarios:', error);
+      alert('Hubo un problema al obtener los calendarios. Inténtalo más tarde.');
+      this.calendarios.set([]);
+    }
+  }
+}

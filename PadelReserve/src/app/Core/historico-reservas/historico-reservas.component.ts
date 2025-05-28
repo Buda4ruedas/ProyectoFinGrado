@@ -14,19 +14,17 @@ export class HistoricoReservasComponent {
   data = signal<any>(null);
   perfil = this.autenticacionService.perfilSignal
 
- async ngOnInit(){
-    await this.cargarReservas()
+   async ngOnInit() {
+    await this.cargarReservas();
   }
 
-
-
-  async cargarReservas(){
-    const datos = await this.reservasService.obtenerReservas(this.perfil().id);
-    const dia = new Date();
-    this.data.set(datos);
-
+  async cargarReservas() {
+    try {
+      const datos = await this.reservasService.obtenerReservas(this.perfil().id);
+      this.data.set(datos);
+    } catch (error) {
+      console.error('Error al cargar las reservas:', error);
+      alert('Ocurrió un error al cargar tu historial de reservas.');
+    }
   }
-
-
-
 }

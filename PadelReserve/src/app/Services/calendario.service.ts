@@ -8,7 +8,7 @@ import { ReservasService } from './reservas.service';
 export class CalendarioService {
   
 
-   async obtenerCalendarios(id: number): Promise<
+   async obtenerCalendarios(id: any): Promise<
     { id: string, nombre: string, horaInicio: string, horaFin: string, horaInicioFinde: string, horaFinFinde: string }[]
   > {
     try {

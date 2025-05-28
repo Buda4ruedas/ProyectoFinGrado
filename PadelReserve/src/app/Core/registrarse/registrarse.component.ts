@@ -1,6 +1,6 @@
-import { Component, EventEmitter, inject, Output, output } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Component, EventEmitter, inject, Output,  } from '@angular/core';
+import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import {  RouterModule } from '@angular/router';
 import { AutenticacionService } from '../../Services/autenticacion.service';
 import { UsuarioService } from '../../Services/usuario.service';
 
@@ -41,7 +41,7 @@ async onRegistro() {
   const registrado = await this.usuarioService.usuarioYaRegistrado(email)
   if(registrado){
     alert("Este correo ya esta registrado")
-    this.registroForm.reset
+    this.registroForm.reset()
     
   }else{
       const resultado = await this.authService.registro(email, password);
@@ -54,8 +54,6 @@ async onRegistro() {
   }
   }
 }
-
-
 
 
 }
