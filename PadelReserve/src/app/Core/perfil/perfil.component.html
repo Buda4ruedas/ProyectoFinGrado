@@ -60,11 +60,11 @@
         </div>
 
         <div class="mb-3">
-          <label for="comunidad" class="form-label">Comunidad</label>
-          <input type="text" id="comunidad" class="form-control" [value]="nombreComunidad" disabled />
-          <input type="hidden" formControlName="comunidad" />
+          <label for="comunidad_id" class="form-label">Comunidad</label>
+          <input type="text" id="comunidad_id" class="form-control" [value]="nombreComunidad" disabled />
+          <input type="hidden" formControlName="comunidad_id" />
           
-          <div *ngIf="perfilForm.controls['comunidad'].invalid && perfilForm.controls['comunidad'].touched"
+          <div *ngIf="perfilForm.controls['comunidad_id'].invalid && perfilForm.controls['comunidad_id'].touched"
             class="text-danger">
             La comunidad es obligatoria.
           </div>

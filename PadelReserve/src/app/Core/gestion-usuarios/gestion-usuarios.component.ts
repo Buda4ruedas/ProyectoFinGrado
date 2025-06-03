@@ -2,6 +2,7 @@ import { Component, effect, inject, signal } from '@angular/core';
 import { UsuarioService } from '../../Services/usuario.service';
 import { AutenticacionService } from '../../Services/autenticacion.service';
 import { ComunidadService } from '../../Services/comunidad.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-gestion-usuarios',
@@ -14,6 +15,7 @@ export class GestionUsuariosComponent {
   private usuariosService = inject(UsuarioService)
   private autenticacionService = inject(AutenticacionService)
   private comunidadService = inject(ComunidadService)
+  private route = inject (Router)
   perfil = this.autenticacionService.perfilSignal
 
   ngOnInit() {
@@ -35,6 +37,10 @@ export class GestionUsuariosComponent {
       if (rolActual === 'administrador') {
         if (puede) {
           await this.usuariosService.modificarRol(userId, 'usuario');
+          if(this.perfil().id==userId){
+            this.route.navigate(['navbar/principal'])
+          }
+          
         } else {
           alert("No se puede modificar el rol de este usuario porque es el único administrador.");
           return;

@@ -50,7 +50,7 @@
       <div class="d-flex flex-column gap-3">
         @for(calendario of comunidad?.calendarios; track $index) {
           <app-calendario-card
-            [calendario]="calendario?.nombre"
+            [calendario]="calendario"
             [enlace]="'/navbar/calendario/' + calendario?.id">
           </app-calendario-card>
         }

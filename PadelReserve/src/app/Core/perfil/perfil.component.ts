@@ -20,7 +20,7 @@ export class PerfilComponent {
   private imagenesService = inject(ImagenesService)
 
   perfilForm: FormGroup;
-  perfil = signal<any>(null)
+  perfil = this.authService.perfilSignal
   nombreComunidad:string='';
   selectedFile: File | null = null;
   
@@ -33,25 +33,20 @@ export class PerfilComponent {
       portal: [{ value: '', disabled: true }, Validators.required],
       piso: [{ value: '', disabled: true }, Validators.required],
       fotografia: ['', Validators.required],
-      comunidad: [{ value: '', disabled: true }, Validators.required],
+      comunidad_id: [{ value: '', disabled: true }, Validators.required],
     });
-
-    effect(() => {
-      const perfil = this.authService.perfilSignal();
-      if (perfil) {
-        this.perfil.set(perfil);
-        this.nombreComunidad = perfil.comunidad?.nombre ?? '';
+        this.nombreComunidad = this.perfil().comunidad?.nombre ?? '';
         this.perfilForm.patchValue({
-          nombre: perfil.nombre,
-          email: perfil.email,
-          apellidos: perfil.apellidos,
-          portal: perfil.portal,
-          piso: perfil.piso,
-          fotografia: perfil.fotografia,
-          comunidad: perfil.comunidad?.id
-        });
-      }
-    });
+          nombre: this.perfil().nombre,
+          email: this.perfil().email,
+          apellidos: this.perfil().apellidos,
+          portal: this.perfil().portal,
+          piso: this.perfil().piso,
+          fotografia: this.perfil().fotografia,
+          comunidad_id: this.perfil().comunidad?.id
+
+        })
+ 
   }
 
   onFileSelected(event: Event) {
@@ -79,7 +74,7 @@ export class PerfilComponent {
         const imageUrl = await this.imagenesService.subirImagen(this.selectedFile, path, 'fotosperfil');
         datos.fotografia = imageUrl;
       }
-
+      console.log("Los datos son los siguientes" , datos)
       await this.usuarioService.modificarPerfil(datos);
       alert('Perfil actualizado correctamente.');
     } catch (error) {
