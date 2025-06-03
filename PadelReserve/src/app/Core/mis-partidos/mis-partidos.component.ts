@@ -74,13 +74,4 @@ cambiarVista(vista: string) {
     this.obtenerPartidosApuntados();
   }
 }
-
-async onPartidoEliminado(partidoId: string) {
-  try {
-    await this.obtenerPartidosCreados();
-  } catch (error) {
-    console.error("Error al actualizar lista de partidos tras eliminar:", error);
-    alert("Hubo un error al actualizar la lista de partidos.");
-  }
-}
 }

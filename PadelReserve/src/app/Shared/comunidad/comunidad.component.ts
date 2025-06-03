@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, EventEmitter, inject, input, Input, Output, signal } from '@angular/core';
+import { Component, effect, EventEmitter, inject, input, Input, output, Output, signal } from '@angular/core';
 import { AutenticacionService } from '../../Services/autenticacion.service';
 import { UsuarioService } from '../../Services/usuario.service';
 
@@ -22,7 +22,7 @@ export class ComunidadComponent {
   coincide = signal<boolean>(false)
   private autenticacionService = inject(AutenticacionService)
   perfil = this.autenticacionService.perfilSignal
-  @Output() unirse = new EventEmitter<any>();
+  unirse = output<any>();
   @Output() abandonar = new EventEmitter<any>();
 
   constructor(){

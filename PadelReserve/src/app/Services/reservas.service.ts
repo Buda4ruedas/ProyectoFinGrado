@@ -28,28 +28,23 @@ export class ReservasService {
       return [];
     }
   }
-
-  async cargarReservasporUsuario(fecha: string, userId: string, calendarioId: string): Promise<number> {
-    try {
-      const { data, error } = await supabase
-        .from('reserva')
-        .select('id')
-        .eq('id_calendario', calendarioId)
-        .eq('id_usuario', userId)
-        .eq('fecha', fecha);
-
-      if (error) {
-        console.error(`Error al obtener las reservas del usuario ${userId}:`, error.message);
-        return 0;
-      }
-
-      return data.length;
-    } catch (err) {
-      console.error('Error inesperado al cargar reservas por usuario:', err);
-      return 0;
+  async reservar(idUsuario:any,horarioId:any,idCalendario:any,fecha:any){
+    try{
+      const { data, error } = await supabase.from('reserva').insert({
+      id_usuario: idUsuario,
+      id_horario: horarioId,
+      id_calendario: idCalendario,
+      fecha: fecha
+    });
+    if(error){
+      throw error
     }
+    }catch(e){
+      alert("Error al realizar la reserva")
+    }
+ 
   }
-
+  
   async cargarReservasPorVivienda(fecha: string, portal: string, piso: string, calendarioId: string): Promise<number> {
     try {
       const { data, error } = await supabase
@@ -120,26 +115,6 @@ export class ReservasService {
     } catch (err) {
       console.error('Error inesperado al obtener reservas activas:', err);
       return [];
-    }
-  }
-
-  async obtenerIdHorario(hora: string): Promise<{ id: string } | null> {
-    try {
-      const { data, error } = await supabase
-        .from('horario')
-        .select('id')
-        .eq('hora', hora)
-        .single();
-
-      if (error) {
-        console.error('No se ha podido obtener el id del horario:', error.message);
-        return null;
-      }
-
-      return data;
-    } catch (err) {
-      console.error('Error inesperado al obtener id del horario:', err);
-      return null;
     }
   }
 }

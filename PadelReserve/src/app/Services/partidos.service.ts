@@ -6,8 +6,6 @@ import { supabase } from '../app.config';
 })
 export class PartidosService {
 
-  constructor() { }
-
   async guardarUnpartido(datos: any, idUser: string): Promise<any> {
     try {
       const { data, error } = await supabase.from('partido').insert([{
@@ -36,7 +34,7 @@ export class PartidosService {
     try {
       const { data, error } = await supabase
         .from('partido')
-        .select('id,usuario(id , nombre, comunidad:comunidad_id(id,nombre)),fecha,hora_inicio,hora_final,resultado,nivel,genero,numero_jugadores')
+        .select('id,usuario(id , nombre, comunidad:comunidad_id(id,nombre,direccion,poblacion)),fecha,hora_inicio,hora_final,resultado,nivel,genero,numero_jugadores')
         .order('fecha', { ascending: false })
         .order('hora_inicio', { ascending: false });
 
@@ -71,7 +69,7 @@ export class PartidosService {
   async obtenerJugadoresPartido(idPartido: string): Promise<any[]> {
     try {
       const { data, error } = await supabase.from('jugadoresPartido')
-        .select('id,id_partido,usuario(id,nombre),equipo')
+        .select('id,id_partido,usuario(id,nombre,puntuacion,fotografia),equipo')
         .eq('id_partido', idPartido)
         .order('equipo', { ascending: true });
 
@@ -140,4 +138,5 @@ export class PartidosService {
       return false;
     }
   }
+
 }

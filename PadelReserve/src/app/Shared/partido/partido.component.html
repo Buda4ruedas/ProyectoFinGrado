@@ -4,9 +4,9 @@
       <h5 class="mb-0">Partido de Pádel</h5>
       @if(puedeEliminarPartido())
       {
-        <button (click)="eliminarPartido()" class="btn btn-sm btn-danger">
-          <i class="bi bi-trash-fill"></i> Eliminar
-        </button>
+      <button (click)="eliminarPartido()" class="btn btn-sm btn-danger">
+        <i class="bi bi-trash-fill"></i> Eliminar
+      </button>
       }
     </div>
 
@@ -18,7 +18,8 @@
             <h6 class="text-muted">Detalles Generales</h6>
             <p class="mb-1"><strong>Comunidad:</strong> {{ datosPartido()?.usuario.comunidad.nombre }}</p>
             <p class="mb-1"><strong>Fecha:</strong> {{ datosPartido()?.fecha }}</p>
-            <p class="mb-1"><strong>Hora:</strong> {{ datosPartido()?.hora_inicio }} - {{ datosPartido()?.hora_final }}</p>
+            <p class="mb-1"><strong>Hora:</strong> {{ datosPartido()?.hora_inicio }} - {{ datosPartido()?.hora_final }}
+            </p>
           </div>
         </div>
         <div class="col-md-6 mb-3">
@@ -31,44 +32,49 @@
         </div>
       </div>
 
-      
+
       <div class="text-center mb-4">
         <h6 class="fw-bold mb-3">Resultado</h6>
         @if (puedeEditarResultado())
         {
-          <div class="d-flex flex-column align-items-center">
-            <input type="text" [(ngModel)]="resultado" class="form-control text-center w-50" placeholder="6/4-6/2" />
-            <button class="btn btn-success mt-2" (click)="guardarResultado()">
-              <i class="bi bi-check-circle"></i> Guardar
-            </button>
-          </div>
+        <div class="d-flex flex-column align-items-center">
+          <input type="text" [(ngModel)]="resultado" class="form-control text-center w-50" placeholder="6/4-6/2" />
+          <button class="btn btn-success mt-2" (click)="guardarResultado()">
+            <i class="bi bi-check-circle"></i> Guardar
+          </button>
+        </div>
         }
         @else
         {
-          <div class="d-flex justify-content-center gap-3">
-            <span class="badge bg-secondary fs-5">{{ setsResultado[0] || '' }}</span>
-            <span class="badge bg-secondary fs-5">{{ setsResultado[1] || '' }}</span>
-            <span class="badge bg-secondary fs-5">{{ setsResultado[2] || '' }}</span>
-          </div>
+        <div class="d-flex justify-content-center gap-3">
+          <span class="badge bg-secondary fs-5">{{ setsResultado[0] || '' }}</span>
+          <span class="badge bg-secondary fs-5">{{ setsResultado[1] || '' }}</span>
+          <span class="badge bg-secondary fs-5">{{ setsResultado[2] || '' }}</span>
+        </div>
         }
       </div>
 
-      
+
       <div class="row text-center">
         <div class="col-md-5">
           <h6 class="fw-bold mb-2">Equipo 1</h6>
           <div class="d-flex justify-content-center gap-2 flex-wrap">
             @for(jugador of equipo1(); track $index) {
-              <div class="text-center">
-                <i class="bi bi-person-circle fs-2 text-primary"></i><br>
-                @if (jugador) {
-                  <small>{{ jugador.usuario?.nombre }}</small>
-                } @else {
-                  <button class="btn btn-outline-success btn-xs p-0" style="width: 24px; height: 24px; font-size: 0.75rem;" (click)="aniadirEquipo(1)">
-                    <i class="bi bi-plus"></i>
-                  </button>
-                }
-              </div>
+            <div class="text-center">
+              @if (jugador) {
+              <img [src]="jugador.usuario?.fotografia || 'assets/default-user.png'" alt="Foto jugador"
+                class="rounded-circle border border-primary" style="width: 40px; height: 40px; object-fit: cover;"><br>
+              <small>{{ jugador.usuario?.nombre }}</small><br>
+                       <small class="badge bg-primary-subtle text-primary-emphasis border border-primary rounded-pill px-2">
+  {{ jugador.usuario?.puntuacion }} 
+</small>
+              } @else {
+              <button class="btn btn-outline-success btn-xs p-0" style="width: 24px; height: 24px; font-size: 0.75rem;"
+                (click)="aniadirEquipo(1)">
+                <i class="bi bi-plus"></i>
+              </button>
+              }
+            </div>
             }
           </div>
         </div>
@@ -81,16 +87,21 @@
           <h6 class="fw-bold mb-2">Equipo 2</h6>
           <div class="d-flex justify-content-center gap-2 flex-wrap">
             @for(jugador of equipo2(); track $index) {
-              <div class="text-center">
-                <i class="bi bi-person-circle fs-2 text-primary"></i><br>
-                @if (jugador) {
-                  <small>{{ jugador.usuario?.nombre }}</small>
-                } @else {
-                  <button class="btn btn-outline-success btn-xs p-0" style="width: 24px; height: 24px; font-size: 0.75rem;" (click)="aniadirEquipo(1)">
-                    <i class="bi bi-plus"></i>
-                  </button>
-                }
-              </div>
+            <div class="text-center">
+              @if (jugador) {
+              <img [src]="jugador.usuario?.fotografia || 'assets/default-user.png'" alt="Foto jugador"
+                class="rounded-circle border border-primary" style="width: 40px; height: 40px; object-fit: cover;"><br>
+              <small>{{ jugador.usuario?.nombre }}</small><br>
+              <small class="badge bg-primary-subtle text-primary-emphasis border border-primary rounded-pill px-2">
+  {{ jugador.usuario?.puntuacion }}
+</small>
+              } @else {
+              <button class="btn btn-outline-success btn-xs p-0" style="width: 24px; height: 24px; font-size: 0.75rem;"
+                (click)="aniadirEquipo(2)">
+                <i class="bi bi-plus"></i>
+              </button>
+              }
+            </div>
             }
           </div>
         </div>

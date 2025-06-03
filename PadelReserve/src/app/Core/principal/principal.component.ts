@@ -14,25 +14,16 @@ import { CalendarioCardComponent } from "../../Shared/calendario-card/calendario
 })
 export class PrincipalComponent {
 
-
-  calendarios = signal<{ id: string; nombre: string }[]>([]);
-  perfil = signal<any>(null);
-
   private calendarioService = inject(CalendarioService);
   private autenticacionService = inject(AutenticacionService);
 
+  calendarios = signal<{ id: string; nombre: string }[]>([]);
+  perfil = this.autenticacionService.perfilSignal
+
+
+
   constructor() {
-    effect(() => {
-      const perfilActual = this.autenticacionService.perfilSignal();
-      if (perfilActual) {
-        this.perfil.set(perfilActual);
-        if (perfilActual.comunidad) {
-          this.cargarCalendarios(perfilActual.comunidad.id);
-        } else {
-          this.calendarios.set([]);
-        }
-      }
-    });
+          this.cargarCalendarios(this.perfil().comunidad.id);
   }
 
   private async cargarCalendarios(comunidadId: string) {

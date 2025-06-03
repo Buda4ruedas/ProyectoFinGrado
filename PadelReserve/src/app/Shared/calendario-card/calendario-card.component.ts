@@ -8,6 +8,6 @@ import { RouterModule } from '@angular/router';
   styleUrl: './calendario-card.component.css'
 })
 export class CalendarioCardComponent {
- nombre = input<any>()
+ calendario = input<any>()
  enlace= input <any>()
 }

@@ -1,10 +1,29 @@
-<div class="card shadow-sm border-0">
-    <div class="card-body">
-        <h5 class="card-title text-primary mb-2">
-            {{nombre() }}
-        </h5>
-        <a [routerLink]="enlace()" class="btn btn-primary">
-            Ir al Calendario
-        </a>
-    </div>
+<div class="card border-0 shadow-sm rounded-4">
+  <div class="card-body p-4">
+    <h5 class="card-title text-primary fw-bold mb-3">
+      {{ calendario()?.nombre }}
+    </h5>
+
+    <ul class="list-unstyled mb-4">
+      <li class="d-flex align-items-center mb-2">
+        <i class="bi bi-clock-fill text-secondary me-2"></i>
+        <span>Horas entre semana: 
+          <strong>{{ calendario()?.horaInicio.hora }}</strong> - 
+          <strong>{{ calendario()?.horaFin.hora }}</strong>
+        </span>
+      </li>
+      <li class="d-flex align-items-center">
+        <i class="bi bi-calendar-week-fill text-secondary me-2"></i>
+        <span>Horas fin de semana: 
+          <strong>{{ calendario()?.horaInicioFinde.hora }}</strong> - 
+          <strong>{{ calendario()?.horaFinFinde.hora }}</strong>
+        </span>
+      </li>
+    </ul>
+
+    <a [routerLink]="enlace()" class="btn btn-outline-primary w-100">
+      <i class="bi bi-calendar-event me-1"></i>
+      Ir al Calendario
+    </a>
+  </div>
 </div>

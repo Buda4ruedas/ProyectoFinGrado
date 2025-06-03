@@ -8,7 +8,7 @@ import { CalendarioService } from './calendario.service';
 })
 export class ComunidadService {
 
- private usuarioService= inject( UsuarioService)
+  private usuarioService= inject( UsuarioService)
   private calendarioService= inject (CalendarioService)
 
   
@@ -25,19 +25,19 @@ export class ComunidadService {
         codigo_acceso: datos.codigoAcceso,
         fotografia: datos?.fotografia
       }])
-      .select('id');
+      .select('id')
+      .single();
 
-    if (error || !data || !data[0]?.id) {
+    if (error || !data || !data?.id) {
       console.error('Error al insertar comunidad:', error?.message);
       return null;
     }
 
-    const idComunidad = data[0].id;
+    const idComunidad = data.id;
 
-    
     const rolAsignado = await this.usuarioService.ponerRolAdministrador(idComunidad, userId, portal, piso);
     if (!rolAsignado) {
-      await this.eliminarComunidad(idComunidad); // rollback
+      await this.eliminarComunidad(idComunidad); 
       console.error('Error al asignar rol de administrador. Comunidad eliminada.');
       return null;
     }
@@ -45,12 +45,11 @@ export class ComunidadService {
     for (let calendario of datos.calendarios) {
       const ok = await this.calendarioService.crearCalendarios(idComunidad, calendario);
       if (!ok) {
-        await this.eliminarComunidad(idComunidad); // rollback
+        await this.eliminarComunidad(idComunidad);
         console.error('Error al crear calendarios. Comunidad eliminada.');
         return null;
       }
     }
-
     return idComunidad;
   } catch (error) {
     console.error('Error inesperado al crear la comunidad:', error);
@@ -101,20 +100,6 @@ export class ComunidadService {
       }));
     } catch (error) {
       console.error('Error al obtener administradores:', error);
-      return [];
-    }
-  }
-
-  async obtenerCalendarios(idComunidad: any): Promise<string[]> {
-    try {
-      const { data, error } = await supabase.from('calendario')
-        .select('nombre')
-        .eq('comunidad_id', idComunidad);
-
-      if (error || !data) return [];
-      return data.map(c => c.nombre);
-    } catch (error) {
-      console.error('Error al obtener calendarios:', error);
       return [];
     }
   }

@@ -6,7 +6,10 @@ export const zonaUsuariosGuard: CanActivateFn = (route, state) => {
 const autenticationService = inject(AutenticacionService)
 const perfil = autenticationService.perfilSignal()
 const router = inject(Router)
-
+if(!perfil.nombre){
+ router.navigate(["navbar/completarPerfil"])
+return false   
+}
 if(!perfil.comunidad?.id ||!perfil.rol){
 router.navigate(["navbar/sinRol"])
 return false

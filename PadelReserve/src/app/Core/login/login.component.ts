@@ -43,7 +43,6 @@ export class LoginComponent {
         this.errorLogin.set(resultado.mensaje);
         return;
       }
-
       this.router.navigate(['/navbar/principal']);
     } catch (error) {
       console.error('Error al iniciar sesión:', error);

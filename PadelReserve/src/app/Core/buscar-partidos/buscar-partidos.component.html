@@ -72,9 +72,11 @@
                     <h5 class="card-title mb-2">Comunidad: <span class="text-muted">{{ registro.usuario.comunidad.nombre }}</span></h5>
                     <p class="card-text mb-1">
                       <strong>Fecha:</strong> {{ registro.fecha }}<br>
-                      <strong>Hora de inicio:</strong> {{ registro.hora_inicio }}<br>
-                      <strong>Hora de fin:</strong> {{ registro.hora_final }}<br>
+                      <strong>Horario:</strong> {{ registro.hora_inicio }} - {{ registro.hora_final }}<br>
+                      <strong>Direccion:  </strong> {{registro.usuario.comunidad.direccion}}, {{registro.usuario.comunidad.poblacion}} <br>
                       <strong>Creador:</strong> {{ registro.usuario.nombre }}<br>
+                      <strong>Nivel:</strong> {{ registro.nivel }}<br>
+                      <strong>Genero:</strong> {{ registro.genero}}<br>
                       <strong>Jugadores apuntados:</strong> {{ registro.jugadores_apuntados }} / {{ registro.numero_jugadores }}
                     </p>
                   </div>

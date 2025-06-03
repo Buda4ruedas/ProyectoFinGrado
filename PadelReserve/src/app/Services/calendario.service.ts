@@ -64,11 +64,11 @@ export class CalendarioService {
       const { error } = await supabase.from('calendario').insert([
         {
           comunidad_id: idComunidad,
-          nombre: datos.nombre,
-          hora_inicio: datos.horaInicio,
-          hora_fin: datos.horaFin,
-          hora_inicio_finde: datos.horaInicioFinde,
-          hora_fin_finde: datos.horaFinFinde,
+          nombre: datos?.nombre,
+          hora_inicio: datos?.horaInicio,
+          hora_fin: datos?.horaFin,
+          hora_inicio_finde: datos?.horaInicioFinde,
+          hora_fin_finde: datos?.horaFinFinde,
         },
       ]);
       if (error) throw error;

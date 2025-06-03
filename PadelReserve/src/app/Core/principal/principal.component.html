@@ -3,9 +3,9 @@
   <h2 class="text-primary mb-4">Mis Opciones de Reserva</h2>
 
   <div class="d-flex flex-column gap-3">
-    @for(calendarios of calendarios(); track calendarios.id){
+    @for(calendario of calendarios(); track calendario.id){
 
-    <app-calendario-card [nombre]="calendarios.nombre" [enlace]="'/navbar/calendario/' + calendarios.id">
+    <app-calendario-card [calendario]="calendario" [enlace]="'/navbar/calendario/' + calendario.id">
     </app-calendario-card>
     }
   </div>

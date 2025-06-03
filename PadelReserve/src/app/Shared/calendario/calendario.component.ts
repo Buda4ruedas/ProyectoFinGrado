@@ -17,11 +17,11 @@ export class CalendarioComponent {
   private autenticationService = inject(AutenticacionService);
   private reservaService = inject(ReservasService);
   private calendarioService = inject(CalendarioService);
-  
+
   calendario = signal<any>(null);
   perfil = this.autenticationService.perfilSignal;
   semanaActual = signal(new Date());
-  
+
   dias: Date[] = this.obtenerSemana(new Date());
   horario = signal<{ id: string, hora: string }[]>([]);
   horariosDiario = signal<{ id: string, hora: string }[]>([]);
@@ -38,21 +38,18 @@ export class CalendarioComponent {
   }
 
   async cargarHorariosGenerico() {
-    console.log('el calendario es ', this.calendario());
-    console.log(this.calendario().hora_inicio, this.calendario().hora_fin);
+   
     const horas = await this.calendarioService.obtenerHorasCalendario(this.calendario().hora_inicio, this.calendario().hora_fin);
     this.horariosDiario.set(horas);
-    console.log('estos son los horarios', this.horariosDiario());
   }
-  async cargarHorariosFindes(){
-    console.log('el calendario es ', this.calendario());
-    console.log(this.calendario().hora_inicio_finde, this.calendario().hora_fin_finde);
+
+  async cargarHorariosFindes() {
+
     const horas = await this.calendarioService.obtenerHorasCalendario(this.calendario().hora_inicio_finde, this.calendario().hora_fin_finde);
     this.horariosFinde.set(horas);
-    console.log('estos son los horarios', this.horariosFinde());
+
   }
-
-
+  
   async cargarReservas() {
     const { data, error } = await supabase
       .from('reserva')
@@ -67,11 +64,10 @@ export class CalendarioComponent {
       });
       this.reservas.set(reservasMap);
     } else {
-      console.error('Error al cargar reservas', error);
+      alert('Error al cargar reservas');
     }
   }
 
-  
   obtenerLunes(fecha: Date): Date {
     const dia = fecha.getDay();
     const diff = (dia === 0 ? -6 : 1) - dia;
@@ -81,7 +77,6 @@ export class CalendarioComponent {
     return lunes;
   }
 
-  
   obtenerSemana(fecha: Date): Date[] {
     const lunes = this.obtenerLunes(fecha);
     const semana: Date[] = [];
@@ -143,18 +138,9 @@ export class CalendarioComponent {
 
     const fechaISO = `${yyyy}-${String(mm).padStart(2, '0')}-${String(dd).padStart(2, '0')}`;
 
-    const { error } = await supabase.from('reserva').insert({
-      id_usuario: this.perfil().id,
-      id_horario: horarioId,
-      id_calendario: this.calendario().id,
-      fecha: fechaISO
-    });
+    await this.reservaService.reservar(this.perfil().id, horarioId, this.calendario().id, fechaISO);
+    await this.cargarReservas();
 
-    if (!error) {
-      await this.cargarReservas();
-    } else {
-      console.error('Error al hacer reserva:', error);
-    }
   }
 
   async onclick(dia: Date, horarioId: string) {
@@ -173,56 +159,59 @@ export class CalendarioComponent {
       this.reservar(dia, horarioId);
     }
   }
+
   semanaAnterior() {
-  const fecha = new Date(this.semanaActual());
-  fecha.setDate(fecha.getDate() - 7);
-  this.semanaActual.set(fecha);
-  this.dias = this.obtenerSemana(fecha);
-}
-
-semanaSiguiente() {
-  const fecha = new Date(this.semanaActual());
-  fecha.setDate(fecha.getDate() + 7);
-  this.semanaActual.set(fecha);
-  this.dias = this.obtenerSemana(fecha);
-}
-volverAHoy() {
-  const hoy = new Date();
-  this.semanaActual.set(hoy);
-  this.dias = this.obtenerSemana(hoy);
-}
-esFinDeSemana(dia: Date): boolean {
-  const d = dia.getDay();
-  return d === 0 || d === 6;
-}
-
-async obtenerRangoHorario() {
-  const horariosSemana = this.horariosDiario();
-  const horariosFin = this.horariosFinde();
-
-  if (horariosSemana.length === 0 && horariosFin.length === 0) {
-    this.horario.set([]);
-    return;
+    
+    const fecha = new Date(this.semanaActual());
+    fecha.setDate(fecha.getDate() - 7);
+    this.semanaActual.set(fecha);
+    this.dias = this.obtenerSemana(fecha);
   }
 
-  const todos = [...horariosSemana, ...horariosFin];
-
-  const ids = todos.map(h => +h.id); // nos aseguramos de que sean números
-  const idInicio = Math.min(...ids);
-  const idFin = Math.max(...ids);
-  console.log("Paso por aqui", idInicio,idFin )
-  const horas = await this.calendarioService.obtenerHorasCalendario(idInicio, idFin);
-  this.horario.set(horas) 
-  console.log("AASDFASDFGASD" , this.horario())
-
-}
-horarioDisponible(dia: Date, horarioId: string): boolean {
-  const diaSemana = dia.getDay(); // 0=Domingo, 1=Lunes, ..., 6=Sábado
-
-  if (diaSemana > 0 && diaSemana < 6) { // días de semana (lunes a viernes)
-    return this.horariosDiario().some(h => h.id === horarioId);
-  } else { // fin de semana (sábado y domingo)
-    return this.horariosFinde().some(h => h.id === horarioId);
+  semanaSiguiente() {
+    const fecha = new Date(this.semanaActual());
+    fecha.setDate(fecha.getDate() + 7);
+    this.semanaActual.set(fecha);
+    this.dias = this.obtenerSemana(fecha);
   }
-}
+  
+  volverAHoy() {
+    const hoy = new Date();
+    this.semanaActual.set(hoy);
+    this.dias = this.obtenerSemana(hoy);
+  }
+
+  esFinDeSemana(dia: Date): boolean {
+    const d = dia.getDay();
+    return d === 0 || d === 6;
+  }
+
+  async obtenerRangoHorario() {
+    const horariosSemana = this.horariosDiario();
+    const horariosFin = this.horariosFinde();
+
+    if (horariosSemana.length === 0 && horariosFin.length === 0) {
+      this.horario.set([]);
+      return;
+    }
+    const todos = [...horariosSemana, ...horariosFin];
+
+    const ids = todos.map(h => +h.id); // nos aseguramos de que sean números
+    const idInicio = Math.min(...ids);
+    const idFin = Math.max(...ids);
+    
+    const horas = await this.calendarioService.obtenerHorasCalendario(idInicio, idFin);
+    this.horario.set(horas)
+    
+  }
+
+  horarioDisponible(dia: Date, horarioId: string): boolean {
+    const diaSemana = dia.getDay(); // 0=Domingo, 1=Lunes, ..., 6=Sábado
+
+    if (diaSemana > 0 && diaSemana < 6) { // días de semana (lunes a viernes)
+      return this.horariosDiario().some(h => h.id === horarioId);
+    } else { // fin de semana (sábado y domingo)
+      return this.horariosFinde().some(h => h.id === horarioId);
+    }
+  }
 }

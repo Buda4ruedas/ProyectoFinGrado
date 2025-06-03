@@ -161,4 +161,16 @@ export class UsuarioService {
       return false;
     }
   }
+
+  async actualizarPuntuacion(puntuacion:any,id:any){
+    try{
+      const {data,error} = await supabase.from("usuario").update([{puntuacion:puntuacion}]).eq('id',id)
+      if(error){
+        throw error
+      }
+
+    }catch(e){
+      console.log("error al actualizar la puntuacion")
+    }
+  }
 }

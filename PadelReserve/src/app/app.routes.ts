@@ -33,7 +33,6 @@ export const routes: Routes = [
   {
     path: 'navbar',
     component: NavBarComponent, canActivate: [accesoGuard],
-    
     children: [
       { path: 'principal', component: PrincipalComponent, canActivate:[zonaUsuariosGuard] },
       { path: 'reservasActivas', component: ReservasActivasComponent, canActivate:[zonaUsuariosGuard] },

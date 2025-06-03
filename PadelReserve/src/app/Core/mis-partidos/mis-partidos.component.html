@@ -26,7 +26,7 @@
         }@else if(partidosCreados().length > 0){
         <div class="d-flex flex-column gap-3">
             @for(partido of partidosCreados(); track $index){
-            <app-partido [partidoIdS]="partido" [editable]=true (partidoEliminado)="onPartidoEliminado($event)"></app-partido>
+            <app-partido [partidoIdS]="partido" [editable]=true (partidoEliminado)="obtenerPartidosCreados()" (resultadoaniadido)="obtenerPartidosCreados()"></app-partido>
             }
         </div>
         }@else {
@@ -44,7 +44,7 @@
         }@else if(partidosApuntados().length > 0){
         <div class="d-flex flex-column gap-3">
             @for(partido of partidosApuntados(); track $index){
-            <app-partido [partidoIdS]="partido"></app-partido>
+            <app-partido [partidoIdS]="partido" (resultadoaniadido)="obtenerPartidosCreados()"></app-partido>
             }
         </div>
         }@else {

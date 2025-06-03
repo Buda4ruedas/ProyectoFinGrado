@@ -56,7 +56,7 @@ export class BuscarPartidosComponent {
       const partidos = await this.partidosService.obtenerPartidos();
       const partidosFiltrados: any[] = [];
 
-      const filtroBase = (resp: any) => resp.usuario.id !== this.perfil().id && resp.numero_jugadores == datos.jugadores;
+      const filtroBase = (resp: any) => resp.numero_jugadores == datos.jugadores;
 
       const fechaHoy = new Date();
       fechaHoy.setHours(0, 0, 0, 0);
@@ -81,7 +81,6 @@ export class BuscarPartidosComponent {
           }
         }
       }
-
       this.data.set(partidosFiltrados);
     } catch (error) {
       alert('Error al obtener partidos:')
