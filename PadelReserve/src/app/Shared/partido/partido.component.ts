@@ -127,7 +127,7 @@ private route = inject(ActivatedRoute);
     if (valido) {
       console.log('el ganador es el equipo', ganador);
       await this.partidosService.actualizarResultado(this.partidoId, this.resultado);
-      await this.sumarPuntuacion(ganador, this.partidoId);
+      await this.sumarPuntuacion(ganador!, this.partidoId);
       this.cargarPartido();
     } else {
       console.log('el resultado introducido es invalido');
@@ -207,17 +207,48 @@ private route = inject(ActivatedRoute);
     }
   }
 
-  async sumarPuntuacion(equipoGanador: any, idPartido: any) {
-    const usuarios = await this.partidosService.obtenerJugadoresPartido(idPartido);
-    usuarios.forEach(usuario=>{
-      if(usuario.equipo==equipoGanador){
-        usuario.usuario.puntuacion+=0.10
-      }else{
-        usuario.usuario.puntuacion-=0.10
-      }
-      this.usuarioService.actualizarPuntuacion(usuario.usuario.puntuacion,usuario.usuario.id)
-    })
-      this.resultadoaniadido.emit()
+async sumarPuntuacion(equipoGanador: number, idPartido: string) {
+  
+  const K = 32;
+
+  const usuarios = await this.partidosService.obtenerJugadoresPartido(idPartido);
+
+  // Separa jugadores por equipo
+  const equipo1 = usuarios.filter(u => u.equipo === 1);
+  const equipo2 = usuarios.filter(u => u.equipo === 2);
+
+  // Calcula la puntuación promedio de cada equipo
+  const promedio = (equipo: any[]) => equipo.reduce((acc, u) => acc + u.usuario.puntuacion, 0) / equipo.length;
+
+  const rating1 = promedio(equipo1);
+  const rating2 = promedio(equipo2);
+
+  // Calcula la expectativa de victoria
+  const expected1 = 1 / (1 + Math.pow(10, (rating2 - rating1) / 400));
+  const expected2 = 1 / (1 + Math.pow(10, (rating1 - rating2) / 400));
+
+  // Asigna el resultado real
+  const score1 = equipoGanador === 1 ? 1 : 0;
+  const score2 = equipoGanador === 2 ? 1 : 0;
+
+  // Calcula la nueva puntuación para cada equipo
+  const newRating1 = rating1 + K * (score1 - expected1);
+  const newRating2 = rating2 + K * (score2 - expected2);
+
+  // Ajusta la puntuación de cada jugador proporcionalmente
+  for (const jugador of equipo1) {
+    const ajuste = newRating1 - rating1;
+    jugador.usuario.puntuacion += ajuste;
+    await this.usuarioService.actualizarPuntuacion(jugador.usuario.puntuacion, jugador.usuario.id);
   }
+
+  for (const jugador of equipo2) {
+    const ajuste = newRating2 - rating2;
+    jugador.usuario.puntuacion += ajuste;
+    await this.usuarioService.actualizarPuntuacion(jugador.usuario.puntuacion, jugador.usuario.id);
+  }
+
+  this.resultadoaniadido.emit();
+}
 
 }
