@@ -1,70 +1,68 @@
 <div class="container mt-5">
   @if(perfil().rol && perfil().comunidad){
-    <h2 class="text-primary mb-4">Mis Opciones de Reserva</h2>
+  <h2 class="text-primary mb-4">Mis Opciones de Reserva</h2>
 
-    <div class="row">
-      <!-- Columna izquierda: tarjetas de calendario -->
-      <div class="col-md-8">
+  <div class="row">
+    <!-- Columna izquierda: tarjetas de calendario -->
+    <div class="col-md-8">
+      <div class="card shadow-sm p-3"> <!-- <- envuelve aquí -->
         <div class="d-flex flex-column gap-3">
           @for(calendario of calendarios(); track calendario.id){
-            <app-calendario-card 
-              [calendario]="calendario" 
-              [enlace]="'/navbar/calendario/' + calendario.id">
-            </app-calendario-card>
+          <app-calendario-card [calendario]="calendario" [enlace]="'/navbar/calendario/' + calendario.id">
+          </app-calendario-card>
           }
         </div>
       </div>
+    </div>
 
-      <!-- Columna derecha: ranking -->
-      <div class="col-md-4">
-        <div class="card shadow-sm p-3">
-          <h5 class="text-primary mb-3">Ranking</h5>
+    <!-- Columna derecha: ranking -->
+    <div class="col-md-4">
+      <div class="card shadow-sm p-3">
+        <h5 class="text-primary mb-3">Ranking</h5>
 
-          <!-- Menú de pestañas -->
-          <ul class="nav nav-tabs mb-3">
-            <li class="nav-item">
-              <button class="nav-link" 
-                      [class.active]="tipoRanking === 'general'" 
-                      (click)="cambiarRanking('general')">
-                General
-              </button>
-            </li>
-            <li class="nav-item">
-              <button class="nav-link" 
-                      [class.active]="tipoRanking === 'comunidad'" 
-                      (click)="cambiarRanking('comunidad')">
-                Mi Comunidad
-              </button>
-            </li>
-          </ul>
+        <!-- Menú de pestañas -->
+        <ul class="nav nav-tabs mb-3">
+          <li class="nav-item">
+            <button class="nav-link" [class.active]="tipoRanking === 'general'" (click)="cambiarRanking('general')">
+              General
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" [class.active]="tipoRanking === 'comunidad'" (click)="cambiarRanking('comunidad')">
+              Mi Comunidad
+            </button>
+          </li>
+        </ul>
 
-          <!-- Tabla de ranking paginada con PrimeNG -->
-          <p-table 
-            [value]="jugadores()" 
-            [paginator]="true" 
-            [rows]="10" 
-            [rowsPerPageOptions]="[5, 10, 20]"
-            [responsiveLayout]="'scroll'">
-            
-            <ng-template pTemplate="header">
-              <tr>
-                <th>#</th>
-                <th>Jugador</th>
-                <th>Puntuación</th>
-              </tr>
-            </ng-template>
+        <!-- Tabla de ranking paginada con Angular Material, manteniendo @for -->
+        <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" style="width: 100%;">
 
-            <ng-template pTemplate="body" let-jugador let-rowIndex="rowIndex">
-              <tr>
-                <td>{{ rowIndex + 1 }}</td>
-                <td>{{ jugador.nombre }} {{ jugador.apellidos }}</td>
-                <td>{{ jugador.puntuacion }}</td>
-              </tr>
-            </ng-template>
-          </p-table>
+          <ng-container matColumnDef="posicion">
+            <th mat-header-cell *matHeaderCellDef>#</th>
+            <td mat-cell *matCellDef="let element; let i = index;">
+              {{ i + 1 + (paginator.pageIndex * paginator.pageSize) }}
+            </td>
+          </ng-container>
 
-        </div>
+          <ng-container matColumnDef="nombre">
+            <th mat-header-cell *matHeaderCellDef>Jugador</th>
+            <td mat-cell *matCellDef="let element">{{ element.nombre }} {{ element.apellidos }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="puntuacion">
+            <th mat-header-cell *matHeaderCellDef>Puntuación</th>
+            <td mat-cell *matCellDef="let element">{{ element.puntuacion }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        </table>
+
+        <mat-paginator #paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+
       </div>
-    </div> <!-- Aquí cierra la fila -->
+    </div>
+  </div> <!-- Aquí cierra la fila -->
   } <!-- Aquí cierra el @if -->
 </div>

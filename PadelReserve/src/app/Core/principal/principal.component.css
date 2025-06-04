@@ -1,0 +1,27 @@
+/* Cambiar el color del encabezado */
+.mat-header-row {
+  background-color: #007bff; /* azul */
+  color: white;
+  font-weight: bold;
+}
+
+/* Cambiar el color de las filas */
+.mat-row:nth-child(even) {
+  background-color: #f5f5f5;
+}
+
+/* Cambiar el hover de las filas */
+.mat-row:hover {
+  background-color: #e0e0e0;
+}
+
+/* Personalizar la tabla en general */
+table.mat-elevation-z8 {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Personalizar las celdas */
+.mat-cell, .mat-header-cell {
+  padding: 12px 16px;
+}

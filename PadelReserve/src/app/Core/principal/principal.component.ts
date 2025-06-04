@@ -1,16 +1,17 @@
-import { Component, effect, inject, signal, Signal } from '@angular/core';
+import { Component, effect, inject, signal, Signal, ViewChild } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { AutenticacionService } from '../../Services/autenticacion.service';
-import { TableModule } from 'primeng/table';
 import { CalendarioService } from '../../Services/calendario.service';
-import { SinRolComponent } from "../../Shared/sin-rol/sin-rol.component";
 import { CalendarioCardComponent } from "../../Shared/calendario-card/calendario-card.component";
 import { FormsModule } from '@angular/forms';
 import { supabase } from '../../app.config';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-principal',
-  imports: [RouterModule, CalendarioCardComponent, FormsModule,TableModule],
+  imports: [RouterModule, CalendarioCardComponent, FormsModule,MatTableModule,MatPaginatorModule,MatButtonModule],
   templateUrl: './principal.component.html',
   styleUrl: './principal.component.css'
 })
@@ -23,7 +24,15 @@ export class PrincipalComponent {
   calendarios = signal<{ id: string; nombre: string }[]>([]);
   perfil = this.autenticacionService.perfilSignal
   jugadores = signal<any>(null)
-  tipoRanking: string = 'general'
+  tipoRanking: string = 'general';
+  dataSource = new MatTableDataSource<any>([]);
+  displayedColumns: string[] = ['posicion', 'nombre', 'puntuacion'];
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+  }
 
   constructor() {
     this.cargarCalendarios(this.perfil().comunidad.id);
@@ -49,30 +58,34 @@ export class PrincipalComponent {
     }
   }
   async cargarRankingGeneral() {
-    const { data, error } = await supabase
-      .from('usuario')
-      .select('nombre, apellidos, puntuacion')
-      .order('puntuacion', { ascending: false });
+  const { data, error } = await supabase
+    .from('usuario')
+    .select('nombre, apellidos, puntuacion')
+    .order('puntuacion', { ascending: false });
 
-    if (error) {
-      console.error('Error al obtener el ranking:', error);
-    } else {
-      console.log(data)
-      this.jugadores.set(data)
-    }
+  if (error) {
+    console.error('Error al obtener el ranking:', error);
+  } else {
+    console.log(data);
+    this.jugadores.set(data);
+    this.dataSource.data = data ?? [];
   }
-    async cargarRankingComunidad() {
-      const idComunidad = this.perfil().comunidad.id
-    const { data, error } = await supabase
-      .from('usuario')
-      .select('nombre, apellidos, puntuacion').eq('comunidad_id',idComunidad)
-      .order('puntuacion', { ascending: false });
+}
 
-    if (error) {
-      console.error('Error al obtener el ranking:', error);
-    } else {
-      console.log(data)
-      this.jugadores.set(data)
-    }
+async cargarRankingComunidad() {
+  const idComunidad = this.perfil().comunidad.id;
+  const { data, error } = await supabase
+    .from('usuario')
+    .select('nombre, apellidos, puntuacion')
+    .eq('comunidad_id', idComunidad)
+    .order('puntuacion', { ascending: false });
+
+  if (error) {
+    console.error('Error al obtener el ranking:', error);
+  } else {
+    console.log(data);
+    this.jugadores.set(data);
+    this.dataSource.data = data ?? [];
   }
+}
 }
