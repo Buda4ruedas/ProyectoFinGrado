@@ -1,5 +1,5 @@
 import { Component, effect, inject, signal, Signal, ViewChild } from '@angular/core';
-import { RouterModule, RouterOutlet } from '@angular/router';
+import { RouterModule} from '@angular/router';
 import { AutenticacionService } from '../../Services/autenticacion.service';
 import { CalendarioService } from '../../Services/calendario.service';
 import { CalendarioCardComponent } from "../../Shared/calendario-card/calendario-card.component";

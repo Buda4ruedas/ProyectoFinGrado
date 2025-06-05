@@ -8,6 +8,8 @@ import { UsuarioService } from '../../Services/usuario.service';
 import { AutenticacionService } from '../../Services/autenticacion.service';
 import { PopUpConfirmacionComponent } from '../../Shared/pop-up-confirmacion/pop-up-confirmacion.component';
 import { ComunidadService } from '../../Services/comunidad.service';
+import { EnviarEmailsService } from '../../Services/enviar-emails.service';
+
 
 
 @Component({
@@ -20,6 +22,8 @@ export class BuscarComunidadComponent {
   private usuarioService = inject(UsuarioService)
   private autenticacionService = inject(AutenticacionService)
   private comunidadService = inject(ComunidadService)
+  private enviarMailsService = inject(EnviarEmailsService)
+ 
 
   perfil = this.autenticacionService.perfilSignal;
   loading = signal<boolean>(true);
@@ -129,6 +133,7 @@ export class BuscarComunidadComponent {
     if (!ok) {
       console.error('Error al unirse a la comunidad.');
     }
+    this.enviarCorreo()
     return ok;
   }
 
@@ -170,4 +175,13 @@ export class BuscarComunidadComponent {
     const administradores = await this.comunidadService.obtenerAdministradores(idComunidad);
     return !(this.perfil().rol === 'administrador' && administradores.length <= 1);
   }
+
+async enviarCorreo() {
+  const administradores = await this.comunidadService.obtenerAdministradores(this.comunidadSeleccionada.id);
+  const mensaje = `Un usuario ha solicitado unirse a tu comunidad ${this.comunidadSeleccionada.nombre}`;
+  const asunto = "Solicitud de Validación";
+
+  this.enviarMailsService.enviarCorreoSolicitudValidacion(administradores, mensaje, asunto);
+}
+
 }
