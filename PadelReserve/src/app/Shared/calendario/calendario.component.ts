@@ -214,4 +214,13 @@ export class CalendarioComponent {
       return this.horariosFinde().some(h => h.id === horarioId);
     }
   }
+  sumarTreintaMinutos(hora: string): string {
+  const [h, m] = hora.split(':').map(Number);
+  const date = new Date();
+  date.setHours(h, m + 30);
+
+  const horas = date.getHours().toString().padStart(2, '0');
+  const minutos = date.getMinutes().toString().padStart(2, '0');
+  return `${horas}:${minutos}`;
+}
 }

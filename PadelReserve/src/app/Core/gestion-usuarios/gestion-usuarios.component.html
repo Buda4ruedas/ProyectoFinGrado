@@ -17,6 +17,8 @@
             </div>
             <h5 class="card-title text-primary mb-1">{{ usuario.nombre }} {{ usuario.apellidos }}</h5>
             <p class="text-muted mb-2">{{ usuario.email }}</p>
+            <p class="text mb-2">Vivienda: {{ usuario.portal }} - {{usuario.piso}}</p>
+
             <p class="mb-3"><strong>Rol:</strong> {{ usuario.rol || 'Sin rol' }}</p>
 
             <div class="d-flex justify-content-center gap-2">

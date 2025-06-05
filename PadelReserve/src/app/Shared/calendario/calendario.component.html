@@ -35,43 +35,56 @@
           <th class="bg-primary text-white">Hora</th>
           @for(dia of dias;track $index){
           <th class="bg-primary text-white">
-            {{ dia | date:'EEE d/M' }}
+          {{ dia | date:'EEEE d/M' }}
           </th>
           }
         </tr>
       </thead>
       <tbody>
-        @for( horario of horario() ; track $index){
+        @for(horario of horario(); track $index) {
         <tr>
           <td class="fw-semibold text-primary">
             {{ horario?.hora || '' }}
           </td>
-          @for(dia of dias;track $index){
-          <td>
-            @if(horarioDisponible(dia, horario!.id)){
-            <div (click)="onclick(dia, horario!.id)" [ngClass]="{
-            'calendar-cell': true,
-            'bg-secondary text-white': estaReservado(dia, horario!.id) && esDeMiVivienda(dia, horario!.id),
-            'bg-warning text-dark': estaReservado(dia, horario!.id) && !esDeMiVivienda(dia, horario!.id),
-            'bg-success text-white': !estaReservado(dia, horario!.id)
+
+          @for(dia of dias; track $index) {
+          <td class="p-0">
+            @if(horarioDisponible(dia, horario!.id)) {
+            <div (click)="onclick(dia, horario!.id)" class="calendar-cell h-100 w-100" [ngClass]="{
+                'bg-secondary text-white': estaReservado(dia, horario!.id) && esDeMiVivienda(dia, horario!.id),
+                'bg-warning text-dark': estaReservado(dia, horario!.id) && !esDeMiVivienda(dia, horario!.id),
+                'bg-success text-white': !estaReservado(dia, horario!.id)
               }">
-              {{
-              estaReservado(dia, horario!.id)
-              ? 'Portal: ' + reservas()[dia.toLocaleDateString('es-ES') + '-' + horario!.id].portal + ' - ' +
-              reservas()[dia.toLocaleDateString('es-ES') + '-' + horario!.id].piso
-              : 'Disponible'
-              }}
+              @if(estaReservado(dia, horario!.id)) {
+              <div class="d-flex flex-column justify-content-center align-items-center h-100 w-100 text-center p-2">
+                <span>Portal:</span>
+                <span>
+                  {{
+                  reservas()[dia.toLocaleDateString('es-ES') + '-' + horario!.id].portal
+                  }} -
+                  {{
+                  reservas()[dia.toLocaleDateString('es-ES') + '-' + horario!.id].piso
+                  }}
+                </span>
+              </div>
+              } @else {
+              <div class="d-flex flex-column justify-content-center align-items-center h-100 w-100 text-center p-2">
+                <span>Disponible</span>
+                <small>{{ horario.hora }} - {{ sumarTreintaMinutos(horario.hora) }}</small>
+              </div>
+              }
             </div>
-            }@else { <div class="d-flex justify-content-center align-items-center" style="height: 100%;">
-    <p class="mb-0 text-muted">No disponible</p>
-  </div>
+            } @else {
+            <div class="d-flex justify-content-center align-items-center h-100" style="min-height: 60px;">
+              <p class="mb-0 text-muted">No disponible</p>
+            </div>
             }
           </td>
           }
-
         </tr>
         }
       </tbody>
+
     </table>
   </div>
 </div>
