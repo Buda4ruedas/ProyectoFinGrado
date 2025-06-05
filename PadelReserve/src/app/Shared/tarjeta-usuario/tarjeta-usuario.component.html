@@ -1,0 +1,36 @@
+<div class="card shadow-lg border-0 mb-4 rounded-4 overflow-hidden">
+  <div class="row g-0">
+    <!-- Imagen del usuario -->
+    <div class="col-md-4 bg-light d-flex align-items-center justify-content-center p-3">
+      <img [src]="usuario()?.fotografia" alt="Foto de usuario"
+           class="img-fluid rounded-circle shadow-sm"
+           style="width: 120px; height: 120px; object-fit: cover;">
+    </div>
+
+    <!-- Información del usuario -->
+    <div class="col-md-8">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <h4 class="text-primary fw-bold mb-1">{{ usuario()?.nombre }} {{ usuario()?.apellidos }}</h4>
+            <p class="text-muted mb-2">{{ usuario()?.email }}</p>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="row mb-2">
+          <div class="col-6">
+            <p class="mb-1"><strong>Comunidad:</strong></p>
+            <p class="text-secondary">{{ usuario()?.comunidad.nombre }}</p>
+          </div>
+          <div class="col-6">
+            <p class="mb-1"><strong>Puntuación:</strong></p>
+            <p class="text-secondary">{{ usuario()?.puntuacion }}</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

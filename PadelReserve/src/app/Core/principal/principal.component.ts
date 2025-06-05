@@ -8,10 +8,11 @@ import { supabase } from '../../app.config';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
+import { TarjetaUsuarioComponent } from "../../Shared/tarjeta-usuario/tarjeta-usuario.component";
 
 @Component({
   selector: 'app-principal',
-  imports: [RouterModule, CalendarioCardComponent, FormsModule,MatTableModule,MatPaginatorModule,MatButtonModule],
+  imports: [RouterModule, CalendarioCardComponent, FormsModule, MatTableModule, MatPaginatorModule, MatButtonModule, TarjetaUsuarioComponent],
   templateUrl: './principal.component.html',
   styleUrl: './principal.component.css'
 })
@@ -27,6 +28,8 @@ export class PrincipalComponent {
   tipoRanking: string = 'general';
   dataSource = new MatTableDataSource<any>([]);
   displayedColumns: string[] = ['posicion', 'nombre', 'puntuacion'];
+  idBuscado = signal<any>(null)
+  mostrarUsuario = signal<boolean>(false);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -60,7 +63,7 @@ export class PrincipalComponent {
   async cargarRankingGeneral() {
   const { data, error } = await supabase
     .from('usuario')
-    .select('nombre, apellidos, puntuacion')
+    .select('id,nombre, apellidos, puntuacion')
     .order('puntuacion', { ascending: false });
 
   if (error) {
@@ -76,7 +79,7 @@ async cargarRankingComunidad() {
   const idComunidad = this.perfil().comunidad.id;
   const { data, error } = await supabase
     .from('usuario')
-    .select('nombre, apellidos, puntuacion')
+    .select(' id, nombre, apellidos, puntuacion')
     .eq('comunidad_id', idComunidad)
     .order('puntuacion', { ascending: false });
 
@@ -87,5 +90,9 @@ async cargarRankingComunidad() {
     this.jugadores.set(data);
     this.dataSource.data = data ?? [];
   }
+}
+encontrarUsuario(idUsuario:any){
+  this.idBuscado = idUsuario;
+  this.mostrarUsuario.set(true)
 }
 }

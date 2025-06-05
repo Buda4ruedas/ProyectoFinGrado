@@ -7,7 +7,7 @@ import { supabase } from '../app.config';
   providedIn: 'root'
 })
 export class UsuarioService {
-  private authService = inject(AutenticacionService) 
+  private authService = inject(AutenticacionService)
 
 
   async modificarPerfil(datos: any): Promise<boolean> {
@@ -162,15 +162,28 @@ export class UsuarioService {
     }
   }
 
-  async actualizarPuntuacion(puntuacion:any,id:any){
-    try{
-      const {data,error} = await supabase.from("usuario").update([{puntuacion:puntuacion}]).eq('id',id)
-      if(error){
+  async actualizarPuntuacion(puntuacion: any, id: any) {
+    try {
+      const { data, error } = await supabase.from("usuario").update([{ puntuacion: puntuacion }]).eq('id', id)
+      if (error) {
         throw error
       }
 
-    }catch(e){
+    } catch (e) {
       console.log("error al actualizar la puntuacion")
+    }
+  }
+  async obtenerUsuario(idUsuario: any): Promise<any> {
+    try {
+      const { data, error } = await supabase.from('usuario').select('nombre,apellidos,comunidad(*),portal,piso,email,rol,puntuacion,fotografia').eq('id', idUsuario).single();
+      if (error) {
+        throw error
+      } else {
+        return data
+      }
+    } catch (e) {
+      console.log("error al obtener informacion del usuario")
+
     }
   }
 }
