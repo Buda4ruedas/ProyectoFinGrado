@@ -185,13 +185,18 @@ export class PartidoComponent {
   }
 
   puedeEliminarPartido(): boolean {
+
     if (!this.editable() || !this.datosPartido()) return false;
+
 
     const fechaPartido = new Date(this.datosPartido().fecha);
     const [horaInicio, minutoInicio] = this.datosPartido().hora_inicio.split(':');
     fechaPartido.setHours(parseInt(horaInicio), parseInt(minutoInicio));
-
-    return new Date() < fechaPartido;
+    if(new Date()<fechaPartido || this.jugadoresPartido().length<this.datosPartido().numero_jugadores){
+      return true
+    }else{
+      return false
+    }
   }
 
   async eliminarPartido() {
@@ -214,29 +219,28 @@ export class PartidoComponent {
 
     const usuarios = await this.partidosService.obtenerJugadoresPartido(idPartido);
 
-    // Separa jugadores por equipo
+    
     const equipo1 = usuarios.filter(u => u.equipo === 1);
     const equipo2 = usuarios.filter(u => u.equipo === 2);
 
-    // Calcula la puntuación promedio de cada equipo
+   
     const promedio = (equipo: any[]) => equipo.reduce((acc, u) => acc + u.usuario.puntuacion, 0) / equipo.length;
 
     const rating1 = promedio(equipo1);
     const rating2 = promedio(equipo2);
 
-    // Calcula la expectativa de victoria
     const expected1 = 1 / (1 + Math.pow(10, (rating2 - rating1) / 400));
     const expected2 = 1 / (1 + Math.pow(10, (rating1 - rating2) / 400));
 
-    // Asigna el resultado real
+
     const score1 = equipoGanador === 1 ? 1 : 0;
     const score2 = equipoGanador === 2 ? 1 : 0;
 
-    // Calcula la nueva puntuación para cada equipo
+
     const newRating1 = rating1 + K * (score1 - expected1);
     const newRating2 = rating2 + K * (score2 - expected2);
 
-    // Ajusta la puntuación de cada jugador proporcionalmente
+ 
     for (const jugador of equipo1) {
       const ajuste = newRating1 - rating1;
       jugador.usuario.puntuacion += ajuste;
@@ -256,8 +260,18 @@ export class PartidoComponent {
     const fechaPartido = new Date(this.datosPartido().fecha);
     const [hora, minuto] = this.datosPartido().hora_inicio.split(':');
     fechaPartido.setHours(parseInt(hora), parseInt(minuto));
+
+    console.log('el perfil es ' , this.perfil())
+    console.log("los datos del partido son" , this.datosPartido())
+
+
     if (fechaActual > fechaPartido) {
       alert('Ya no puedes desapuntarte del partido');
+      return;
+    }
+    
+    if(this.perfil().id==this.datosPartido().usuario.id){
+      alert('El creador de un partido no puede desapuntarse')
       return;
     }
     const confirmado = confirm('¿Quieres desapuntarte del partido?');
