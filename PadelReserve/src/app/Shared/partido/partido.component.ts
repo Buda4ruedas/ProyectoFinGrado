@@ -252,20 +252,14 @@ export class PartidoComponent {
     this.resultadoaniadido.emit();
   }
   async desapuntarse() {
-const fechaActual = new Date();
-console.log('la fecha de ahora es', fechaActual);
-
-const fechaPartido = new Date(this.datosPartido().fecha);  
-const [hora, minuto] = this.datosPartido().hora_inicio.split(':'); 
-fechaPartido.setHours(parseInt(hora), parseInt(minuto));
-
-console.log('la fecha y hora del partido es', fechaPartido);
-
-if (fechaActual > fechaPartido) {
-  alert('Ya no puedes desapuntarte del partido');
-  return;
-}
-
+    const fechaActual = new Date();
+    const fechaPartido = new Date(this.datosPartido().fecha);
+    const [hora, minuto] = this.datosPartido().hora_inicio.split(':');
+    fechaPartido.setHours(parseInt(hora), parseInt(minuto));
+    if (fechaActual > fechaPartido) {
+      alert('Ya no puedes desapuntarte del partido');
+      return;
+    }
     const confirmado = confirm('¿Quieres desapuntarte del partido?');
     if (!confirmado) return;
 
