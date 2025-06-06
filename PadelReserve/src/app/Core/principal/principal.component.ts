@@ -30,6 +30,7 @@ export class PrincipalComponent {
   displayedColumns: string[] = ['posicion', 'nombre', 'puntuacion'];
   idBuscado = signal<any>(null)
   mostrarUsuario = signal<boolean>(false);
+  loading = signal<boolean>(false)
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -54,11 +55,17 @@ export class PrincipalComponent {
   }
   cambiarRanking(tipo: string) {
     this.tipoRanking = tipo;
+    this.loading.set(true)
+    const inicio = Date.now();
+
     if (tipo === 'general') {
       this.cargarRankingGeneral()
     } else {
       this.cargarRankingComunidad()
     }
+    const duracion = Date.now() - inicio;
+    const espera = Math.max(500 - duracion, 0);
+    setTimeout(() => this.loading.set(false), espera);
   }
   async cargarRankingGeneral() {
   const { data, error } = await supabase

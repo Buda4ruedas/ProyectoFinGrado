@@ -17,7 +17,7 @@
           <div class="border rounded p-3 h-100">
             <h6 class="text-muted">Detalles Generales</h6>
             <p class="mb-1"><strong>Comunidad:</strong> {{ datosPartido()?.usuario.comunidad.nombre }}</p>
-            <p class="mb-1"><strong>Fecha:</strong> {{ datosPartido()?.fecha }}</p>
+            <p class="mb-1"><strong>Fecha:</strong> {{ datosPartido()?.fecha | date: 'dd/MM/yyyy' }} </p>
             <p class="mb-1"><strong>Hora:</strong> {{ datosPartido()?.hora_inicio }} - {{ datosPartido()?.hora_final }}
             </p>
           </div>
@@ -63,7 +63,9 @@
             <div class="text-center">
               @if (jugador) {
               <img [src]="jugador.usuario?.fotografia || 'assets/default-user.png'" alt="Foto jugador"
-                class="rounded-circle border border-primary" style="width: 40px; height: 40px; object-fit: cover;"><br>
+     class="rounded-circle border border-primary" style="width: 40px; height: 40px; object-fit: cover; cursor: pointer"
+     [title]="jugador.usuario?.id === perfil().id ? 'Haz clic para desapuntarte' : ''"
+     (click)="jugador.usuario?.id === perfil().id && desapuntarse()"><br>
               <small>{{ jugador.usuario?.nombre }}</small><br>
                        <small class="badge bg-primary-subtle text-primary-emphasis border border-primary rounded-pill px-2">
   {{ jugador.usuario?.puntuacion }} 
@@ -89,8 +91,10 @@
             @for(jugador of equipo2(); track $index) {
             <div class="text-center">
               @if (jugador) {
-              <img [src]="jugador.usuario?.fotografia || 'assets/default-user.png'" alt="Foto jugador"
-                class="rounded-circle border border-primary" style="width: 40px; height: 40px; object-fit: cover;"><br>
+                  <img [src]="jugador.usuario?.fotografia || 'assets/default-user.png'" alt="Foto jugador"
+     class="rounded-circle border border-primary" style="width: 40px; height: 40px; object-fit: cover; cursor: pointer"
+     [title]="jugador.usuario?.id === perfil().id ? 'Haz clic para desapuntarte' : ''"
+     (click)="jugador.usuario?.id === perfil().id && desapuntarse()"><br>
               <small>{{ jugador.usuario?.nombre }}</small><br>
               <small class="badge bg-primary-subtle text-primary-emphasis border border-primary rounded-pill px-2">
   {{ jugador.usuario?.puntuacion }}

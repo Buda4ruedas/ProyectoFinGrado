@@ -1,21 +1,22 @@
-import { Component, effect, EventEmitter, inject, input,  Output,  signal} from '@angular/core';
+import { Component, effect, EventEmitter, inject, input, Output, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PartidosService } from '../../Services/partidos.service';
 import { AutenticacionService } from '../../Services/autenticacion.service';
 import { FormsModule } from '@angular/forms';
 import { UsuarioService } from '../../Services/usuario.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-partido',
-  imports: [FormsModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './partido.component.html',
   styleUrl: './partido.component.css'
 })
 export class PartidoComponent {
-private route = inject(ActivatedRoute);
+  private route = inject(ActivatedRoute);
   private partidosService = inject(PartidosService);
   private autenticacionService = inject(AutenticacionService);
-  private usuarioService = inject (UsuarioService)
+  private usuarioService = inject(UsuarioService)
 
   partidoIdS = input<string>('');
   editable = input<boolean>(false);
@@ -101,7 +102,7 @@ private route = inject(ActivatedRoute);
   get setsResultado(): string[] {
     const resultado = this.datosPartido()?.resultado;
     if (!resultado) return [];
-    return resultado.split('-'); 
+    return resultado.split('-');
   }
 
   puedeEditarResultado(): boolean {
@@ -207,48 +208,77 @@ private route = inject(ActivatedRoute);
     }
   }
 
-async sumarPuntuacion(equipoGanador: number, idPartido: string) {
-  
-  const K = 32;
+  async sumarPuntuacion(equipoGanador: number, idPartido: string) {
 
-  const usuarios = await this.partidosService.obtenerJugadoresPartido(idPartido);
+    const K = 32;
 
-  // Separa jugadores por equipo
-  const equipo1 = usuarios.filter(u => u.equipo === 1);
-  const equipo2 = usuarios.filter(u => u.equipo === 2);
+    const usuarios = await this.partidosService.obtenerJugadoresPartido(idPartido);
 
-  // Calcula la puntuación promedio de cada equipo
-  const promedio = (equipo: any[]) => equipo.reduce((acc, u) => acc + u.usuario.puntuacion, 0) / equipo.length;
+    // Separa jugadores por equipo
+    const equipo1 = usuarios.filter(u => u.equipo === 1);
+    const equipo2 = usuarios.filter(u => u.equipo === 2);
 
-  const rating1 = promedio(equipo1);
-  const rating2 = promedio(equipo2);
+    // Calcula la puntuación promedio de cada equipo
+    const promedio = (equipo: any[]) => equipo.reduce((acc, u) => acc + u.usuario.puntuacion, 0) / equipo.length;
 
-  // Calcula la expectativa de victoria
-  const expected1 = 1 / (1 + Math.pow(10, (rating2 - rating1) / 400));
-  const expected2 = 1 / (1 + Math.pow(10, (rating1 - rating2) / 400));
+    const rating1 = promedio(equipo1);
+    const rating2 = promedio(equipo2);
 
-  // Asigna el resultado real
-  const score1 = equipoGanador === 1 ? 1 : 0;
-  const score2 = equipoGanador === 2 ? 1 : 0;
+    // Calcula la expectativa de victoria
+    const expected1 = 1 / (1 + Math.pow(10, (rating2 - rating1) / 400));
+    const expected2 = 1 / (1 + Math.pow(10, (rating1 - rating2) / 400));
 
-  // Calcula la nueva puntuación para cada equipo
-  const newRating1 = rating1 + K * (score1 - expected1);
-  const newRating2 = rating2 + K * (score2 - expected2);
+    // Asigna el resultado real
+    const score1 = equipoGanador === 1 ? 1 : 0;
+    const score2 = equipoGanador === 2 ? 1 : 0;
 
-  // Ajusta la puntuación de cada jugador proporcionalmente
-  for (const jugador of equipo1) {
-    const ajuste = newRating1 - rating1;
-    jugador.usuario.puntuacion += ajuste;
-    await this.usuarioService.actualizarPuntuacion(jugador.usuario.puntuacion, jugador.usuario.id);
+    // Calcula la nueva puntuación para cada equipo
+    const newRating1 = rating1 + K * (score1 - expected1);
+    const newRating2 = rating2 + K * (score2 - expected2);
+
+    // Ajusta la puntuación de cada jugador proporcionalmente
+    for (const jugador of equipo1) {
+      const ajuste = newRating1 - rating1;
+      jugador.usuario.puntuacion += ajuste;
+      await this.usuarioService.actualizarPuntuacion(jugador.usuario.puntuacion, jugador.usuario.id);
+    }
+
+    for (const jugador of equipo2) {
+      const ajuste = newRating2 - rating2;
+      jugador.usuario.puntuacion += ajuste;
+      await this.usuarioService.actualizarPuntuacion(jugador.usuario.puntuacion, jugador.usuario.id);
+    }
+
+    this.resultadoaniadido.emit();
   }
+  async desapuntarse() {
+const fechaActual = new Date();
+console.log('la fecha de ahora es', fechaActual);
 
-  for (const jugador of equipo2) {
-    const ajuste = newRating2 - rating2;
-    jugador.usuario.puntuacion += ajuste;
-    await this.usuarioService.actualizarPuntuacion(jugador.usuario.puntuacion, jugador.usuario.id);
-  }
+const fechaPartido = new Date(this.datosPartido().fecha);  
+const [hora, minuto] = this.datosPartido().hora_inicio.split(':'); 
+fechaPartido.setHours(parseInt(hora), parseInt(minuto));
 
-  this.resultadoaniadido.emit();
+console.log('la fecha y hora del partido es', fechaPartido);
+
+if (fechaActual > fechaPartido) {
+  alert('Ya no puedes desapuntarte del partido');
+  return;
 }
+
+    const confirmado = confirm('¿Quieres desapuntarte del partido?');
+    if (!confirmado) return;
+
+    try {
+      const usuarioId = this.perfil().id;
+      await this.partidosService.eliminarJugadorDelPartido(this.partidoId, usuarioId);
+      await this.obtenerDatosPartido();
+      await this.obtenerJugadoresPartido();
+      alert('Te has desapuntado del partido.');
+    } catch (error) {
+      console.error('Error al desapuntarse:', error);
+      alert('No se pudo desapuntar. Inténtalo más tarde.');
+    }
+  }
 
 }

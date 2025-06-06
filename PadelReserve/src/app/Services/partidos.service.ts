@@ -138,5 +138,14 @@ export class PartidosService {
       return false;
     }
   }
+  async eliminarJugadorDelPartido(partidoId: string, usuarioId: string) {
+  const { error } = await supabase
+    .from('jugadoresPartido')
+    .delete()
+    .eq('id_partido', partidoId)
+    .eq('id_participante', usuarioId);
+
+  if (error) throw error;
+}
 
 }
