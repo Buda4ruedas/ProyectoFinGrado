@@ -23,7 +23,8 @@ constructor(){
   
 }
 async obtenerDatosUsuario(idUsuario:any){
- this.usuario.set(await this.usuarioService.obtenerUsuario(idUsuario))
+  const usuarios = await this.usuarioService.obtenerUsuario(idUsuario)
+ this.usuario.set(usuarios[0])
 }
 
 

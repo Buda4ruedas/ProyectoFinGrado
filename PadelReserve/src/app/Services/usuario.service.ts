@@ -173,9 +173,9 @@ export class UsuarioService {
       console.log("error al actualizar la puntuacion")
     }
   }
-  async obtenerUsuario(idUsuario: any): Promise<any> {
+  async obtenerUsuario(idUsuario: any): Promise<any[]> {
     try {
-      const { data, error } = await supabase.from('usuario').select('nombre,apellidos,comunidad(*),portal,piso,email,rol,puntuacion,fotografia').eq('id', idUsuario).single();
+      const { data, error } = await supabase.from('usuario').select('nombre,apellidos,comunidad(*),portal,piso,email,rol,puntuacion,fotografia').eq('id', idUsuario);
       if (error) {
         throw error
       } else {
@@ -183,7 +183,7 @@ export class UsuarioService {
       }
     } catch (e) {
       console.log("error al obtener informacion del usuario")
-
+      return[]
     }
   }
 }
