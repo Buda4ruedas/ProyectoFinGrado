@@ -16,7 +16,7 @@
           <tr>
             <td>{{ registro.nombre }}</td>
             <td>{{ registro.calendario }}</td>
-            <td>{{ registro.fecha }}</td>
+            <td>{{ registro.fecha |  date: 'dd/MM/yyyy' }}</td>
             <td>{{ registro.horario }}</td>
           </tr>
         }

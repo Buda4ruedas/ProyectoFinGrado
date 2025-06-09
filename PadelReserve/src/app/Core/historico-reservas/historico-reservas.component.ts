@@ -1,10 +1,11 @@
 import { Component, effect, inject, signal } from '@angular/core';
 import { AutenticacionService } from '../../Services/autenticacion.service';
 import { ReservasService } from '../../Services/reservas.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-historico-reservas',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './historico-reservas.component.html',
   styleUrl: './historico-reservas.component.css'
 })
